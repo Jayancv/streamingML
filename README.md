@@ -13,6 +13,19 @@ streamingml : streamclusteringsamoa ([learn-type], [window-shift], [batch-size],
 
 streaming : streamclustering ([learn-type], [window-shift], [batch-size],[num-iterations], [num-clusters], [alpha], [ci],[param0],...., [paramp]);
 
+##Example Query
+
+@Import('ccppInputStream:1.0.0')
+define stream ccppInputStream (PE double, ATV double, V double, AP double, RH double);
+
+@Export('ccppOutputStream:1.0.0')
+define stream ccppOutputStream (PE double, ATV double, V double, AP double, RH double, stderr double, center0 string, center1 string);
+
+from ccppInputStream#streaming:streamclusteringsamoa(0, 0, 1000, 10, 2, 1, 0.95, PE, ATV, V, AP, RH)
+select *
+insert into ccppOutputStream;
+
+
 ##Paramters for Streaming CLustering
 
 
