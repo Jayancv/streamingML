@@ -108,7 +108,7 @@ public class StreamingKMeansClustering {
         int memSize=eventsMem.size();
         if(memSize >= batchSize){
 
-            System.out.println("Start Training");
+            logger.info("Start Training");
             Object[]output= buildModel(eventsMem);
             eventsMem.clear();
             return output;
@@ -131,7 +131,7 @@ public class StreamingKMeansClustering {
     }
 
     public Object[] buildModel(List<String> eventsMem){
-        System.out.println("Build Model");
+        logger.info("Building Model");
         eventsRDD = getRDD(sc,eventsMem);
         KMeansModel newModel = null;
         Vector clusterWeights = null;
@@ -176,7 +176,7 @@ public class StreamingKMeansClustering {
     }
 
     public static JavaRDD<Vector> getRDD (JavaSparkContext sc ,List<String> events){
-        System.out.println("Train-Stream-Data\n");
+        logger.info("Training-Stream-Data\n");
         JavaRDD<String> data = sc.parallelize(events);
         JavaRDD<Vector> parsedData = data.map(
                 new Function<String, Vector>() {
@@ -196,8 +196,8 @@ public class StreamingKMeansClustering {
     public static double getWSSSE(JavaRDD<Vector> parsedData,final KMeansModel clusters){
 
         double WSSSE = clusters.computeCost(parsedData.rdd());
-        System.out.println("Within Set Sum of Squared Errors = " + WSSSE);
-        System.out.println("training Mean Squared Error = " + WSSSE);
+        logger.info("Within Set Sum of Squared Errors = " + WSSSE);
+        logger.info("training Mean Squared Error = " + WSSSE);
         return WSSSE;
     }
 
@@ -213,7 +213,7 @@ public class StreamingKMeansClustering {
     }
 
     public static Vector getClutserWeights(JavaRDD<Vector> eventsRDD, KMeansModel model, int numClusters ){
-        System.out.println("CLuster Weights");
+        logger.info("Calculating Cluster Weights: Cluster Centers");
         JavaRDD<Integer> weights = model.predict(eventsRDD);
         List<Integer> list = weights.collect();
         double [] w = new double[numClusters];
