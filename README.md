@@ -1,2 +1,4 @@
 # streamingml - Real Time Massive Predictive Analytics with Online Big Data
 This project is to develop deep learning based streaming data analytics platform to predictive analytics which support retrain of machine learning models using advanced algorithms like Stochastic Gradient Descent based deep learning algorithms and mini btach processing. More importantly this supports massive online data analysis with the high speed streaming support which can be used alongside with the modern day distributed processing and data storin techniques such as apache storm, samza and p4. As a Google Summer of code contributor this platform is integrated with the WSO2 CEP (Complex Event Processing) plaform and their ML (Machine Learner) for massive data analysis real time saving lots of resources at run time.
+
+streaming:streamclusteringsamoa ((learn-type), (window-shift),<>)
