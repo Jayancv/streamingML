@@ -92,6 +92,7 @@
 
   </dependencies>
 
+  <!-->Normal build without packing necessary jars use this if cep already has spark1.6.1 and samoa 0.4.0-incubating dependencies<-->
   <build>
     <plugins>
       <plugin>
