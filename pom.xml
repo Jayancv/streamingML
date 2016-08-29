@@ -1,5 +1,5 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.wso2.carbon.ml.siddhi.extension.streamingml</groupId>
   <artifactId>streamingml</artifactId>
@@ -18,12 +18,12 @@
     <dependency>
       <groupId>org.wso2.siddhi</groupId>
       <artifactId>siddhi-core</artifactId>
-      <version> 3.0.6-SNAPSHOT </version>
+      <version> 3.1.2-SNAPSHOT </version>
     </dependency>
     <dependency>
       <groupId>org.wso2.siddhi</groupId>
       <artifactId>siddhi-query-api</artifactId>
-      <version> 3.0.6-SNAPSHOT </version>
+      <version> 3.1.2-SNAPSHOT </version>
     </dependency>
 
     <!--dependency>
@@ -107,7 +107,7 @@
   </build>
 
 
- <!-->This Build is for Packing Dependency Jar with your project with Maven Shade Plugin<-->
+  <!-->This Build is for Packing Dependency Jar with your project with Maven Shade Plugin<-->
   <!--build>
     <plugins>
       <plugin>
@@ -147,10 +147,10 @@
     </plugins>
   </build-->
 
-<!-->Packing Dependency Jar with Mavne Assembly Plugin - May cause akka.version error please use above.
- For More Information
-    http://stackoverflow.com/questions/31011243/no-configuration-setting-found-for-key-akka-version
-<-->
+  <!-->Packing Dependency Jar with Mavne Assembly Plugin - May cause akka.version error please use above.
+   For More Information
+      http://stackoverflow.com/questions/31011243/no-configuration-setting-found-for-key-akka-version
+  <-->
   <!--build>
   <plugins>
     <plugin>
