@@ -1,4 +1,4 @@
-package org.wso2.carbon.ml.siddhi.extension.streamingml.samoa;
+package org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.Clustering;
 
 import com.github.javacliparser.*;
 import org.apache.samoa.evaluation.ClusteringEvaluatorProcessor;
