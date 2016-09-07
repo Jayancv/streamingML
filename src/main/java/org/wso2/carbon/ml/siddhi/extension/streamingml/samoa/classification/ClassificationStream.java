@@ -2,11 +2,13 @@ package org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.classification;
 
 import com.github.javacliparser.IntOption;
 import org.apache.samoa.instances.*;
+import org.apache.samoa.moa.MOAObject;
 import org.apache.samoa.moa.cluster.Cluster;
 import org.apache.samoa.moa.core.DataPoint;
 import org.apache.samoa.moa.core.Example;
 import org.apache.samoa.moa.core.InstanceExample;
 import org.apache.samoa.moa.core.ObjectRepository;
+import org.apache.samoa.moa.options.AbstractOptionHandler;
 import org.apache.samoa.moa.tasks.TaskMonitor;
 import org.apache.samoa.streams.InstanceStream;
 import org.apache.samoa.streams.clustering.ClusteringStream;
@@ -22,7 +24,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 /**
  * Created by wso2123 on 8/30/16.
  */
-public class ClassificationStream extends ClusteringStream {
+public class ClassificationStream extends AbstractOptionHandler implements InstanceStream {
 
     public ConcurrentLinkedQueue<double[]> cepEvents;
     private static final Logger logger = LoggerFactory.getLogger(ClassificationStream.class);
@@ -130,6 +132,16 @@ public class ClassificationStream extends ClusteringStream {
 
     public void setCepEvents(ConcurrentLinkedQueue<double[]> cepEvents) {
         this.cepEvents = cepEvents;
+    }
+
+    @Override
+    public int measureByteSize() {
+        return 0;
+    }
+
+    @Override
+    public MOAObject copy() {
+        return null;
     }
 
     @Override

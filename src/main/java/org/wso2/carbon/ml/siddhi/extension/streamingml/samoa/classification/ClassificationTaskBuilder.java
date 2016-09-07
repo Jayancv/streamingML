@@ -46,9 +46,9 @@ public class ClassificationTaskBuilder {
     public void initTask(int numAttributes, int numClasses, int maxInstances) {
         String query = "";
         //query = "org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.classification.ClassTask -f 100000 -i 1000000 -s (org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.classification.ClassificationStream ) -l (org.apache.samoa.learners.classifiers.SingleClassifier -l (org.apache.samoa.learners.classifiers.SimpleClassifierAdapter -l (org.apache.samoa.moa.classifiers.functions.MajorityClass)))";
-        query = "org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.classification.ClassTask -f 100000 -i 1000000 -s (org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.classification.ClassificationStream ) -l (org.apache.samoa.learners.classifiers.ensemble.Bagging -l (org.apache.samoa.learners.classifiers.trees.VerticalHoeffdingTree))";
-        // query = "org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.classification.ClassTask -f 100000 -i 1000000 -s (org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.classification.ClassificationStream ) -l (org.apache.samoa.learners.classifiers.trees.VerticalHoeffdingTree)";
-       //  query = "org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.classification.ClassTask -f 100000 -i 1000000 -s (org.apache.samoa.streams.generators.RandomTreeGenerator ) -l (org.apache.samoa.learners.classifiers.trees.VerticalHoeffdingTree)";
+      //  query = "org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.classification.ClassTask -f 100000 -i 1000000 -s (org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.classification.ClassificationStream ) -l (org.apache.samoa.learners.classifiers.ensemble.Bagging -l (org.apache.samoa.learners.classifiers.trees.VerticalHoeffdingTree))";
+         query = "org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.classification.ClassTask -f 100000 -i 1000000 -s (org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.classification.ClassificationStream ) -l (org.apache.samoa.learners.classifiers.trees.VerticalHoeffdingTree)";
+       // query = "org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.classification.ClassTask -f 100000 -i 1000000 -s (org.apache.samoa.streams.generators.RandomTreeGenerator ) -l (org.apache.samoa.learners.classifiers.trees.VerticalHoeffdingTree)";
 
         logger.info("QUERY: " + query);
         String args[] = {query};
