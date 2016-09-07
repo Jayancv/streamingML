@@ -35,7 +35,6 @@ public class StreamingClusteringTask implements Task, Configurable {
     public ClassOption learnerOption = new ClassOption("learner", 'l', "Clustering to run.", Learner.class,
             DistributedClusterer.class.getName());
 
-
     public ClassOption streamTrainOption = new ClassOption("streamTrain", 's', "Input stream.", InstanceStream.class,
             StreamingClusteringStream.class.getName());
 
@@ -64,6 +63,9 @@ public class StreamingClusteringTask implements Task, Configurable {
     public FloatOption samplingThresholdOption = new FloatOption("samplingThreshold", 'a',
             "Ratio of instances sampled that will be used for evaluation.", 0.5,
             0.0, 1.0);
+    // Default=0: no delay/waiting
+    public IntOption sourceDelayOption = new IntOption("sourceDelay", 'w',
+            "How many miliseconds between injections of two instances.", 0, 0, Integer.MAX_VALUE);
 
     private StreamingClusteringEntranceProcessor source;
     private InstanceStream streamTrain;
@@ -71,21 +73,16 @@ public class StreamingClusteringTask implements Task, Configurable {
     private Stream distributorStream;
     private Stream evaluationStream;
 
-    // Default=0: no delay/waiting
-    public IntOption sourceDelayOption = new IntOption("sourceDelay", 'w',
-            "How many miliseconds between injections of two instances.", 0, 0, Integer.MAX_VALUE);
-
     private Learner learner;
     private ClusteringEvaluatorProcessor evaluator;
 
     private Topology topology;
     private TopologyBuilder builder;
 
-    //public LinkedList<double[]> cepEvents;
-    //public LinkedList<Clustering> samoaClusters;
     public ConcurrentLinkedQueue<double[]> cepEvents;
     public ConcurrentLinkedQueue<Clustering>samoaClusters;
     public int numClusters=0;
+
     public void getDescription(StringBuilder sb) {
         sb.append("Clustering evaluation");
     }
@@ -94,6 +91,7 @@ public class StreamingClusteringTask implements Task, Configurable {
     public void init() {
         // TODO remove the if statement theoretically, dynamic binding will work
         // here! for now, the if statement is used by Storm
+
 
         if (builder == null) {
             logger.warn("Builder was not initialized, initializing it from the Task");
@@ -108,6 +106,7 @@ public class StreamingClusteringTask implements Task, Configurable {
         // instantiate ClusteringEntranceProcessor and its output stream
         // (sourceStream)
         source = new StreamingClusteringEntranceProcessor();
+        // s denoted source
         streamTrain = this.streamTrainOption.getValue();
 
         if(streamTrain instanceof StreamingClusteringStream){

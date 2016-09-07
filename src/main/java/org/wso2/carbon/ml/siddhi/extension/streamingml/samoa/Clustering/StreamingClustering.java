@@ -28,9 +28,6 @@ public class StreamingClustering extends Thread{
     private MODEL_TYPE type;
     public enum MODEL_TYPE {BATCH_PROCESS, MOVING_WINDOW,TIME_BASED }
 
-    //public  LinkedList<double[]> cepEvents;
-    // public LinkedList<Clustering>samoaClusters;
-
     public ConcurrentLinkedQueue<double[]>cepEvents;
     public ConcurrentLinkedQueue<Clustering>samoaClusters;
     public int maxNumEvents=1000000;
@@ -38,7 +35,6 @@ public class StreamingClustering extends Thread{
 
     public StreamingClusteringTaskBuilder clusteringTask;
     private static final Logger logger = LoggerFactory.getLogger(StreamingClustering.class);
-
 
     public StreamingClustering(int learnType,int paramCount, int batchSize, double ci, int numClusters,int numIteration, double alpha){
         this.learnType = learnType;
@@ -51,32 +47,25 @@ public class StreamingClustering extends Thread{
         this.alpha = alpha;
         this.isBuiltModel = false;
         type= MODEL_TYPE.BATCH_PROCESS;
-        // System.out.println("A");
-        ///cepEvents = new LinkedList<double[]>();
-        //  System.out.println("B");
-        // samoaClusters = new LinkedList<Clustering>();
-        // System.out.println("C");
 
         this.cepEvents = new ConcurrentLinkedQueue<double[]>();
         //StreamingClusteringStream.cepEvents = this.cepEvents;
         this.samoaClusters = new  ConcurrentLinkedQueue<Clustering>();
         this.maxNumEvents = 1000000;
         try {
-
             this.clusteringTask = new StreamingClusteringTaskBuilder(this.numClusters,this.cepEvents, this.samoaClusters, this.maxNumEvents);
         }catch(Exception e){
             System.out.println(e.toString());
         }
         logger.info("Successfully Initiated the Streaming Clustering Topology");
-
     }
 
-    public void run(){
+    public void run()
+    {
         this.clusteringTask.initTask(paramCount,numClusters,batchSize,maxNumEvents);
     }
 
     public Object[] cluster(double[] eventData) {
-        // System.out.println("Events Added to the CEP Events");
         numEventsReceived++;
         //logger.info("CEP Event Received : "+numEventsReceived);
         cepEvents.add(eventData);

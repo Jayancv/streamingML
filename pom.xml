@@ -89,6 +89,12 @@
       <artifactId>slf4j-api</artifactId>
       <version>1.7.21</version>
     </dependency>
+      <dependency>
+          <groupId>org.apache.samoa</groupId>
+          <artifactId>samoa-api</artifactId>
+          <version>0.4.0-incubating-SNAPSHOT</version>
+      </dependency>
+
 
   </dependencies>
 

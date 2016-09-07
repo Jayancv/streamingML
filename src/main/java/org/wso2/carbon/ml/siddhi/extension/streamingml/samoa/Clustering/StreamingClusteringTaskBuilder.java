@@ -29,8 +29,6 @@ public class StreamingClusteringTaskBuilder {
     private static final String STATUS_UPDATE_FREQ_MSG = "Wait time in milliseconds between status updates.";
     private static final Logger logger = LoggerFactory.getLogger(StreamingClusteringTaskBuilder.class);
 
-    // public LinkedList<double[]>cepEvents;
-    // public LinkedList<Clustering> samoaClusters;
     public ConcurrentLinkedQueue<double[]>cepEvents;
     public ConcurrentLinkedQueue<Clustering>samoaClusters ;
     public int numClusters=0;
@@ -53,68 +51,57 @@ public class StreamingClusteringTaskBuilder {
     }
     public static void main(String[] args) {
         logger.info("In Main");
-        // ArrayList<String> tmpArgs = new ArrayList<String>(Arrays.asList(args));
 
-        // args = tmpArgs.toArray(new String[0]);
-
-        FlagOption suppressStatusOutOpt = new FlagOption("suppressStatusOut", 'S', SUPPRESS_STATUS_OUT_MSG);
-
-        FlagOption suppressResultOutOpt = new FlagOption("suppressResultOut", 'R', SUPPRESS_RESULT_OUT_MSG);
-
-        IntOption statusUpdateFreqOpt = new IntOption("statusUpdateFrequency", 'F', STATUS_UPDATE_FREQ_MSG, 1000, 0,
-                Integer.MAX_VALUE);
-
-        Option[] extraOptions = new Option[] { suppressStatusOutOpt, suppressResultOutOpt, statusUpdateFreqOpt };
-
-        StringBuilder cliString = new StringBuilder();
-        for (String arg : args) {
-            logger.info(arg);
-            cliString.append(" ").append(arg);
-        }
-        logger.debug("Command line string = {}", cliString.toString());
-        System.out.println("Command line string = " + cliString.toString());
-
-
-        Task task;
-        try {
-            task = ClassOption.cliStringToObject(cliString.toString(), Task.class, extraOptions);
-            logger.info("Successfully instantiating {}", task.getClass().getCanonicalName());
-        } catch (Exception e) {
-            logger.error("Fail to initialize the task", e);
-            System.out.println("Fail to initialize the task" + e);
-            return;
-        }
-
-        task.setFactory(new SimpleComponentFactory());
-        task.init();
-        SimpleEngine.submitTopology(task.getTopology());
+//        FlagOption suppressStatusOutOpt = new FlagOption("suppressStatusOut", 'S', SUPPRESS_STATUS_OUT_MSG);
+//
+//        FlagOption suppressResultOutOpt = new FlagOption("suppressResultOut", 'R', SUPPRESS_RESULT_OUT_MSG);
+//
+//        IntOption statusUpdateFreqOpt = new IntOption("statusUpdateFrequency", 'F', STATUS_UPDATE_FREQ_MSG, 1000, 0,
+//                Integer.MAX_VALUE);
+//
+//        Option[] extraOptions = new Option[] { suppressStatusOutOpt, suppressResultOutOpt, statusUpdateFreqOpt };
+//
+//        StringBuilder cliString = new StringBuilder();
+//        for (String arg : args) {
+//            logger.info(arg);
+//            cliString.append(" ").append(arg);
+//        }
+//        logger.debug("Command line string = {}", cliString.toString());
+//        System.out.println("Command line string = " + cliString.toString());
+//
+//
+//        Task task;
+//        try {
+//            task = ClassOption.cliStringToObject(cliString.toString(), Task.class, extraOptions);
+//            logger.info("Successfully instantiating {}", task.getClass().getCanonicalName());
+//        } catch (Exception e) {
+//            logger.error("Fail to initialize the task", e);
+//            System.out.println("Fail to initialize the task" + e);
+//            return;
+//        }
+//
+//        task.setFactory(new SimpleComponentFactory());
+//        task.init();
+//        SimpleEngine.submitTopology(task.getTopology());
     }
 
 
     public void initTask(int numAttributes, int numClusters, int batchSize, int maxNumEvents){
         String query="";
-        //query ="org.gsoc.samoa.streaming.samoa.StreamingClusteringTask -f "+batchSize+" -i "+maxNumEvents+" -s  (org.gsoc.samoa.streaming.samoa.StreamingClusteringStream -K "+numClusters+" -a "+numAttributes+") -l (org.apache.samoa.learners.clusterers.simple.DistributedClusterer -l (org.apache.samoa.learners.clusterers.ClustreamClustererAdapter -l (org.apache.samoa.moa.clusterers.clustream.WithKmeans  -m 100 -k "+numClusters+")))";
-        //query ="org.wso2.carbon.ml.siddhi.extension.streaming.samoa.StreamingClusteringTask -f "+batchSize+" -i "+maxNumEvents+" -s  (org.wso2.carbon.ml.siddhi.extension.streaming.samoa.StreamingClusteringStream -K "+numClusters+" -a "+numAttributes+") -l (org.apache.samoa.learners.clusterers.simple.DistributedClusterer -l (org.apache.samoa.learners.clusterers.ClustreamClustererAdapter -l (org.apache.samoa.moa.clusterers.clustream.WithKmeans  -m 100 -k "+numClusters+")))";
-        //query = "org.apache.samoa.tasks.ClusteringEvaluation";
-        //query = "org.wso2.carbon.ml.siddhi.extension.streaming.samoa.StreamingClusteringTask";
         query ="org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.Clustering.StreamingClusteringTask -f "+batchSize+" -i "+maxNumEvents+" -s  (org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.Clustering.StreamingClusteringStream -K "+numClusters+" -a "+numAttributes+") -l (org.apache.samoa.learners.clusterers.simple.DistributedClusterer -l (org.apache.samoa.learners.clusterers.ClustreamClustererAdapter -l (org.apache.samoa.moa.clusterers.clustream.WithKmeans  -m 100 -k "+numClusters+")))";
         logger.info("QUERY: "+query);
         String args[]={query};
+        //System.out.println("check" + args.toString());
         this.initClusteringTask(args);
     }
 
     public void initClusteringTask(String[] args) {
         logger.info("Initializing Samoa Clustering Topology");
-        // ArrayList<String> tmpArgs = new ArrayList<String>(Arrays.asList(args));
-
-        // args = tmpArgs.toArray(new String[0]);
 
         FlagOption suppressStatusOutOpt = new FlagOption("suppressStatusOut", 'S', SUPPRESS_STATUS_OUT_MSG);
-
         FlagOption suppressResultOutOpt = new FlagOption("suppressResultOut", 'R', SUPPRESS_RESULT_OUT_MSG);
+        IntOption statusUpdateFreqOpt = new IntOption("statusUpdateFrequency", 'F', STATUS_UPDATE_FREQ_MSG, 1000, 0, Integer.MAX_VALUE);
 
-        IntOption statusUpdateFreqOpt = new IntOption("statusUpdateFrequency", 'F', STATUS_UPDATE_FREQ_MSG, 1000, 0,
-                Integer.MAX_VALUE);
 
         Option[] extraOptions = new Option[] { suppressStatusOutOpt, suppressResultOutOpt, statusUpdateFreqOpt };
 
@@ -137,7 +124,6 @@ public class StreamingClusteringTaskBuilder {
             return;
         }
 
-        //task = new StreamingClusteringTask();
         logger.info("A");
         if(task instanceof StreamingClusteringTask){
             logger.info("Task is a Instance of StreamingClusteringTask");
@@ -148,13 +134,8 @@ public class StreamingClusteringTaskBuilder {
 
         }else{
 
-            logger.info("Check Task: Not a StreamingClusteringTask");
+            logger.info("Check Task: Not a StreamingClassificationTask");
         }
-
-        /*StreamingClusteringTask t = (StreamingClusteringTask) task;
-        t.setCepEvents(this.cepEvents);
-        t.setSamoaClusters(this.samoaClusters);
-        t.setNumClusters(this.numClusters);*/
 
         logger.info("Successfully Convert the Task into StreamingClusteringTask");
         task.setFactory(new SimpleComponentFactory());

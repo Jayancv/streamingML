@@ -22,8 +22,6 @@ public class StreamingClusteringEvaluationProcessor implements Processor {
     private static final Logger logger = LoggerFactory.getLogger(StreamingClusteringEvaluationProcessor.class);
 
     String evalPoint;
-    //public LinkedList<Clustering>samoaClusters;
-    //public ConcurrentLinkedQueue<double[]> cepEvents;
     public ConcurrentLinkedQueue<Clustering>samoaClusters;
     public int numClusters=0;
 
@@ -33,25 +31,18 @@ public class StreamingClusteringEvaluationProcessor implements Processor {
     }
     @Override
     public boolean process(ContentEvent event) {
-
-       // logger.info("Process");
         if (event instanceof ClusteringContentEvent) {
             logger.info(event.getKey()+""+evalPoint+"ClusteringContentEvent");
             ClusteringContentEvent e= (ClusteringContentEvent)event;
             Instance inst = e.getInstance();
 
             int numAttributes=inst.numAttributes();
-            //  logger.info("Attribute Size: "+numAttributes);
-           /* for(int i=0;i<numAttributes;i++){
-                logger.info(inst.attribute(i).toString()+""+inst.value(i)+"");
-            }*/
         }
 
         else if(event instanceof ClusteringResultContentEvent){
             logger.info(event.getKey()+" "+evalPoint+" ClusteringResultContentEvent "+numClusters);
             ClusteringResultContentEvent resultEvent = (ClusteringResultContentEvent)event;
 
-            // Clustering clustering = KMeans.gaussianMeans(gtClustering, resultEvent.getClustering());
             Clustering clustering=resultEvent.getClustering();
 
             Clustering kmeansClustering = WithKmeans.kMeans_rand(numClusters,clustering);
@@ -61,16 +52,7 @@ public class StreamingClusteringEvaluationProcessor implements Processor {
 
             int numClusters = clustering.size();
             logger.info("Number of Kernal Clusters : "+numClusters+" Number of KMeans Clusters :"+kmeansClustering.size());
-          /*  for(int i=0;i<numClusters;i++){
-                Cluster cluster = clustering.get(i);
-                logger.info("++++++Cluster"+i+"+++++");
-                double []clusterCenter=cluster.getCenter();
-                for(int j=0;j<clusterCenter.length;j++){
-                    logger.info("Dim: "+j+":"+clusterCenter[j]);
-                }
-                logger.info("Cluster End\n");
-            }
-            logger.info("Clustering End\n\n\n");*/
+
 
         }
 
@@ -80,8 +62,6 @@ public class StreamingClusteringEvaluationProcessor implements Processor {
         else{
             logger.info(event.getKey()+""+evalPoint+"ContentEvent\n");
         }
-
-
 
         return true;
     }

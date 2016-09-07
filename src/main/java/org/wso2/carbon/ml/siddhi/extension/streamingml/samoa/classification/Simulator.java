@@ -1,7 +1,8 @@
-package org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.Clustering;
+package org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.classification;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -9,11 +10,10 @@ import java.io.FileReader;
 import java.util.Scanner;
 
 /**
- * Created by mahesh on 7/30/16.
+ * Created by wso2123 on 9/2/16.
  */
-public class CepEventSimulator {
-
-    private static final Logger logger = LoggerFactory.getLogger(CepEventSimulator.class);
+public class Simulator {
+    private static final Logger logger = LoggerFactory.getLogger(Simulator.class);
 
     public static Scanner scn;
     public static void main(String[] args){
@@ -30,15 +30,11 @@ public class CepEventSimulator {
         int learnType = 0;
         int paramCount = 5;
         int batchSize = 1000;
-        double ci = 0.95;
         int numClusters = 2;
-        int numIterations = 10;
-        int alpha = 1;
-        int numInsancesSent=0;
-        int numAttribute = 5;
-        StreamingClustering streamingClusteringWithSamoa = new StreamingClustering(learnType,paramCount, batchSize, ci,numClusters, numIterations,alpha);
 
-        new Thread(streamingClusteringWithSamoa).start();
+        Classification classification = new Classification(learnType,paramCount, batchSize);
+
+        new Thread(classification).start();
 
         try {
             Thread.sleep(1000);
@@ -54,7 +50,7 @@ public class CepEventSimulator {
         }*/
         while(true){
             Object[] outputData = null;
-            // logger.info("Sending Next Event"+numInsancesSent++);
+            //logger.info("Sending Next Event"+numInsancesSent++);
             // Object[] outputData= streamingLinearRegression.addToRDD(eventData);
             //Calling the regress function
             if(scn.hasNext()) {
@@ -64,10 +60,10 @@ public class CepEventSimulator {
                     cepEvent[i]=Double.parseDouble(event[i]);
 
                 }
-                outputData = streamingClusteringWithSamoa.cluster(cepEvent);
+                outputData = classification.classify(cepEvent);
 
                 if (outputData == null) {
-                    //  System.out.println("null");
+                    // System.out.println("null");
                 } else {
                     System.out.println("Error: " + outputData[0]);
                     for (int i = 0; i < numClusters; i++) {
