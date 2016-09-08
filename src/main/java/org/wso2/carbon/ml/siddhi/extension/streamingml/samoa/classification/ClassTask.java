@@ -85,6 +85,7 @@ public class ClassTask implements Task, Configurable {
             "The delay batch size: delay of x milliseconds after each batch ", 1, 1, Integer.MAX_VALUE);
 
     protected ClassificationEntranceProcessor preqSource;
+    private InstanceStream streamTrain;
     protected Stream sourcePiOutputStream;
     private Learner classifier;
     private EvaluatorProcessor evaluator;
@@ -97,7 +98,8 @@ public class ClassTask implements Task, Configurable {
     protected TopologyBuilder builder;
 
     public ConcurrentLinkedQueue<double[]> cepEvents;
-    public int numClasses;
+    public int numClasses=2;
+
 
     public void getDescription(StringBuilder sb, int indent) {
         sb.append("Prequential evaluation");
@@ -121,7 +123,20 @@ public class ClassTask implements Task, Configurable {
         // instantiate PrequentialSourceProcessor and its output stream
         // (sourcePiOutputStream)
         preqSource = new ClassificationEntranceProcessor();
-        preqSource.setStreamSource((InstanceStream) this.streamTrainOption.getValue());
+
+        streamTrain=this.streamTrainOption.getValue();
+
+        if(streamTrain instanceof ClassificationStream){
+            logger.info("Stream is a StreamingClusteringStream");
+            ClassificationStream myStream = (ClassificationStream)streamTrain;
+            myStream.setCepEvents(this.cepEvents);
+        }else{
+            logger.info("Check Stream: Stream is not a StreamingClusteringStream");
+        }
+
+
+       // preqSource.setStreamSource((InstanceStream) this.streamTrainOption.getValue());
+        preqSource.setStreamSource(streamTrain);
         preqSource.setMaxNumInstances(instanceLimitOption.getValue());
         preqSource.setSourceDelay(sourceDelayOption.getValue());
         preqSource.setDelayBatchSize(batchDelayOption.getValue());
@@ -138,13 +153,16 @@ public class ClassTask implements Task, Configurable {
         builder.connectInputShuffleStream(sourcePiOutputStream, classifier.getInputProcessor());
         logger.debug("Successfully instantiating Classifier");
 
-        PerformanceEvaluator evaluatorOptionValue = this.evaluatorOption.getValue();
-        if (!ClassTask.isLearnerAndEvaluatorCompatible(classifier, evaluatorOptionValue)) {
-            evaluatorOptionValue = getDefaultPerformanceEvaluatorForLearner(classifier);
-        }
-        evaluator = new EvaluatorProcessor.Builder(evaluatorOptionValue)
-                .samplingFrequency(sampleFrequencyOption.getValue()).dumpFile(dumpFileOption.getFile()).build();
+//        PerformanceEvaluator evaluatorOptionValue = this.evaluatorOption.getValue();
+//        if (!ClassTask.isLearnerAndEvaluatorCompatible(classifier, evaluatorOptionValue)) {
+//            evaluatorOptionValue = getDefaultPerformanceEvaluatorForLearner(classifier);
+//        }
+//        evaluator = new EvaluatorProcessor.Builder(evaluatorOptionValue)
+//                .samplingFrequency(sampleFrequencyOption.getValue()).dumpFile(dumpFileOption.getFile()).build();
 
+        ClassificationEvaluationProcessor evaluator=new ClassificationEvaluationProcessor("Result check");
+        evaluator.setNumClasses(this.numClasses);
+        //evaluator.setSamoaClassifiers(this.samoaClassifiers);
         // evaluatorPi = builder.createPi(evaluator);
         // evaluatorPi.connectInputShuffleStream(evaluatorPiInputStream);
         builder.addProcessor(evaluator);

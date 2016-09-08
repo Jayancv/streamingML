@@ -2,13 +2,11 @@ package org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.classification;
 
 import com.github.javacliparser.IntOption;
 import org.apache.samoa.instances.*;
-import org.apache.samoa.moa.MOAObject;
 import org.apache.samoa.moa.cluster.Cluster;
 import org.apache.samoa.moa.core.DataPoint;
 import org.apache.samoa.moa.core.Example;
 import org.apache.samoa.moa.core.InstanceExample;
 import org.apache.samoa.moa.core.ObjectRepository;
-import org.apache.samoa.moa.options.AbstractOptionHandler;
 import org.apache.samoa.moa.tasks.TaskMonitor;
 import org.apache.samoa.streams.InstanceStream;
 import org.apache.samoa.streams.clustering.ClusteringStream;
@@ -24,7 +22,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 /**
  * Created by wso2123 on 8/30/16.
  */
-public class ClassificationStream extends AbstractOptionHandler implements InstanceStream {
+public class ClassificationStream extends ClusteringStream {
 
     public ConcurrentLinkedQueue<double[]> cepEvents;
     private static final Logger logger = LoggerFactory.getLogger(ClassificationStream.class);
@@ -40,7 +38,7 @@ public class ClassificationStream extends AbstractOptionHandler implements Insta
 
     @Override
     public InstancesHeader getHeader() {
-        return null;
+        return streamHeader;
     }
 
     @Override
@@ -60,7 +58,7 @@ public class ClassificationStream extends AbstractOptionHandler implements Insta
             logger.info("Sending First Samoa Instance.....");
             numGeneratedInstances++;
             //double[] values = this.values;
-            double[] values_new = new double[numAttsOption.getValue()]; // +1
+            double[] values_new = new double[5]; // +1
             int clusterChoice = -1;
             while(cepEvents == null);
             while (cepEvents.isEmpty()) ;
@@ -73,7 +71,7 @@ public class ClassificationStream extends AbstractOptionHandler implements Insta
         }else {
             numGeneratedInstances++;
             // logger.info("Sending Samoa Instance :"+numGeneratedInstances);
-            double[] values_new = new double[numAttsOption.getValue()]; // +1
+            double[] values_new = new double[5]; // +1
             //logger.info("I am here");
 
             //while(cepEvents == null);
@@ -114,7 +112,7 @@ public class ClassificationStream extends AbstractOptionHandler implements Insta
 
     protected void generateHeader() {
         ArrayList<Attribute> attributes = new ArrayList<Attribute>();
-        for (int i = 0; i < this.numAttsOption.getValue(); i++) {
+        for (int i = 0; i < 5; i++) {
             attributes.add(new Attribute("att" + (i + 1)));
         }
 
@@ -132,16 +130,6 @@ public class ClassificationStream extends AbstractOptionHandler implements Insta
 
     public void setCepEvents(ConcurrentLinkedQueue<double[]> cepEvents) {
         this.cepEvents = cepEvents;
-    }
-
-    @Override
-    public int measureByteSize() {
-        return 0;
-    }
-
-    @Override
-    public MOAObject copy() {
-        return null;
     }
 
     @Override

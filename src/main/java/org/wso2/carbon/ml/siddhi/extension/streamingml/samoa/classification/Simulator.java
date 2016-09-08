@@ -28,11 +28,11 @@ public class Simulator {
             logger.info(e.toString());
         }
         int learnType = 0;
-        int paramCount = 5;
+        int paramCount = 5;               //number of attributes
         int batchSize = 1000;
-        int numClusters = 2;
+        int numClasses = 2;
 
-        Classification classification = new Classification(learnType,paramCount, batchSize);
+        Classification classification = new Classification(learnType,paramCount, batchSize,paramCount);
 
         new Thread(classification).start();
 
@@ -44,15 +44,10 @@ public class Simulator {
         logger.info("Successfully Instatiated the Clustering with samoa");
 
         double [] cepEvent=new double[paramCount];
-       /*for(int i=0;i<paramCount;i++){
-            cepEvent[i]=(int)(Math.random()*100);
 
-        }*/
         while(true){
             Object[] outputData = null;
-            //logger.info("Sending Next Event"+numInsancesSent++);
-            // Object[] outputData= streamingLinearRegression.addToRDD(eventData);
-            //Calling the regress function
+
             if(scn.hasNext()) {
                 String eventStr = scn.nextLine();
                 String[] event=eventStr.split(",");
@@ -65,10 +60,10 @@ public class Simulator {
                 if (outputData == null) {
                     // System.out.println("null");
                 } else {
-                    System.out.println("Error: " + outputData[0]);
-                    for (int i = 0; i < numClusters; i++) {
-                        System.out.println("center " + i + ": " + outputData[i + 1]);
-                    }
+                    System.out.println("Godaaa");
+//                    for (int i = 0; i < numClusters; i++) {
+//                        System.out.println("center " + i + ": " + outputData[i + 1]);
+//                    }
                 }
             }
 

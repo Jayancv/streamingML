@@ -104,6 +104,8 @@ public class ClassificationTaskBuilder {
         logger.info("Successfully Initialized Component Factory");
         task.init();
         logger.info("Successfully Initiated the StreamingClassificationTask");
+
+
         SimpleEngine.submitTopology(task.getTopology());
 
         logger.info("Samoa Simple Engine Started");
