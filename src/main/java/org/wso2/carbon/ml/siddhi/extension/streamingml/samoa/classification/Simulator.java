@@ -67,6 +67,8 @@ public class Simulator {
                 }
             }
 
+           // System.out.println(cepEvent[2]);
+
 
             try {
                 Thread.sleep(1);

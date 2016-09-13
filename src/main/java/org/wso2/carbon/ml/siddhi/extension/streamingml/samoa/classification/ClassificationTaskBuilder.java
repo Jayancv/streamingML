@@ -29,7 +29,6 @@ public class ClassificationTaskBuilder {
 
 
     public ConcurrentLinkedQueue<double[]> cepEvents;
-  //  public ConcurrentLinkedQueue<AbstractClassifier> samoaClassifiers;
     public int numClasses = 2;
     public int maxInstances = 100000;
 
@@ -38,17 +37,17 @@ public class ClassificationTaskBuilder {
         logger.info("Streaming  Classification TaskBuilder");
         this.numClasses = numClasses;
         this.cepEvents = cepEvents;
-      ////  this.samoaClassifiers = samoaClassifiers;
         this.maxInstances = maxInstance;
 
     }
 
     public void initTask(int numAttributes, int numClasses, int maxInstances) {
         String query = "";
-        //query = "org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.classification.ClassTask -f 100000 -i 1000000 -s (org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.classification.ClassificationStream ) -l (org.apache.samoa.learners.classifiers.SingleClassifier -l (org.apache.samoa.learners.classifiers.SimpleClassifierAdapter -l (org.apache.samoa.moa.classifiers.functions.MajorityClass)))";
-      //  query = "org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.classification.ClassTask -f 100000 -i 1000000 -s (org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.classification.ClassificationStream ) -l (org.apache.samoa.learners.classifiers.ensemble.Bagging -l (org.apache.samoa.learners.classifiers.trees.VerticalHoeffdingTree))";
-         query = "org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.classification.ClassTask -f 100000 -i 1000000 -s (org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.classification.ClassificationStream ) -l (org.apache.samoa.learners.classifiers.trees.VerticalHoeffdingTree)";
-       // query = "org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.classification.ClassTask -f 100000 -i 1000000 -s (org.apache.samoa.streams.generators.RandomTreeGenerator ) -l (org.apache.samoa.learners.classifiers.trees.VerticalHoeffdingTree)";
+      //  query = "org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.classification.ClassTask -f 100000 -i 1000000 -s (org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.classification.ClassificationStream ) -l (org.apache.samoa.learners.classifiers.SingleClassifier -l (org.apache.samoa.learners.classifiers.SimpleClassifierAdapter -l (org.apache.samoa.moa.classifiers.functions.MajorityClass)))";
+      // query = "org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.classification.ClassTask -f 100000 -i 1000000 -s (org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.classification.ClassificationStream ) -l (org.apache.samoa.learners.classifiers.ensemble.Bagging -l (org.apache.samoa.learners.classifiers.trees.VerticalHoeffdingTree))";
+
+      query = "org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.classification.ClassTask -f 100000 -i 1000000 -s (org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.classification.ClassificationStream ) -l (org.apache.samoa.learners.classifiers.trees.VerticalHoeffdingTree)";
+      // query = "org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.classification.ClassTask -f 100000 -i 1000000 -s (org.apache.samoa.streams.generators.RandomTreeGenerator ) -l (org.apache.samoa.learners.classifiers.trees.VerticalHoeffdingTree)";
 
         logger.info("QUERY: " + query);
         String args[] = {query};
@@ -56,7 +55,7 @@ public class ClassificationTaskBuilder {
     }
 
     private void initClassificationTask(String[] args) {
-        System.out.println("done toooo");
+       // System.out.println("done toooo");
         logger.info("Initializing Samoa Classification Topology");
 
         FlagOption suppressStatusOutOpt = new FlagOption("suppressStatusOut", 'S', SUPPRESS_STATUS_OUT_MSG);

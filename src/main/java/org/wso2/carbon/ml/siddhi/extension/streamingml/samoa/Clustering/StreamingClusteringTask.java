@@ -123,6 +123,7 @@ public class StreamingClusteringTask implements Task, Configurable {
         source.setSamplingThreshold(samplingThresholdOption.getValue());
         source.setMaxNumInstances(instanceLimitOption.getValue());
         logger.debug("Successfully instantiated ClusteringEntranceProcessor");
+        logger.info("Successfully instantiated ClusteringEntranceProcessor");
 
         Stream sourceStream = builder.createStream(source);
 

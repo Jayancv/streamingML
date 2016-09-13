@@ -51,7 +51,7 @@ public class ClassTask implements Task, Configurable {
 
     public ClassOption streamTrainOption = new ClassOption("trainStream", 's', "Stream to learn from.",
             InstanceStream.class,
-            RandomTreeGenerator.class.getName());
+            ClassificationStream.class.getName());
 
     public ClassOption evaluatorOption = new ClassOption("evaluator", 'e',
             "Classification performance evaluation method.",
@@ -137,12 +137,13 @@ public class ClassTask implements Task, Configurable {
 
        // preqSource.setStreamSource((InstanceStream) this.streamTrainOption.getValue());
         preqSource.setStreamSource(streamTrain);
+        builder.addEntranceProcessor(preqSource);
         preqSource.setMaxNumInstances(instanceLimitOption.getValue());
         preqSource.setSourceDelay(sourceDelayOption.getValue());
         preqSource.setDelayBatchSize(batchDelayOption.getValue());
-        builder.addEntranceProcessor(preqSource);
-        logger.debug("Successfully instantiating PrequentialSourceProcessor");
 
+        logger.debug("Successfully instantiating PrequentialSourceProcessor");
+        logger.info("Successfully instantiating PrequentialSourceProcessor");
 
         sourcePiOutputStream = builder.createStream(preqSource);
         // preqStarter.setInputStream(sourcePiOutputStream);
@@ -152,16 +153,20 @@ public class ClassTask implements Task, Configurable {
         classifier.init(builder, preqSource.getDataset(), 1);
         builder.connectInputShuffleStream(sourcePiOutputStream, classifier.getInputProcessor());
         logger.debug("Successfully instantiating Classifier");
+        logger.info("Successfully instantiating Classifier");
 
-//        PerformanceEvaluator evaluatorOptionValue = this.evaluatorOption.getValue();
-//        if (!ClassTask.isLearnerAndEvaluatorCompatible(classifier, evaluatorOptionValue)) {
-//            evaluatorOptionValue = getDefaultPerformanceEvaluatorForLearner(classifier);
-//        }
-//        evaluator = new EvaluatorProcessor.Builder(evaluatorOptionValue)
-//                .samplingFrequency(sampleFrequencyOption.getValue()).dumpFile(dumpFileOption.getFile()).build();
+        PerformanceEvaluator evaluatorOptionValue = this.evaluatorOption.getValue();
+        if (!ClassTask.isLearnerAndEvaluatorCompatible(classifier, evaluatorOptionValue)) {
+            evaluatorOptionValue = getDefaultPerformanceEvaluatorForLearner(classifier);
+        }
+        evaluator = new EvaluatorProcessor.Builder(evaluatorOptionValue)
+                .samplingFrequency(sampleFrequencyOption.getValue()).dumpFile(dumpFileOption.getFile()).build();
 
-        ClassificationEvaluationProcessor evaluator=new ClassificationEvaluationProcessor("Result check");
-        evaluator.setNumClasses(this.numClasses);
+
+
+        //ClassificationEvaluationProcessor evaluator=new ClassificationEvaluationProcessor("Result check");
+       // evaluator.setNumClasses(this.numClasses);
+        
         //evaluator.setSamoaClassifiers(this.samoaClassifiers);
         // evaluatorPi = builder.createPi(evaluator);
         // evaluatorPi.connectInputShuffleStream(evaluatorPiInputStream);
@@ -171,9 +176,11 @@ public class ClassTask implements Task, Configurable {
         }
 
         logger.debug("Successfully instantiating EvaluatorProcessor");
+        logger.info("Successfully instantiating EvaluatorProcessor");
 
         prequentialTopology = builder.build();
         logger.debug("Successfully building the topology");
+        logger.info("Successfully building the topology");
     }
 
     @Override

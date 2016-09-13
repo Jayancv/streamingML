@@ -6,6 +6,7 @@ import org.apache.samoa.instances.Instance;
 import org.apache.samoa.learners.InstanceContentEvent;
 import org.apache.samoa.learners.ResultContentEvent;
 import org.apache.samoa.moa.classifiers.AbstractClassifier;
+import org.apache.samoa.moa.cluster.Clustering;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,7 +47,7 @@ public class ClassificationEvaluationProcessor implements Processor {
             logger.info(event.getKey()+" "+evalPoint+" ClusteringResultContentEvent "+numClasses);
             ResultContentEvent resultEvent = (ResultContentEvent) event;
 
-           // Clustering clustering=resultEvent.getClustering();
+          // Clustering clustering=resultEvent.getClustering();
 
            // Clustering kmeansClustering = WithKmeans.kMeans_rand(numClusters,clustering);
            // logger.info("Kmean Clusters: "+kmeansClustering.size()+" with dimention of : "+kmeansClustering.dimension());

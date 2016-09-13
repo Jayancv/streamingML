@@ -87,12 +87,13 @@ public class ClassificationEntranceProcessor implements EntranceProcessor {
 
     @Override
     public boolean isFinished() {
-        return finished;
+        return (!streamSource.hasMoreInstances() || (numberInstances >= 0 && numInstanceSent >= numberInstances));
     }
 
     @Override
     public boolean hasNext() {
-        return !isFinished() && (delay <= 0 || numInstanceSent < readyEventIndex);
+        return true;
+        //return (!isFinished());
     }
 
     private boolean hasReachedEndOfStream() {
@@ -118,6 +119,7 @@ public class ClassificationEntranceProcessor implements EntranceProcessor {
                         TimeUnit.MICROSECONDS);
             }
         }
+        logger.info(contentEvent.getInstance().toString());
         return contentEvent;
     }
 
@@ -132,9 +134,10 @@ public class ClassificationEntranceProcessor implements EntranceProcessor {
 
     @Override
     public void onCreate(int id) {
-        initStreamSource(sourceStream);
-        timer = Executors.newScheduledThreadPool(1);
+      // initStreamSource(sourceStream);
+//        timer = Executors.newScheduledThreadPool(1);
         logger.debug("Creating PrequentialSourceProcessor with id {}", id);
+        logger.info("Creating PrequentialSourceProcessor with id {}", id);
     }
 
     @Override
@@ -153,7 +156,12 @@ public class ClassificationEntranceProcessor implements EntranceProcessor {
     }
 
     public void setStreamSource(InstanceStream stream) {
-        this.sourceStream = stream;
+        if (stream instanceof AbstractOptionHandler) {
+            ((AbstractOptionHandler) (stream)).prepareForUse();
+        }
+
+        this.streamSource = new StreamSource(stream);
+        firstInstance = streamSource.nextInstance().getData();
     }
 
 
