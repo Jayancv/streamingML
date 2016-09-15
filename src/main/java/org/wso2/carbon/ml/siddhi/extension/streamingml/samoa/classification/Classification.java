@@ -66,22 +66,22 @@ public class Classification extends Thread {
         //logger.info("CEP Event Received : "+numEventsReceived);
         cepEvents.add(eventData);
         Object[] output;
-        if(!samoaClassifiers.isEmpty()){
-            logger.info("Update the Model");
-            output = new Object[numClasses +1];
-            output[0] = 0.0;
-            //System.out.println("++++ We got a hit ++++");
-            AbstractClassifier classifiers = samoaClassifiers.poll();
-           //int dim = classifier.get();
-
-            for(int i=0;i<numClasses;i++){
-                Classifier[] classifier=classifiers.getSubClassifiers();
-                String a = classifier.toString();
-            }
-        }else{
-            output=null;
-        }
-        return output;
+//        if(!samoaClassifiers.isEmpty()){
+//            logger.info("Update the Model");
+//            output = new Object[numClasses +1];
+//            output[0] = 0.0;
+//            //System.out.println("++++ We got a hit ++++");
+//            AbstractClassifier classifiers = samoaClassifiers.poll();
+//           //int dim = classifier.get();
+//
+//            for(int i=0;i<numClasses;i++){
+//                Classifier[] classifier=classifiers.getSubClassifiers();
+//                String a = classifier.toString();
+//            }
+//        }else{
+//            output=null;
+//        }
+        return null;
     }
 
 }

@@ -24,130 +24,10 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 public class ClassificationStream extends ClusteringStream {
 
-//    public ConcurrentLinkedQueue<double[]> cepEvents;
-   private static final Logger logger = LoggerFactory.getLogger(ClassificationStream.class);
-//    protected InstancesHeader streamHeader;
-//    private int numGeneratedInstances;
-//    private int nextEventCounter;
-//    LinkedList<DataPoint> points = new LinkedList<DataPoint>();
-//    double [] values; //Cep Event
-   private int numAttributes=5;
-//
-//    //public IntOption numClusterOption = new IntOption("numCluster", 'K',
-//     //       "The average number of centroids in the model.", 5, 1, Integer.MAX_VALUE);
-//
-//    protected void prepareForUseImpl(TaskMonitor taskMonitor, ObjectRepository objectRepository) {
-//        taskMonitor.setCurrentActivity("Preparing random RBF...", -1.0);
-//        this.numAttributes =5;
-//        logger.info("Number of Attributes in the Stream : "+this.numAttributes);
-//        generateHeader();
-//        restart();
-//        //logger.info("Succefully Prepare MyClusteringStream for Implementation");
-//        values = new double[numAttributes];
-//
-//        for(int i=0;i<numAttributes;i++){
-//            values[i]=0;
-//        }
-//    }
-//
-//    @Override
-//    public InstancesHeader getHeader() {
-//        return streamHeader;
-//    }
-//
-//    @Override
-//    public long estimatedRemainingInstances() {
-//        return -1L ;
-//    }
-//
-//    @Override
-//    public boolean hasMoreInstances() {
-//        return true;
-//    }
-//
-//    public Example<Instance> nextInstance() {
-//        //logger.info(("Next event"));
-//        //int numGeneratedInstances = 0;
-//        if(numGeneratedInstances == 0){
-//            logger.info("Sending First Samoa Instance.....");
-//            numGeneratedInstances++;
-//            //double[] values = this.values;
-//            double[] values_new = new double[5]; // +1
-//            int clusterChoice = -1;
-//            while(cepEvents == null);
-//            while (cepEvents.isEmpty()) ;
-//            double[] values = cepEvents.poll();
-//            System.arraycopy(values, 0, values_new, 0, values.length);
-//            Instance inst = new DenseInstance(1.0, values_new);
-//            inst.setDataset(getHeader());
-//            return new InstanceExample(inst);
-//
-//        }else {
-//            numGeneratedInstances++;
-//            // logger.info("Sending Samoa Instance :"+numGeneratedInstances);
-//            double[] values_new = new double[5]; // +1
-//            //logger.info("I am here");
-//
-//            //while(cepEvents == null);
-//            while (cepEvents.isEmpty()) ;
-//            //logger.info("Cep Events Not Empty");
-//            double[] values = cepEvents.poll();
-//            int clusterChoice = -1;
-//            System.arraycopy(values, 0, values_new, 0, values.length);
-//            Instance inst = new DenseInstance(1.0, values_new);
-//            inst.setDataset(getHeader());
-//            return new InstanceExample(inst);
-//        }
-//    }
-//
-//    @Override
-//    public boolean isRestartable() {
-//        return true;
-//    }
-//
-//
-//    @Override
-//    public void restart() {
-//        numGeneratedInstances =0;
-//
-//    }
-//
-//
-//    @Override
-//    public void getDescription(StringBuilder stringBuilder, int i) {
-//
-//    }
-//
-//    private void addInstance(Instance instance) {
-//        DataPoint point = new DataPoint(instance, numGeneratedInstances);
-//        points.add(point);
-//
-//    }
-//
-//    protected void generateHeader() {
-//        ArrayList<Attribute> attributes = new ArrayList<Attribute>();
-//        for (int i = 0; i < 5; i++) {
-//            attributes.add(new Attribute("att" + (i + 1)));
-//        }
-//
-////        ArrayList<String> classLabels = new ArrayList<String>();
-////        for (int i = 0; i < this.numClusterOption.getValue(); i++) {
-////            classLabels.add("class" + (i + 1));
-////        }
-//
-//        //attributes.add(new Attribute("class", classLabels));
-//        streamHeader = new InstancesHeader(new Instances(getCLICreationString(InstanceStream.class), attributes, 0));
-//        streamHeader.setClassIndex(streamHeader.numAttributes() - 1);
-//    }
-//
-//    public void setCepEvents(ConcurrentLinkedQueue<double[]> cepEvents) {
-//        this.cepEvents = cepEvents;
-//    }
+    private static final Logger logger = LoggerFactory.getLogger(ClassificationStream.class);
 
-
-
-
-
+    private int numAttributes=5;
+    private ConcurrentLinkedQueue<double[]> cepEvents;
 
 
     private static final long serialVersionUID = 1L;
@@ -163,9 +43,6 @@ public class ClassificationStream extends ClusteringStream {
     protected ClassificationStream.Node treeRoot;
     protected InstancesHeader streamHeader;
     protected Random instanceRandom;
-
-
-    private ConcurrentLinkedQueue<double[]> cepEvents;
 
     public ClassificationStream() {
     }
@@ -205,16 +82,26 @@ public class ClassificationStream extends ClusteringStream {
         double[] attVals = new double[this.numNominalsOption.getValue() + this.numNumericsOption.getValue()];
         InstancesHeader header = this.getHeader();
         DenseInstance inst = new DenseInstance((double)header.numAttributes());
+        while (cepEvents==null);
+        while (cepEvents.isEmpty());
+        double[] event=this.cepEvents.poll();
 
-        for(int i = 5; i <10; ++i) {
-            attVals[i] = i < this.numNominalsOption.getValue()?(double)this.instanceRandom.nextInt(this.numValsPerNominalOption.getValue()):this.instanceRandom.nextDouble();
-           // attVals[i] = i < this.numNominalsOption.getValue()?(double)this.instanceRandom.nextInt(this.numValsPerNominalOption.getValue()):cepEvents.poll()[i-5];
-          //attVals[i]=cepEvents.poll()[i];
+        for(int i = 0; i < attVals.length; ++i) {
+
+            try {
+                //attVals[i] = i < this.numNominalsOption.getValue()?(double)this.instanceRandom.nextInt(this.numValsPerNominalOption.getValue()):this.instanceRandom.nextDouble();
+                attVals[i] = i < this.numNominalsOption.getValue() ? (double) this.instanceRandom.nextInt(this.numValsPerNominalOption.getValue()) :event[i-5];
+
+            }catch (NullPointerException e){
+                attVals[i] = i < this.numNominalsOption.getValue()?(double)this.instanceRandom.nextInt(this.numValsPerNominalOption.getValue()):this.instanceRandom.nextDouble();
+                logger.info("Null");
+            }
             inst.setValue(i, attVals[i]);
         }
 
         inst.setDataset(header);
         inst.setClassValue((double)this.classifyInstance(this.treeRoot, attVals));
+        logger.info(inst.toString());
         return new InstanceExample(inst);
     }
 
@@ -227,11 +114,11 @@ public class ClassificationStream extends ClusteringStream {
         FastVector nominalAttVals = new FastVector();
 
         int classLabels;
-        for(classLabels = 0; classLabels < 5; ++classLabels) {
+        for(classLabels = 0; classLabels < this.numValsPerNominalOption.getValue(); ++classLabels) {
             nominalAttVals.addElement("value" + (classLabels + 1));
         }
 
-        for(classLabels = 0; classLabels < 5; ++classLabels) {
+        for(classLabels = 0; classLabels < this.numNominalsOption.getValue(); ++classLabels) {
             attributes.addElement(new Attribute("nominal" + (classLabels + 1), nominalAttVals));
         }
 
@@ -273,8 +160,7 @@ public class ClassificationStream extends ClusteringStream {
         ClassificationStream.Node node;
         if(currentDepth < this.maxTreeDepthOption.getValue() && (currentDepth < this.firstLeafLevelOption.getValue() || this.leafFractionOption.getValue() < 1.0D - treeRand.nextDouble())) {
             node = new ClassificationStream.Node();
-            int chosenAtt =1;
-            //int chosenAtt = treeRand.nextInt(nominalAttCandidates.size() + this.numNumericsOption.getValue());
+            int chosenAtt = treeRand.nextInt(nominalAttCandidates.size() + this.numNumericsOption.getValue());
             if(chosenAtt < nominalAttCandidates.size()) {
                 node.splitAttIndex = ((Integer)nominalAttCandidates.get(chosenAtt)).intValue();
                 node.children = new ClassificationStream.Node[this.numValsPerNominalOption.getValue()];
@@ -324,4 +210,20 @@ public class ClassificationStream extends ClusteringStream {
 
         protected Node() {
         }
-    }}
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+}

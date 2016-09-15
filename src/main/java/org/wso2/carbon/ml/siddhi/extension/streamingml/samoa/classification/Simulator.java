@@ -32,16 +32,18 @@ public class Simulator {
         int batchSize = 1000;
         int numClasses = 2;
 
+
         Classification classification = new Classification(learnType,paramCount, batchSize,paramCount);
 
         new Thread(classification).start();
 
         try {
-            Thread.sleep(1000);
+            Thread.sleep(1000
+            );
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        logger.info("Successfully Instatiated the Clustering with samoa");
+        logger.info("Successfully Instatiated the classification with samoa");
 
         double [] cepEvent=new double[paramCount];
 

@@ -31,7 +31,6 @@ public class StreamingClusteringEntranceProcessor implements EntranceProcessor {
     private StreamSource streamSource;
     private Instance firstInstance;
     private boolean isInited = false;
-    private Random random = new Random();
     private double samplingThreshold;
     private int numberInstances;
     private int numInstanceSent = 0;

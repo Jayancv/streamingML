@@ -29,17 +29,14 @@ public class ClassificationEntranceProcessor implements EntranceProcessor {
     private static final Logger logger = LoggerFactory.getLogger(ClassificationEntranceProcessor.class);
 
 
-
-    private Random random = new Random();
     private double samplingThreshold;
-
     private int groundTruthSamplingFrequency;
     private int maxNumInstances;
 
-
-    private boolean isInited = false;
     private StreamSource streamSource;
     private Instance firstInstance;
+    private boolean isInited = false;
+
     private int numberInstances;
     private int numInstanceSent = 0;
 
@@ -61,12 +58,9 @@ public class ClassificationEntranceProcessor implements EntranceProcessor {
 
 
     String evalPoint;
-    //public LinkedList<Clustering>samoaClusters;
-    //public ConcurrentLinkedQueue<double[]> cepEvents;
+
     public ConcurrentLinkedQueue<AbstractClassifier> samoaClassifiers;
     public int numClasses=0;
-
-
 
 
     public void setNumClasses(int numClasses) {
@@ -86,55 +80,8 @@ public class ClassificationEntranceProcessor implements EntranceProcessor {
     }
 
     @Override
-    public boolean isFinished() {
-        return (!streamSource.hasMoreInstances() || (numberInstances >= 0 && numInstanceSent >= numberInstances));
-    }
-
-    @Override
-    public boolean hasNext() {
-        return true;
-        //return (!isFinished());
-    }
-
-    private boolean hasReachedEndOfStream() {
-        return (!streamSource.hasMoreInstances() || (numberInstances >= 0 && numInstanceSent >= numberInstances));
-    }
-
-    @Override
-    public ContentEvent nextEvent() {
-        InstanceContentEvent contentEvent = null;
-        if (hasReachedEndOfStream()) {
-            contentEvent = new InstanceContentEvent(-1, firstInstance, false, true);
-            contentEvent.setLast(true);
-            // set finished status _after_ tagging last event
-            finished = true;
-        }
-        else if (hasNext()) {
-            numInstanceSent++;
-            contentEvent = new InstanceContentEvent(numInstanceSent, nextInstance(), true, true);
-
-            // first call to this method will trigger the timer
-            if (schedule == null && delay > 0) {
-                schedule = timer.scheduleWithFixedDelay(new DelayTimeoutHandler(this), delay, delay,
-                        TimeUnit.MICROSECONDS);
-            }
-        }
-        logger.info(contentEvent.getInstance().toString());
-        return contentEvent;
-    }
-
-
-    private void increaseReadyEventIndex() {
-        readyEventIndex+=batchSize;
-        // if we exceed the max, cancel the timer
-        if (schedule != null && isFinished()) {
-            schedule.cancel(false);
-        }
-    }
-
-    @Override
     public void onCreate(int id) {
-      // initStreamSource(sourceStream);
+        // initStreamSource(sourceStream);
 //        timer = Executors.newScheduledThreadPool(1);
         logger.debug("Creating PrequentialSourceProcessor with id {}", id);
         logger.info("Creating PrequentialSourceProcessor with id {}", id);
@@ -150,6 +97,20 @@ public class ClassificationEntranceProcessor implements EntranceProcessor {
         return newProcessor;
     }
 
+    @Override
+    public boolean hasNext() {
+        return true;
+       // return (!isFinished());
+    }
+
+    @Override
+    public boolean isFinished() {
+        return (!streamSource.hasMoreInstances() || (numberInstances >= 0 && numInstanceSent >= numberInstances));
+    }
+
+    private boolean hasReachedEndOfStream() {
+        return (!streamSource.hasMoreInstances() || (numberInstances >= 0 && numInstanceSent >= numberInstances));
+    }
 
     public StreamSource getStreamSource() {
         return streamSource;
@@ -165,20 +126,10 @@ public class ClassificationEntranceProcessor implements EntranceProcessor {
     }
 
 
-//    public void setStreamSource(InstanceStream stream) {
-//        if (stream instanceof AbstractOptionHandler) {
-//            ((AbstractOptionHandler) (stream)).prepareForUse();
-//        }
-//
-//        this.streamSource = new StreamSource(stream);
-//        firstInstance = streamSource.nextInstance().getData();
-//    }
-
-
     public Instances getDataset() {
-        if (firstInstance == null) {
-            initStreamSource(sourceStream);
-        }
+//        if (firstInstance == null) {
+//            initStreamSource(sourceStream);
+//        }
         return firstInstance.dataset();
     }
 
@@ -192,6 +143,73 @@ public class ClassificationEntranceProcessor implements EntranceProcessor {
     }
 
 
+    public void setMaxNumInstances(int value) {
+        numberInstances = value;
+    }
+
+
+    @Override
+    public ContentEvent nextEvent() {
+        InstanceContentEvent contentEvent = null;
+        if (hasReachedEndOfStream()) {
+            contentEvent = new InstanceContentEvent(-1, firstInstance, false, true);
+            contentEvent.setLast(true);
+            // set finished status _after_ tagging last event
+            System.out.println("Finish");
+            finished = true;
+        }
+        else if (hasNext()) {
+            numInstanceSent++;
+            contentEvent = new InstanceContentEvent(numInstanceSent, nextInstance(), true, true);
+
+            // first call to this method will trigger the timer
+            if (schedule == null && delay > 0) {
+                schedule = timer.scheduleWithFixedDelay(new DelayTimeoutHandler(this), delay, delay,
+                        TimeUnit.MICROSECONDS);
+            }
+        }
+        return contentEvent;
+
+//        if(isFinished()){
+//            InstanceContentEvent contentEvent=new InstanceContentEvent(-1,firstInstance,true,true);
+//            contentEvent.setLast(true);
+//            return contentEvent;
+//        }else {
+//            DataPoint nextDataPoint =new DataPoint(nextInstance(),numberInstances);
+//            numberInstances++;
+//            InstanceContentEvent contentEvent=new InstanceContentEvent(numberInstances,nextDataPoint,true,true);
+//            return contentEvent;
+//        }
+    }
+
+
+    private void increaseReadyEventIndex() {
+        readyEventIndex+=batchSize;
+        // if we exceed the max, cancel the timer
+        if (schedule != null && isFinished()) {
+            schedule.cancel(false);
+        }
+    }
+
+
+
+
+
+
+
+
+//    public void setStreamSource(InstanceStream stream) {
+//        if (stream instanceof AbstractOptionHandler) {
+//            ((AbstractOptionHandler) (stream)).prepareForUse();
+//        }
+//
+//        this.streamSource = new StreamSource(stream);
+//        firstInstance = streamSource.nextInstance().getData();
+//    }
+
+
+
+
     private void initStreamSource(InstanceStream stream) {
         if (stream instanceof AbstractOptionHandler) {
             ((AbstractOptionHandler) (stream)).prepareForUse();
@@ -201,9 +219,7 @@ public class ClassificationEntranceProcessor implements EntranceProcessor {
         firstInstance = streamSource.nextInstance().getData();
     }
 
-    public void setMaxNumInstances(int value) {
-        numberInstances = value;
-    }
+
 
     public int getMaxNumInstances() {
         return this.numberInstances;
