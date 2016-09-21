@@ -10,7 +10,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import org.apache.samoa.evaluation.BasicClassificationPerformanceEvaluator;
 import org.apache.samoa.evaluation.BasicRegressionPerformanceEvaluator;
 import org.apache.samoa.evaluation.ClassificationPerformanceEvaluator;
-import org.apache.samoa.evaluation.EvaluatorProcessor;
 import org.apache.samoa.evaluation.PerformanceEvaluator;
 import org.apache.samoa.evaluation.RegressionPerformanceEvaluator;
 import org.apache.samoa.learners.ClassificationLearner;
@@ -18,7 +17,6 @@ import org.apache.samoa.learners.Learner;
 import org.apache.samoa.learners.RegressionLearner;
 import org.apache.samoa.learners.classifiers.trees.VerticalHoeffdingTree;
 import org.apache.samoa.streams.InstanceStream;
-import org.apache.samoa.streams.generators.RandomTreeGenerator;
 import org.apache.samoa.tasks.Task;
 import org.apache.samoa.topology.ComponentFactory;
 import org.apache.samoa.topology.Stream;
@@ -33,13 +31,7 @@ import com.github.javacliparser.FileOption;
 import com.github.javacliparser.IntOption;
 import com.github.javacliparser.StringOption;
 
-/**
- * Prequential Evaluation task is a scheme in evaluating performance of online classifiers which uses each instance for
- * testing online classifiers model and then it further uses the same instance for training the model(Test-then-train)
- *
- * @author Arinto Murdopo
- *
- */
+
 public class ClassTask implements Task, Configurable {
 
     private static final long serialVersionUID = -8246537378371580550L;
@@ -66,7 +58,7 @@ public class ClassTask implements Task, Configurable {
             Integer.MAX_VALUE);
 
     public IntOption sampleFrequencyOption = new IntOption("sampleFrequency", 'f',
-            "How many instances between samples of the learning performance.", 100000,
+            "How many instances between samples of the learning performance.", 1000,
             0, Integer.MAX_VALUE);
 
     public StringOption evaluationNameOption = new StringOption("evaluationName", 'n', "Identifier of the evaluation",
@@ -88,7 +80,7 @@ public class ClassTask implements Task, Configurable {
     private InstanceStream streamTrain;
     protected Stream sourcePiOutputStream;
     private Learner classifier;
-    private EvaluatorProcessor evaluator;
+    private ClassificationEvaluationProcessor evaluator;
 
     // private ProcessingItem evaluatorPi;
 
@@ -111,6 +103,16 @@ public class ClassTask implements Task, Configurable {
         // theoretically, dynamic binding will work here!
         // test later!
         // for now, the if statement is used by Storm
+        streamTrain=this.streamTrainOption.getValue();
+
+        if(streamTrain instanceof ClassificationStream){
+            logger.info("Stream is a StreamingClusteringStream");
+            ClassificationStream myStream = (ClassificationStream)streamTrain;
+            myStream.setCepEvents(this.cepEvents);
+        }else{
+            logger.info("Check Stream: Stream is not a StreamingClusteringStream");
+        }
+
 
         if (builder == null) {
             builder = new TopologyBuilder();
@@ -124,18 +126,6 @@ public class ClassTask implements Task, Configurable {
         // (sourcePiOutputStream)
         preqSource = new ClassificationEntranceProcessor();
 
-        streamTrain=this.streamTrainOption.getValue();
-
-        if(streamTrain instanceof ClassificationStream){
-            logger.info("Stream is a StreamingClusteringStream");
-            ClassificationStream myStream = (ClassificationStream)streamTrain;
-            myStream.setCepEvents(this.cepEvents);
-        }else{
-            logger.info("Check Stream: Stream is not a StreamingClusteringStream");
-        }
-
-
-       // preqSource.setStreamSource((InstanceStream) this.streamTrainOption.getValue());
         preqSource.setStreamSource(streamTrain);
         builder.addEntranceProcessor(preqSource);
         preqSource.setMaxNumInstances(instanceLimitOption.getValue());
@@ -146,9 +136,7 @@ public class ClassTask implements Task, Configurable {
         logger.info("Successfully instantiating PrequentialSourceProcessor");
 
         sourcePiOutputStream = builder.createStream(preqSource);
-        // preqStarter.setInputStream(sourcePiOutputStream);
 
-        // instantiate classifier and connect it to sourcePiOutputStream
         classifier = this.learnerOption.getValue();
         classifier.init(builder, preqSource.getDataset(), 1);
         builder.connectInputShuffleStream(sourcePiOutputStream, classifier.getInputProcessor());
@@ -159,17 +147,9 @@ public class ClassTask implements Task, Configurable {
         if (!ClassTask.isLearnerAndEvaluatorCompatible(classifier, evaluatorOptionValue)) {
             evaluatorOptionValue = getDefaultPerformanceEvaluatorForLearner(classifier);
         }
-        evaluator = new EvaluatorProcessor.Builder(evaluatorOptionValue)
+        evaluator = new ClassificationEvaluationProcessor.Builder(evaluatorOptionValue)
                 .samplingFrequency(sampleFrequencyOption.getValue()).dumpFile(dumpFileOption.getFile()).build();
 
-
-
-        //ClassificationEvaluationProcessor evaluator=new ClassificationEvaluationProcessor("Result check");
-       // evaluator.setNumClasses(this.numClasses);
-        
-        //evaluator.setSamoaClassifiers(this.samoaClassifiers);
-        // evaluatorPi = builder.createPi(evaluator);
-        // evaluatorPi.connectInputShuffleStream(evaluatorPiInputStream);
         builder.addProcessor(evaluator);
         for (Stream evaluatorPiInputStream : classifier.getResultStreams()) {
             builder.connectInputShuffleStream(evaluatorPiInputStream, evaluator);
@@ -199,12 +179,6 @@ public class ClassTask implements Task, Configurable {
     public Topology getTopology() {
         return prequentialTopology;
     }
-
-    //
-    // @Override
-    // public TopologyStarter getTopologyStarter() {
-    // return this.preqStarter;
-    // }
 
     protected static boolean isLearnerAndEvaluatorCompatible(Learner learner, PerformanceEvaluator evaluator) {
         return (learner instanceof RegressionLearner && evaluator instanceof RegressionPerformanceEvaluator) ||

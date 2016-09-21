@@ -99,14 +99,15 @@ public class ClassificationEntranceProcessor implements EntranceProcessor {
 
     @Override
     public boolean hasNext() {
-        return true;
-       // return (!isFinished());
+        //return true;
+         return (!isFinished());
     }
 
     @Override
     public boolean isFinished() {
-        return (!streamSource.hasMoreInstances() || (numberInstances >= 0 && numInstanceSent >= numberInstances));
+        return finished;
     }
+
 
     private boolean hasReachedEndOfStream() {
         return (!streamSource.hasMoreInstances() || (numberInstances >= 0 && numInstanceSent >= numberInstances));
@@ -246,7 +247,7 @@ public class ClassificationEntranceProcessor implements EntranceProcessor {
         }
 
         public void run() {
-             processor.increaseReadyEventIndex();
+            processor.increaseReadyEventIndex();
         }
     }
 }
