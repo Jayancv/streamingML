@@ -1,6 +1,6 @@
 package org.wso2.carbon.ml.siddhi.extension.streamingml;
 
-import org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.classification.Classification;
+import org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.classification.StreamingClassification;
 import org.wso2.siddhi.core.config.ExecutionPlanContext;
 import org.wso2.siddhi.core.event.ComplexEvent;
 import org.wso2.siddhi.core.event.ComplexEventChunk;
@@ -24,22 +24,53 @@ import java.util.List;
 public class StreamingClassificationWithSamoaStreamProcessor extends StreamProcessor {
 
 
-    private int maxInstance=0;
-    private int step =0 ;
-    private int numClasses=1;
-
-    private int paramCount = 0;                                         // Number of x variables +1
-    private int calcInterval = 1;                                       // The frequency of regression calculation
-    private int batchSize = 10;                                 // Maximum # of events, used for regression calculation
-    private double ci = 0.95;                                           // Confidence Interval
-    private double miniBatchFraction=1;
+    private int maxInstance=1000000;
+    private int numClasses=2;
+    private int paramCount = 9;
+    private int batchSize = 500;
     private int paramPosition = 0;
+    private StreamingClassification streamingClassification =null;
 
-    private int alpha = 0;
-    private double stepSize = 0.00000001;
-    private int featureSize=1;  //P
 
-    private Classification classification=null;
+    @Override
+    protected List<Attribute> init(AbstractDefinition inputDefinition, ExpressionExecutor[] attributeExpressionExecutors, ExecutionPlanContext executionPlanContext) {
+        paramCount = attributeExpressionLength;
+        int PARAM_WIDTH=2;
+
+        // Capture constant inputs
+        if (attributeExpressionExecutors[0] instanceof ConstantExpressionExecutor) {
+
+            paramCount = paramCount - PARAM_WIDTH;
+            paramPosition = PARAM_WIDTH;
+            try {
+                maxInstance = ((Integer) attributeExpressionExecutors[0].execute(null));
+                batchSize = ((Integer) attributeExpressionExecutors[1].execute(null));
+
+            } catch (ClassCastException c) {
+                throw new ExecutionPlanCreationException("maximum no of instance, step size should be of type int");
+            }
+        }
+        System.out.println("StreamingClassification  Parameters: "+" "+maxInstance+" "+" "+batchSize+"\n");
+        streamingClassification = new StreamingClassification(maxInstance, batchSize,numClasses, paramCount);
+        try {
+            Thread.sleep(1000);
+        }catch(Exception e){
+
+        }
+        new Thread(streamingClassification).start();
+
+        // Add attributes for standard error and all beta values
+        String betaVal;
+        ArrayList<Attribute> attributes = new ArrayList<Attribute>(4);
+        attributes.add(new Attribute("numInstance", Attribute.Type.INT));
+        attributes.add(new Attribute("correctness", Attribute.Type.DOUBLE));
+        attributes.add(new Attribute("kappa", Attribute.Type.DOUBLE));
+        attributes.add(new Attribute("tempKappa", Attribute.Type.DOUBLE));
+
+
+        return attributes;
+    }
+
     @Override
     protected void process(ComplexEventChunk<StreamEvent> streamEventChunk, Processor nextProcessor, StreamEventCloner streamEventCloner, ComplexEventPopulater complexEventPopulater) {
 
@@ -57,12 +88,14 @@ public class StreamingClassificationWithSamoaStreamProcessor extends StreamProce
                     cepEvent[i - paramPosition] = (double)value;
                 }
 
+               // System.out.println(cepEvent);
                 //Object[] outputData = regressionCalculator.calculateLinearRegression(inputData);
                 Object[] outputData = null;
 
                 // Object[] outputData= streamingLinearRegression.addToRDD(eventData);
                 //Calling the regress function
-                outputData = classification.classify(cepEvent);
+               // System.out.println("Process");
+                outputData = streamingClassification.classify(cepEvent);
 
                 // Skip processing if user has specified calculation interval
                 if (outputData == null) {
@@ -75,49 +108,7 @@ public class StreamingClassificationWithSamoaStreamProcessor extends StreamProce
         nextProcessor.process(streamEventChunk);
     }
 
-    @Override
-    protected List<Attribute> init(AbstractDefinition inputDefinition, ExpressionExecutor[] attributeExpressionExecutors, ExecutionPlanContext executionPlanContext) {
-        paramCount = attributeExpressionLength;
-        int PARAM_WIDTH=2;
 
-        // Capture constant inputs
-        if (attributeExpressionExecutors[0] instanceof ConstantExpressionExecutor) {
-
-            paramCount = paramCount - PARAM_WIDTH;
-            featureSize=paramCount;//
-
-            paramPosition = PARAM_WIDTH;
-            try {
-                maxInstance = ((Integer) attributeExpressionExecutors[0].execute(null));
-                step = ((Integer) attributeExpressionExecutors[1].execute(null));
-
-            } catch (ClassCastException c) {
-                throw new ExecutionPlanCreationException("maximum no of instance, step size should be of type int");
-            }
-        }
-        System.out.println("Classification  Parameters: "+" "+maxInstance+" "+" "+step+"\n");
-        // Pick the appropriate regression calculator
-
-       // streamingClusteringWithSamoa = new StreamingClustering(learnType,paramCount, batchSize, ci,numClusters, numIterations,alpha);
-        try {
-            Thread.sleep(1000);
-        }catch(Exception e){
-
-        }
-        new Thread(classification).start();
-
-        // Add attributes for standard error and all beta values
-        String betaVal;
-        ArrayList<Attribute> attributes = new ArrayList<Attribute>(5);
-        attributes.add(new Attribute("instances", Attribute.Type.DOUBLE));
-        attributes.add(new Attribute("count", Attribute.Type.DOUBLE));
-        attributes.add(new Attribute("correctness", Attribute.Type.DOUBLE));
-        attributes.add(new Attribute("kappa", Attribute.Type.DOUBLE));
-        attributes.add(new Attribute("kappat", Attribute.Type.DOUBLE));
-
-
-        return attributes;
-    }
 
     @Override
     public void start() {

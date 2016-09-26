@@ -9,120 +9,49 @@ import org.apache.samoa.moa.core.ObjectRepository;
 import org.apache.samoa.moa.tasks.TaskMonitor;
 import org.apache.samoa.streams.InstanceStream;
 import org.apache.samoa.streams.clustering.ClusteringStream;
-import parquet.org.slf4j.Logger;
-import parquet.org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-
 /**
- * Created by wso2123 on 9/9/16.
+ * Created by wso2123 on 9/26/16.
  */
-public class ClassificationStream  extends ClusteringStream{
+public class StreamingClassificationStream extends ClusteringStream {
+
 
     public ConcurrentLinkedQueue<double[]> cepEvents;
-    private static final Logger logger = LoggerFactory.getLogger(ClassificationStream.class);
+    private static final Logger logger = LoggerFactory.getLogger(StreamingClassificationStream.class);
     protected InstancesHeader streamHeader;
     private int numGeneratedInstances;
     private int nextEventCounter;
     LinkedList<DataPoint> points = new LinkedList<DataPoint>();
-    double [] values; //Cep Event
-    private int numAttributes=4;
+    double[] values; //Cep Event
+    private int numAttributes = 2;
 
     public IntOption numClassesOption = new IntOption("numClasses", 'K',
             "The number of classes in the model.", 2, 2, Integer.MAX_VALUE);
 
+
+    @Override
     protected void prepareForUseImpl(TaskMonitor taskMonitor, ObjectRepository objectRepository) {
         taskMonitor.setCurrentActivity("Preparing random RBF...", -1.0);
-        this.numAttributes =4;
-        logger.info("Number of Attributes in the Stream : "+this.numAttributes);
+        this.numAttributes = numClassesOption.getValue();
+        logger.info("Number of Attributes in the Stream : " + this.numAttributes);
         generateHeader();
         restart();
-        //logger.info("Succefully Prepare MyClusteringStream for Implementation");
         values = new double[numAttributes];
 
-        for(int i=0;i<numAttributes;i++){
-            values[i]=0;
+        for (int i = 0; i < numAttributes; i++) {
+            values[i] = 0;
         }
     }
 
-    @Override
-    public InstancesHeader getHeader() {
-        return streamHeader;
-    }
-
-    @Override
-    public long estimatedRemainingInstances() {
-        return -1L ;
-    }
-
-    @Override
-    public boolean hasMoreInstances() {
-        return true;
-    }
-
-    public Example<Instance> nextInstance() {
-        //logger.info(("Next event"));
-        //int numGeneratedInstances = 0;
-        if(numGeneratedInstances == 0){
-            logger.info("Sending First Samoa Instance.....");
-            numGeneratedInstances++;
-            //double[] values = this.values;
-            double[] values_new = new double[4]; // +1
-            while(cepEvents == null);
-            while (cepEvents.isEmpty()) ;
-            double[] values = cepEvents.poll();
-            System.arraycopy(values, 0, values_new, 0, values.length-1);
-            Instance inst = new DenseInstance(1.0, values_new);
-            inst.setDataset(getHeader());
-            inst.setClassValue(values[values.length-1]);
-            return new InstanceExample(inst);
-
-        }else {
-            numGeneratedInstances++;
-            double[] values_new = new double[4]; // +1
-
-            //while(cepEvents == null);
-            while (cepEvents.isEmpty()) ;//logger.info("Cep Events Not Empty");
-            double[] values = cepEvents.poll();
-
-            System.arraycopy(values, 0, values_new, 0, values.length-1);
-            Instance inst = new DenseInstance(1.0, values_new);
-            inst.setDataset(getHeader());
-            inst.setClassValue(values[values.length-1]);
-            return new InstanceExample(inst);
-        }
-    }
-
-    @Override
-    public boolean isRestartable() {
-        return true;
-    }
-
-
-    @Override
-    public void restart() {
-        numGeneratedInstances =0;
-
-    }
-
-
-    @Override
-    public void getDescription(StringBuilder stringBuilder, int i) {
-
-    }
-
-    private void addInstance(Instance instance) {
-        DataPoint point = new DataPoint(instance, numGeneratedInstances);
-        points.add(point);
-
-    }
-
-    protected void generateHeader() {
+    private void generateHeader() {
         ArrayList<Attribute> attributes = new ArrayList<Attribute>();
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < numAttributes; i++) {
             attributes.add(new Attribute("att" + (i + 1)));
         }
 
@@ -136,9 +65,68 @@ public class ClassificationStream  extends ClusteringStream{
         streamHeader.setClassIndex(streamHeader.numAttributes() - 1);
     }
 
+    @Override
+    public InstancesHeader getHeader() {
+        return streamHeader;
+    }
 
+    @Override
+    public long estimatedRemainingInstances() {
+        return -1L;
+    }
 
+    @Override
+    public boolean hasMoreInstances() {
+        return true;
+    }
 
+    @Override
+    public Example<Instance> nextInstance() {
+        if (numGeneratedInstances == 0) {
+            logger.info("Sending First Samoa Instance.....");
+            numGeneratedInstances++;
+            double[] values_new = new double[numAttributes]; // +1
+            while (cepEvents == null) ;
+            while (cepEvents.isEmpty()) ;
+
+            double[] values = cepEvents.poll();
+
+            System.arraycopy(values, 0, values_new, 0, values.length - 1);
+            Instance inst = new DenseInstance(1.0, values_new);
+            inst.setDataset(getHeader());
+            inst.setClassValue(values[values.length - 1]);
+            return new InstanceExample(inst);
+
+        } else {
+            numGeneratedInstances++;
+            double[] values_new = new double[numAttributes]; // +1
+
+            while (cepEvents.isEmpty()) ;
+            double[] values = cepEvents.poll();
+
+            System.arraycopy(values, 0, values_new, 0, values.length - 1);
+            Instance inst = new DenseInstance(1.0, values_new);
+            inst.setDataset(getHeader());
+            inst.setClassValue(values[values.length - 1]);
+            return new InstanceExample(inst);
+        }
+    }
+
+    @Override
+    public boolean isRestartable() {
+        return true;
+    }
+
+    @Override
+    public void restart() {
+        numGeneratedInstances = 0;
+
+    }
+
+    @Override
+    public void getDescription(StringBuilder stringBuilder, int i) {
+
+    }
 
     public void setCepEvents(ConcurrentLinkedQueue<double[]> cepEvents) {
         this.cepEvents = cepEvents;

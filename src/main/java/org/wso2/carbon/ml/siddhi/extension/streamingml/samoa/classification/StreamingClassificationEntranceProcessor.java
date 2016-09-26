@@ -6,27 +6,23 @@ import org.apache.samoa.core.Processor;
 import org.apache.samoa.instances.Instance;
 import org.apache.samoa.instances.Instances;
 import org.apache.samoa.learners.InstanceContentEvent;
-import org.apache.samoa.learners.classifiers.trees.AttributeContentEvent;
-import org.apache.samoa.moa.classifiers.AbstractClassifier;
-import org.apache.samoa.moa.core.DataPoint;
 import org.apache.samoa.moa.options.AbstractOptionHandler;
 import org.apache.samoa.streams.InstanceStream;
 import org.apache.samoa.streams.StreamSource;
-import org.apache.samoa.streams.generators.RandomTreeGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Random;
+import java.util.Vector;
 import java.util.concurrent.*;
 
 /**
  * Created by wso2123 on 8/30/16.
  */
-public class ClassificationEntranceProcessor implements EntranceProcessor {
+public class StreamingClassificationEntranceProcessor implements EntranceProcessor {
 
     private static final long serialVersionUID = 4169053337917578558L;
 
-    private static final Logger logger = LoggerFactory.getLogger(ClassificationEntranceProcessor.class);
+    private static final Logger logger = LoggerFactory.getLogger(StreamingClassificationEntranceProcessor.class);
 
 
     private double samplingThreshold;
@@ -43,9 +39,8 @@ public class ClassificationEntranceProcessor implements EntranceProcessor {
     protected InstanceStream sourceStream;
 
 
-
     /*
-	 * ScheduledExecutorService to schedule sending events after each delay interval.
+     * ScheduledExecutorService to schedule sending events after each delay interval.
 	 * It is expected to have only one event in the queue at a time, so we need only
 	 * one thread in the pool.
 	 */
@@ -59,15 +54,15 @@ public class ClassificationEntranceProcessor implements EntranceProcessor {
 
     String evalPoint;
 
-    public ConcurrentLinkedQueue<AbstractClassifier> samoaClassifiers;
-    public int numClasses=0;
+    public ConcurrentLinkedQueue<Vector> samoaClassifiers;
+    public int numClasses = 0;
 
 
     public void setNumClasses(int numClasses) {
         this.numClasses = numClasses;
     }
 
-    public void setSamoaClassifiers(ConcurrentLinkedQueue<AbstractClassifier> samoaClassifiers) {
+    public void setSamoaClassifiers(ConcurrentLinkedQueue<Vector> samoaClassifiers) {
         this.samoaClassifiers = samoaClassifiers;
     }
 
@@ -81,16 +76,14 @@ public class ClassificationEntranceProcessor implements EntranceProcessor {
 
     @Override
     public void onCreate(int id) {
-        // initStreamSource(sourceStream);
-//        timer = Executors.newScheduledThreadPool(1);
         logger.debug("Creating PrequentialSourceProcessor with id {}", id);
         logger.info("Creating PrequentialSourceProcessor with id {}", id);
     }
 
     @Override
     public Processor newProcessor(Processor p) {
-        ClassificationEntranceProcessor newProcessor = new ClassificationEntranceProcessor();
-        ClassificationEntranceProcessor originProcessor = (ClassificationEntranceProcessor) p;
+        StreamingClassificationEntranceProcessor newProcessor = new StreamingClassificationEntranceProcessor();
+        StreamingClassificationEntranceProcessor originProcessor = (StreamingClassificationEntranceProcessor) p;
         if (originProcessor.getStreamSource() != null) {
             newProcessor.setStreamSource(originProcessor.getStreamSource().getStream());
         }
@@ -100,7 +93,7 @@ public class ClassificationEntranceProcessor implements EntranceProcessor {
     @Override
     public boolean hasNext() {
         //return true;
-         return (!isFinished());
+        return (!isFinished());
     }
 
     @Override
@@ -128,9 +121,6 @@ public class ClassificationEntranceProcessor implements EntranceProcessor {
 
 
     public Instances getDataset() {
-//        if (firstInstance == null) {
-//            initStreamSource(sourceStream);
-//        }
         return firstInstance.dataset();
     }
 
@@ -158,8 +148,7 @@ public class ClassificationEntranceProcessor implements EntranceProcessor {
             // set finished status _after_ tagging last event
             System.out.println("Finish");
             finished = true;
-        }
-        else if (hasNext()) {
+        } else if (hasNext()) {
             numInstanceSent++;
             contentEvent = new InstanceContentEvent(numInstanceSent, nextInstance(), true, true);
 
@@ -171,44 +160,16 @@ public class ClassificationEntranceProcessor implements EntranceProcessor {
         }
         return contentEvent;
 
-//        if(isFinished()){
-//            InstanceContentEvent contentEvent=new InstanceContentEvent(-1,firstInstance,true,true);
-//            contentEvent.setLast(true);
-//            return contentEvent;
-//        }else {
-//            DataPoint nextDataPoint =new DataPoint(nextInstance(),numberInstances);
-//            numberInstances++;
-//            InstanceContentEvent contentEvent=new InstanceContentEvent(numberInstances,nextDataPoint,true,true);
-//            return contentEvent;
-//        }
     }
 
 
     private void increaseReadyEventIndex() {
-        readyEventIndex+=batchSize;
+        readyEventIndex += batchSize;
         // if we exceed the max, cancel the timer
         if (schedule != null && isFinished()) {
             schedule.cancel(false);
         }
     }
-
-
-
-
-
-
-
-
-//    public void setStreamSource(InstanceStream stream) {
-//        if (stream instanceof AbstractOptionHandler) {
-//            ((AbstractOptionHandler) (stream)).prepareForUse();
-//        }
-//
-//        this.streamSource = new StreamSource(stream);
-//        firstInstance = streamSource.nextInstance().getData();
-//    }
-
-
 
 
     private void initStreamSource(InstanceStream stream) {
@@ -219,7 +180,6 @@ public class ClassificationEntranceProcessor implements EntranceProcessor {
         this.streamSource = new StreamSource(stream);
         firstInstance = streamSource.nextInstance().getData();
     }
-
 
 
     public int getMaxNumInstances() {
@@ -240,9 +200,9 @@ public class ClassificationEntranceProcessor implements EntranceProcessor {
 
     private class DelayTimeoutHandler implements Runnable {
 
-        private ClassificationEntranceProcessor processor;
+        private StreamingClassificationEntranceProcessor processor;
 
-        public DelayTimeoutHandler(ClassificationEntranceProcessor processor) {
+        public DelayTimeoutHandler(StreamingClassificationEntranceProcessor processor) {
             this.processor = processor;
         }
 

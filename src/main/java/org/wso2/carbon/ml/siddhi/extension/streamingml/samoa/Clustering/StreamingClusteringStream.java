@@ -75,7 +75,7 @@ public class StreamingClusteringStream  extends ClusteringStream {
             double[] values_new = new double[numAttsOption.getValue()]; // +1
             int clusterChoice = -1;
             while(cepEvents == null);
-            while(cepEvents.isEmpty()) ;
+            while (cepEvents.isEmpty()) ;
             double[] values = cepEvents.poll();
             System.arraycopy(values, 0, values_new, 0, values.length);
             Instance inst = new DenseInstance(1.0, values_new);
@@ -96,8 +96,6 @@ public class StreamingClusteringStream  extends ClusteringStream {
             System.arraycopy(values, 0, values_new, 0, values.length);
             Instance inst = new DenseInstance(1.0, values_new);
             inst.setDataset(getHeader());
-
-            //logger.info(inst.toString());
             return new InstanceExample(inst);
         }
     }

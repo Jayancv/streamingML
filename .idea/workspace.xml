@@ -2,13 +2,26 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="4823d502-0232-430a-8405-6c28f1f344e8" name="Default" comment="">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/classification/ClassificationStream1.class" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/classification/ClassificationStream$Node.class" afterPath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/classification/ClassificationStream$Node.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/classification/ClassificationStream.class" afterPath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/classification/ClassificationStream.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/classification/ClassificationTaskBuilder.class" afterPath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/classification/ClassificationTaskBuilder.class" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/classification/ClassTask.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/classification/Classification.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/classification/ClassificationEntranceProcessor.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/classification/ClassificationEvaluationProcessor.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/classification/ClassificationStream.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/java/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/classification/ClassificationTaskBuilder.java" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/classification/ClassTask.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/classification/ClassificationEntranceProcessor$DelayTimeoutHandler.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/classification/ClassificationEntranceProcessor.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/classification/ClassificationEvaluationProcessor.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/classification/ClassificationStream$Node.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/classification/ClassificationStream.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/classification/ClassificationTaskBuilder.class" afterPath="" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/classification/Simulator.class" afterPath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/classification/Simulator.class" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/classification/ClassificationStream.java" afterPath="$PROJECT_DIR$/src/main/java/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/classification/ClassificationStream.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/classification/ClassificationTaskBuilder.java" afterPath="$PROJECT_DIR$/src/main/java/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/classification/ClassificationTaskBuilder.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/wso2/carbon/ml/siddhi/extension/streamingml/StreamingClassificationWithSamoaStreamProcessor.java" afterPath="$PROJECT_DIR$/src/main/java/org/wso2/carbon/ml/siddhi/extension/streamingml/StreamingClassificationWithSamoaStreamProcessor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Clustering/StreamingClusteringEntranceProcessor.java" afterPath="$PROJECT_DIR$/src/main/java/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Clustering/StreamingClusteringEntranceProcessor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Clustering/StreamingClusteringStream.java" afterPath="$PROJECT_DIR$/src/main/java/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Clustering/StreamingClusteringStream.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Clustering/StreamingClusteringTaskBuilder.java" afterPath="$PROJECT_DIR$/src/main/java/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Clustering/StreamingClusteringTaskBuilder.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/classification/Simulator.java" afterPath="$PROJECT_DIR$/src/main/java/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/classification/Simulator.java" />
     </list>
     <ignored path="streamingml.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -34,48 +47,6 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="ClassificationStream.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/classification/ClassificationStream.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="487">
-              <caret line="77" column="0" selection-start-line="77" selection-start-column="0" selection-end-line="77" selection-end-column="0" />
-              <folding>
-                <element signature="e#3349#3350#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="EvaluatorProcessor.class" pinned="false" current-in-tab="false">
-        <entry file="jar://$MAVEN_REPOSITORY$/org/apache/samoa/samoa-api/0.4.0-incubating-SNAPSHOT/samoa-api-0.4.0-incubating-SNAPSHOT.jar!/org/apache/samoa/evaluation/EvaluatorProcessor.class">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="272">
-              <caret line="51" column="0" selection-start-line="51" selection-start-column="0" selection-end-line="51" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="ClassTask.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/classification/ClassTask.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="201">
-              <caret line="152" column="0" selection-start-line="152" selection-start-column="0" selection-end-line="152" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="ClassificationTaskBuilder.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/classification/ClassificationTaskBuilder.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="379">
-              <caret line="107" column="0" selection-start-line="107" selection-start-column="0" selection-end-line="107" selection-end-column="0" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="SimpleTopology.class" pinned="false" current-in-tab="false">
         <entry file="jar://$MAVEN_REPOSITORY$/org/apache/samoa/samoa-local/0.4.0-incubating-SNAPSHOT/samoa-local-0.4.0-incubating-SNAPSHOT.jar!/org/apache/samoa/topology/impl/SimpleTopology.class">
           <provider selected="true" editor-type-id="text-editor">
@@ -86,51 +57,21 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="VerticalHoeffdingTree.class" pinned="false" current-in-tab="false">
-        <entry file="jar://$MAVEN_REPOSITORY$/org/apache/samoa/samoa-api/0.4.0-incubating-SNAPSHOT/samoa-api-0.4.0-incubating-SNAPSHOT.jar!/org/apache/samoa/learners/classifiers/trees/VerticalHoeffdingTree.class">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="705">
-              <caret line="71" column="7" selection-start-line="71" selection-start-column="6" selection-end-line="71" selection-end-column="7" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="LocalStatisticsProcessor.class" pinned="false" current-in-tab="false">
-        <entry file="jar://$MAVEN_REPOSITORY$/org/apache/samoa/samoa-api/0.4.0-incubating-SNAPSHOT/samoa-api-0.4.0-incubating-SNAPSHOT.jar!/org/apache/samoa/learners/classifiers/trees/LocalStatisticsProcessor.class">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="555">
-              <caret line="63" column="61" selection-start-line="63" selection-start-column="61" selection-end-line="63" selection-end-column="61" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="ModelAggregatorProcessor.class" pinned="false" current-in-tab="true">
+      <file leaf-file-name="ModelAggregatorProcessor.class" pinned="false" current-in-tab="false">
         <entry file="jar://$MAVEN_REPOSITORY$/org/apache/samoa/samoa-api/0.4.0-incubating-SNAPSHOT/samoa-api-0.4.0-incubating-SNAPSHOT.jar!/org/apache/samoa/learners/classifiers/trees/ModelAggregatorProcessor.class">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="345">
-              <caret line="90" column="0" selection-start-line="90" selection-start-column="0" selection-end-line="90" selection-end-column="0" />
+            <state relative-caret-position="765">
+              <caret line="91" column="6" selection-start-line="91" selection-start-column="6" selection-end-line="91" selection-end-column="6" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="NominalAttributeClassObserver.class" pinned="false" current-in-tab="false">
-        <entry file="jar://$MAVEN_REPOSITORY$/org/apache/samoa/samoa-api/0.4.0-incubating-SNAPSHOT/samoa-api-0.4.0-incubating-SNAPSHOT.jar!/org/apache/samoa/moa/classifiers/core/attributeclassobservers/NominalAttributeClassObserver.class">
+      <file leaf-file-name="Simulator.java" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/main/java/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/classification/Simulator.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="90">
-              <caret line="20" column="13" selection-start-line="20" selection-start-column="13" selection-end-line="20" selection-end-column="13" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="NominalAttributeBinaryTest.class" pinned="false" current-in-tab="false">
-        <entry file="jar://$MAVEN_REPOSITORY$/org/apache/samoa/samoa-api/0.4.0-incubating-SNAPSHOT/samoa-api-0.4.0-incubating-SNAPSHOT.jar!/org/apache/samoa/moa/classifiers/core/conditionaltests/NominalAttributeBinaryTest.class">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="60">
-              <caret line="7" column="7" selection-start-line="7" selection-start-column="7" selection-end-line="7" selection-end-column="7" />
+            <state relative-caret-position="1260">
+              <caret line="92" column="0" selection-start-line="92" selection-start-column="0" selection-end-line="92" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -174,10 +115,10 @@
         <option value="$PROJECT_DIR$/src/main/java/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Clustering/StreamingClusteringStream.java" />
         <option value="$PROJECT_DIR$/src/main/java/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/classification/ClassTask.java" />
         <option value="$PROJECT_DIR$/src/main/java/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/classification/Classification.java" />
-        <option value="$PROJECT_DIR$/src/main/java/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/classification/Simulator.java" />
         <option value="$PROJECT_DIR$/src/main/java/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/classification/ClassificationStream.java" />
         <option value="$PROJECT_DIR$/src/main/java/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/classification/ClassificationTaskBuilder.java" />
         <option value="$PROJECT_DIR$/src/main/java/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/classification/ClassificationEntranceProcessor.java" />
+        <option value="$PROJECT_DIR$/src/main/java/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/classification/Simulator.java" />
       </list>
     </option>
   </component>
@@ -811,10 +752,6 @@
               <option name="myItemId" value="samoa" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Clustering" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
           </PATH>
           <PATH>
             <PATH_ELEMENT>
@@ -852,13 +789,13 @@
           </PATH>
         </subPane>
       </pane>
-      <pane id="PackagesPane" />
       <pane id="Scope" />
+      <pane id="PackagesPane" />
       <pane id="Scratches" />
     </panes>
   </component>
   <component name="PropertiesComponent">
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../test/streamingml-1" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
   </component>
   <component name="RecentsManager">
     <key name="ExtractSuperBase.RECENT_KEYS">
@@ -1343,25 +1280,25 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Clustering/StreamingClusteringEntranceProcessor.java</url>
-          <line>138</line>
+          <line>139</line>
           <properties />
           <option name="timeStamp" value="250" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Clustering/StreamingClusteringEntranceProcessor.java</url>
-          <line>139</line>
+          <line>140</line>
           <properties />
           <option name="timeStamp" value="251" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Clustering/StreamingClusteringStream.java</url>
-          <line>78</line>
+          <line>76</line>
           <properties />
           <option name="timeStamp" value="268" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
           <url>file://$PROJECT_DIR$/src/main/java/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Clustering/StreamingClusteringStream.java</url>
-          <line>79</line>
+          <line>77</line>
           <properties />
           <option name="timeStamp" value="269" />
         </line-breakpoint>
@@ -1384,18 +1321,6 @@
           <option name="timeStamp" value="300" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/classification/ClassTask.java</url>
-          <line>152</line>
-          <properties />
-          <option name="timeStamp" value="307" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>file://$PROJECT_DIR$/src/main/java/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/classification/ClassificationTaskBuilder.java</url>
-          <line>107</line>
-          <properties />
-          <option name="timeStamp" value="308" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
           <url>jar://$MAVEN_REPOSITORY$/org/apache/samoa/samoa-api/0.4.0-incubating-SNAPSHOT/samoa-api-0.4.0-incubating-SNAPSHOT.jar!/org/apache/samoa/evaluation/EvaluatorProcessor.class</url>
           <line>52</line>
           <properties />
@@ -1407,20 +1332,8 @@
           <properties />
           <option name="timeStamp" value="310" />
         </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>jar://$MAVEN_REPOSITORY$/org/apache/samoa/samoa-api/0.4.0-incubating-SNAPSHOT/samoa-api-0.4.0-incubating-SNAPSHOT.jar!/org/apache/samoa/learners/classifiers/trees/ModelAggregatorProcessor.class</url>
-          <line>91</line>
-          <properties />
-          <option name="timeStamp" value="311" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="java-line">
-          <url>jar://$MAVEN_REPOSITORY$/org/apache/samoa/samoa-api/0.4.0-incubating-SNAPSHOT/samoa-api-0.4.0-incubating-SNAPSHOT.jar!/org/apache/samoa/learners/classifiers/trees/ModelAggregatorProcessor.class</url>
-          <line>90</line>
-          <properties />
-          <option name="timeStamp" value="312" />
-        </line-breakpoint>
       </breakpoints>
-      <option name="time" value="313" />
+      <option name="time" value="314" />
     </breakpoint-manager>
     <watches-manager />
   </component>
@@ -1429,13 +1342,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="jar:///usr/jdk/jdk1.8.0_45/src.zip!/java/lang/String.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="193">
-          <caret line="1598" column="0" selection-start-line="1598" selection-start-column="0" selection-end-line="1598" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar:///usr/jdk/jdk1.8.0_45/jre/lib/rt.jar!/sun/misc/Launcher.class">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="201">
@@ -1454,7 +1360,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="354">
           <caret line="78" column="40" selection-start-line="78" selection-start-column="40" selection-end-line="78" selection-end-column="40" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1691,19 +1596,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/classification/Simulator.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="435">
-          <caret line="36" column="0" selection-start-line="36" selection-start-column="0" selection-end-line="36" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar://$MAVEN_REPOSITORY$/org/apache/samoa/samoa-api/0.4.0-incubating-SNAPSHOT/samoa-api-0.4.0-incubating-SNAPSHOT.jar!/org/apache/samoa/moa/classifiers/core/attributeclassobservers/NominalAttributeClassObserver.class">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="90">
           <caret line="20" column="13" selection-start-line="20" selection-start-column="13" selection-end-line="20" selection-end-column="13" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1711,7 +1607,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="60">
           <caret line="7" column="7" selection-start-line="7" selection-start-column="7" selection-end-line="7" selection-end-column="7" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1726,7 +1621,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="705">
           <caret line="71" column="7" selection-start-line="71" selection-start-column="6" selection-end-line="71" selection-end-column="7" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1740,12 +1634,12 @@
             <element signature="e#2188#2189#0" expanded="false" />
             <element signature="e#2243#2244#0" expanded="false" />
             <element signature="e#2270#2271#0" expanded="false" />
-            <element signature="e#3783#3784#0" expanded="false" />
-            <element signature="e#3810#3811#0" expanded="false" />
-            <element signature="e#3853#3854#0" expanded="false" />
-            <element signature="e#3894#3895#0" expanded="false" />
-            <element signature="e#4939#4940#0" expanded="false" />
-            <element signature="e#4981#4982#0" expanded="false" />
+            <element signature="e#3739#3740#0" expanded="false" />
+            <element signature="e#3766#3767#0" expanded="false" />
+            <element signature="e#3809#3810#0" expanded="false" />
+            <element signature="e#3850#3851#0" expanded="false" />
+            <element signature="e#4895#4896#0" expanded="false" />
+            <element signature="e#4937#4938#0" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -1757,44 +1651,41 @@
         </state>
       </provider>
     </entry>
+    <entry file="jar://$MAVEN_REPOSITORY$/org/apache/samoa/samoa-api/0.4.0-incubating-SNAPSHOT/samoa-api-0.4.0-incubating-SNAPSHOT.jar!/org/apache/samoa/evaluation/EvaluatorProcessor.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="495">
+          <caret line="51" column="0" selection-start-line="51" selection-start-column="0" selection-end-line="51" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="jar://$MAVEN_REPOSITORY$/org/apache/samoa/samoa-api/0.4.0-incubating-SNAPSHOT/samoa-api-0.4.0-incubating-SNAPSHOT.jar!/org/apache/samoa/learners/classifiers/trees/LocalStatisticsProcessor.class">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="555">
           <caret line="63" column="61" selection-start-line="63" selection-start-column="61" selection-end-line="63" selection-end-column="61" />
-          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/classification/ClassificationStream.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="487">
-          <caret line="77" column="0" selection-start-line="77" selection-start-column="0" selection-end-line="77" selection-end-column="0" />
-          <folding>
-            <element signature="e#3349#3350#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/org/apache/samoa/samoa-api/0.4.0-incubating-SNAPSHOT/samoa-api-0.4.0-incubating-SNAPSHOT.jar!/org/apache/samoa/evaluation/EvaluatorProcessor.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="272">
-          <caret line="51" column="0" selection-start-line="51" selection-start-column="0" selection-end-line="51" selection-end-column="0" />
+        <state relative-caret-position="660">
+          <caret line="62" column="0" selection-start-line="62" selection-start-column="0" selection-end-line="62" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/classification/ClassTask.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="201">
-          <caret line="152" column="0" selection-start-line="152" selection-start-column="0" selection-end-line="152" selection-end-column="0" />
+        <state relative-caret-position="1680">
+          <caret line="140" column="0" selection-start-line="140" selection-start-column="0" selection-end-line="140" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/classification/ClassificationTaskBuilder.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="379">
-          <caret line="107" column="0" selection-start-line="107" selection-start-column="0" selection-end-line="107" selection-end-column="0" />
+        <state relative-caret-position="1350">
+          <caret line="102" column="0" selection-start-line="102" selection-start-column="0" selection-end-line="102" selection-end-column="0" />
           <folding />
         </state>
       </provider>
@@ -1807,10 +1698,26 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/classification/ClassificationEvaluationProcessor.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="555">
+          <caret line="59" column="0" selection-start-line="59" selection-start-column="0" selection-end-line="59" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="jar://$MAVEN_REPOSITORY$/org/apache/samoa/samoa-api/0.4.0-incubating-SNAPSHOT/samoa-api-0.4.0-incubating-SNAPSHOT.jar!/org/apache/samoa/learners/classifiers/trees/ModelAggregatorProcessor.class">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="345">
-          <caret line="90" column="0" selection-start-line="90" selection-start-column="0" selection-end-line="90" selection-end-column="0" />
+        <state relative-caret-position="765">
+          <caret line="91" column="6" selection-start-line="91" selection-start-column="6" selection-end-line="91" selection-end-column="6" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/classification/Simulator.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1260">
+          <caret line="92" column="0" selection-start-line="92" selection-start-column="0" selection-end-line="92" selection-end-column="0" />
           <folding />
         </state>
       </provider>

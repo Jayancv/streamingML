@@ -3,8 +3,10 @@ package org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.classification;
 /**
  * Created by wso2123 on 9/6/16.
  */
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Vector;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.apache.samoa.evaluation.BasicClassificationPerformanceEvaluator;
@@ -32,21 +34,20 @@ import com.github.javacliparser.IntOption;
 import com.github.javacliparser.StringOption;
 
 
-public class ClassTask implements Task, Configurable {
+public class StreamingClassificationTask implements Task, Configurable {
 
     private static final long serialVersionUID = -8246537378371580550L;
 
-    private static Logger logger = LoggerFactory.getLogger(ClassTask.class);
+    private static Logger logger = LoggerFactory.getLogger(StreamingClassificationTask.class);
 
     public ClassOption learnerOption = new ClassOption("learner", 'l', "Classifier to train.", Learner.class,
             VerticalHoeffdingTree.class.getName());
 
     public ClassOption streamTrainOption = new ClassOption("trainStream", 's', "Stream to learn from.",
-            InstanceStream.class,
-            ClassificationStream.class.getName());
+            InstanceStream.class, StreamingClassificationStream.class.getName());
 
     public ClassOption evaluatorOption = new ClassOption("evaluator", 'e',
-            "Classification performance evaluation method.",
+            "StreamingClassification performance evaluation method.",
             PerformanceEvaluator.class, BasicClassificationPerformanceEvaluator.class.getName());
 
     public IntOption instanceLimitOption = new IntOption("instanceLimit", 'i',
@@ -76,21 +77,18 @@ public class ClassTask implements Task, Configurable {
     public IntOption batchDelayOption = new IntOption("delayBatchSize", 'b',
             "The delay batch size: delay of x milliseconds after each batch ", 1, 1, Integer.MAX_VALUE);
 
-    protected ClassificationEntranceProcessor preqSource;
+    protected StreamingClassificationEntranceProcessor preqSource;
     private InstanceStream streamTrain;
     protected Stream sourcePiOutputStream;
     private Learner classifier;
-    private ClassificationEvaluationProcessor evaluator;
-
-    // private ProcessingItem evaluatorPi;
-
-    // private Stream evaluatorPiInputStream;
+    private StreamingClassificationEvaluationProcessor evaluator;
 
     protected Topology prequentialTopology;
     protected TopologyBuilder builder;
 
     public ConcurrentLinkedQueue<double[]> cepEvents;
-    public int numClasses=2;
+    public ConcurrentLinkedQueue<Vector> classifiers;
+    public int numClasses = 2;
 
 
     public void getDescription(StringBuilder sb, int indent) {
@@ -103,13 +101,13 @@ public class ClassTask implements Task, Configurable {
         // theoretically, dynamic binding will work here!
         // test later!
         // for now, the if statement is used by Storm
-        streamTrain=this.streamTrainOption.getValue();
+        streamTrain = this.streamTrainOption.getValue();
 
-        if(streamTrain instanceof ClassificationStream){
+        if (streamTrain instanceof StreamingClassificationStream) {
             logger.info("Stream is a StreamingClusteringStream");
-            ClassificationStream myStream = (ClassificationStream)streamTrain;
+            StreamingClassificationStream myStream = (StreamingClassificationStream) streamTrain;
             myStream.setCepEvents(this.cepEvents);
-        }else{
+        } else {
             logger.info("Check Stream: Stream is not a StreamingClusteringStream");
         }
 
@@ -122,9 +120,8 @@ public class ClassTask implements Task, Configurable {
             logger.debug("Successfully initializing SAMOA topology with name {}", evaluationNameOption.getValue());
         }
 
-        // instantiate PrequentialSourceProcessor and its output stream
-        // (sourcePiOutputStream)
-        preqSource = new ClassificationEntranceProcessor();
+
+        preqSource = new StreamingClassificationEntranceProcessor();
 
         preqSource.setStreamSource(streamTrain);
         builder.addEntranceProcessor(preqSource);
@@ -144,12 +141,13 @@ public class ClassTask implements Task, Configurable {
         logger.info("Successfully instantiating Classifier");
 
         PerformanceEvaluator evaluatorOptionValue = this.evaluatorOption.getValue();
-        if (!ClassTask.isLearnerAndEvaluatorCompatible(classifier, evaluatorOptionValue)) {
+        if (!StreamingClassificationTask.isLearnerAndEvaluatorCompatible(classifier, evaluatorOptionValue)) {
             evaluatorOptionValue = getDefaultPerformanceEvaluatorForLearner(classifier);
         }
-        evaluator = new ClassificationEvaluationProcessor.Builder(evaluatorOptionValue)
+        evaluator = new StreamingClassificationEvaluationProcessor.Builder(evaluatorOptionValue)
                 .samplingFrequency(sampleFrequencyOption.getValue()).dumpFile(dumpFileOption.getFile()).build();
 
+        evaluator.setSamoaClassifiers(classifiers);
         builder.addProcessor(evaluator);
         for (Stream evaluatorPiInputStream : classifier.getResultStreams()) {
             builder.connectInputShuffleStream(evaluatorPiInputStream, evaluator);
@@ -195,6 +193,11 @@ public class ClassTask implements Task, Configurable {
 
     public void setCepEvents(ConcurrentLinkedQueue<double[]> cepEvents) {
         this.cepEvents = cepEvents;
+    }
+
+    public void setSamoaClassifiers(ConcurrentLinkedQueue<Vector> classifiers) {
+        this.classifiers = classifiers;
+
     }
 
     public void setNumClasses(int numClasses) {
