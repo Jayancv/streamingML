@@ -141,7 +141,7 @@ public class StreamingClassificationEvaluationProcessor implements Processor {
             logger.info(e.getMessage());
         }
         //  logger.debug("evaluator id = {}", Integer.valueOf(this.id));
-        logger.info("evaluator id = {}", Integer.valueOf(this.id));
+//        logger.info("evaluator id = {}", Integer.valueOf(this.id));
         //  logger.info(learningEvaluation.toString());
         if (this.immediateResultStream != null) {
             if (this.firstDump) {

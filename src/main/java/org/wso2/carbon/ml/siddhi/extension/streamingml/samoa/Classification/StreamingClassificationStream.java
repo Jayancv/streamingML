@@ -1,6 +1,7 @@
 package org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.Classification;
 
 import com.github.javacliparser.IntOption;
+import com.github.javacliparser.StringOption;
 import org.apache.samoa.instances.*;
 import org.apache.samoa.moa.core.DataPoint;
 import org.apache.samoa.moa.core.Example;
@@ -30,18 +31,33 @@ public class StreamingClassificationStream extends ClusteringStream {
     LinkedList<DataPoint> points = new LinkedList<DataPoint>();
     double[] values; //Cep Event
     private int numAttributes = 2;
-    private int numClasses =2;
+    private int numNorminals = 0;
+    private int numClasses = 2;
+
+    ArrayList<Integer> valsForNominals = new ArrayList<Integer>();
 
     public IntOption numClassesOption = new IntOption("numClasses", 'K',
             "The number of classes in the model.", 2, 2, Integer.MAX_VALUE);
     public IntOption numAttOption = new IntOption("numAttributes", 'A',
             "The number of classes in the model.", 2, 1, Integer.MAX_VALUE);
+    public IntOption numNominalsOption = new IntOption("numNominals", 'N', "The number of nominal attributes to generate.", 0, 0, 2147483647);
+    public IntOption numNumericsOption = new IntOption("numNumerics", 'u', "The number of numeric attributes to generate.", 1, 0, 2147483647);
+
+    public StringOption numValsPerNominalOption = new StringOption("numValsPerNominalOption", 'Z', "The number of values per nominal attributes", "null");
 
     @Override
     protected void prepareForUseImpl(TaskMonitor taskMonitor, ObjectRepository objectRepository) {
         taskMonitor.setCurrentActivity("Preparing random RBF...", -1.0);
+
+        this.numClasses = numClassesOption.getValue();
         this.numAttributes = numAttOption.getValue();
-        this.numClasses=numClassesOption.getValue();
+        this.numNorminals = numNominalsOption.getValue();
+        if (numNorminals != 0) {
+            String[] valsForNominal = numValsPerNominalOption.getValue().split(",");
+            for (String i : valsForNominal) {
+                valsForNominals.add(Integer.parseInt(i));
+            }
+        }
 
         logger.info("Number of Attributes in the Stream : " + this.numAttributes);
         generateHeader();
@@ -55,8 +71,14 @@ public class StreamingClassificationStream extends ClusteringStream {
 
     private void generateHeader() {
         ArrayList<Attribute> attributes = new ArrayList<Attribute>();
-        for (int i = 0; i < numAttributes-1; i++) {
-            attributes.add(new Attribute("att" + (i + 1)));
+        ArrayList<String> nominalAttValls = new ArrayList<>();
+        for (int i = 0; i < numAttributes - 1 - numNominalsOption.getValue(); i++) {
+            attributes.add(new Attribute("numeric" + (i + 1)));
+        }
+
+
+        for (int i = 0; i < this.numNominalsOption.getValue(); ++i) {
+            attributes.add(new Attribute("nominal" + (i + 1), getvals(i)));
         }
 
         ArrayList<String> classLabels = new ArrayList<String>();
@@ -67,6 +89,17 @@ public class StreamingClassificationStream extends ClusteringStream {
         attributes.add(new Attribute("class", classLabels));
         streamHeader = new InstancesHeader(new Instances(getCLICreationString(InstanceStream.class), attributes, 0));
         streamHeader.setClassIndex(streamHeader.numAttributes() - 1);
+    }
+
+    private ArrayList<String> getvals(int count) {
+        ArrayList<String> nominalAttValls = new ArrayList<>();
+
+        for (int i = 0; i < valsForNominals.get(count); ++i) {
+            nominalAttValls.add("value" + (i + 1));
+        }
+
+
+        return nominalAttValls;
     }
 
     @Override

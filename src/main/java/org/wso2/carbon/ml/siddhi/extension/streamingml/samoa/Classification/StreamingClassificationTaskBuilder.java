@@ -30,30 +30,35 @@ public class StreamingClassificationTaskBuilder {
 
     public ConcurrentLinkedQueue<double[]> cepEvents;
     public ConcurrentLinkedQueue<Vector> classifiers;
-    public int numClasses = 4;
-    public int maxInstances = 100000;
-    public int numAttr = 2;
-    public int batchSize = 1000;
 
-    public StreamingClassificationTaskBuilder(int numClasses, ConcurrentLinkedQueue<double[]> cepEvents, ConcurrentLinkedQueue<Vector> classifiers, int numAtts, int maxInstance, int batchSize) {
+    public int maxInstances = 100000;
+    public int batchSize = 1000;
+    public int numClasses = 4;
+    public int numAttr = 2;
+    public int numNominalAtt=0;
+
+
+    public StreamingClassificationTaskBuilder( int maxInstance, int batchSize,int numClasses, int numAtts,int numNominals, ConcurrentLinkedQueue<double[]> cepEvents, ConcurrentLinkedQueue<Vector> classifiers) {
 
         logger.info("Streaming  StreamingClassification TaskBuilder");
         this.numClasses = numClasses;
         this.cepEvents = cepEvents;
         this.maxInstances = maxInstance;
         this.numAttr = numAtts;
+        this.numNominalAtt=numNominals;
         this.batchSize = batchSize;
         this.classifiers = classifiers;
 
     }
 
-    public void initTask(int numAttributes, int numClasses, int maxInstances, int batchSize) {
+    public void initTask(int maxInstances, int batchSize, int numClasses, int numAttributes, int numNominals ,String str) {
         String query = "";
         //  query = "org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.Classification.StreamingClassificationTask -f 1000 -i 1000000 -s (org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.Classification.StreamingClassificationStream -K " + numAttributes + "  ) -l (org.apache.samoa.learners.classifiers.SingleClassifier -l (org.apache.samoa.learners.classifiers.SimpleClassifierAdapter -l (org.apache.samoa.moa.classifiers.functions.MajorityClass)))";
         //query = "org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.Classification.StreamingClassificationTask -f 1000 -i 1000000 -s (org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.Classification.StreamingClassificationStream -K " + numAttributes + " ) -l (org.apache.samoa.learners.classifiers.ensemble.Bagging -l (org.apache.samoa.learners.classifiers.trees.VerticalHoeffdingTree))";
       /////////////////////////////////////////////   query = "org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.Classification.StreamingClassificationTask -f 1000 -i 1000000 -s (org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.Classification.StreamingClassificationStream  -K " + numAttributes + " ) -l (org.apache.samoa.learners.classifiers.SingleClassifier -l (org.apache.samoa.learners.classifiers.SimpleClassifierAdapter -l (org.apache.samoa.learners.classifiers.trees.VerticalHoeffdingTree)))";
-       query = "org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.Classification.StreamingClassificationTask -f " + batchSize + " -i " + maxInstances + " -s (org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.Classification.StreamingClassificationStream -K " + numClasses + " -A "+numAttributes+" ) -l (org.apache.samoa.learners.classifiers.trees.VerticalHoeffdingTree -p 1)";
+       query = "org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.Classification.StreamingClassificationTask -f " + batchSize + " -i " + maxInstances + " -s (org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.Classification.StreamingClassificationStream -K " + numClasses + " -A "+numAttributes+" -N "+numNominals+" -Z "+str+" ) -l (org.apache.samoa.learners.classifiers.trees.VerticalHoeffdingTree -p 1)";
        //query = "org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.Classification.StreamingClassificationTask -f 1000 -i 1000000 -s (org.apache.samoa.streams.generators.RandomTreeGenerator ) -l (org.apache.samoa.learners.classifiers.trees.VerticalHoeffdingTree)";
+        //2,2,2,2,2,2,2,2,2,2,2,2,2,2,3,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,3
 
         logger.info("QUERY: " + query);
         String args[] = {query};

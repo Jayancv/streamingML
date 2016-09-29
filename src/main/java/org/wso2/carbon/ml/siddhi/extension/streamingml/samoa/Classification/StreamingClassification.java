@@ -2,6 +2,8 @@ package org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.Classification;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import scala.util.parsing.combinator.testing.Str;
+
 import java.util.List;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -12,11 +14,13 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class StreamingClassification extends Thread {
 
     private int maxInstance = 100000;
-    private int step = 1;
+    private int batchSize = 500;            //Output display interval
     private int numClasses = 2;
     private int numAttributes = 0;
-    private int batchSize = 500;            //Output display interval
+    private int numNominals= 0;
+    private String nominalAttVals="";
     public int numEventsReceived = 0;
+
     private List<String> eventsMem = null;
 
     private boolean isBuiltModel;
@@ -33,12 +37,14 @@ public class StreamingClassification extends Thread {
     private static final Logger logger = LoggerFactory.getLogger(StreamingClassification.class);
 
 
-    public StreamingClassification(int maxInstance, int batchSize, int classes, int paraCount) {
+    public StreamingClassification(int maxInstance, int batchSize, int classes, int paraCount, int nominals ,String str) {
 
         this.maxInstance = maxInstance;
         this.numClasses = classes;
         this.numAttributes = paraCount;
+        this.numNominals= nominals;
         this.batchSize = batchSize;
+        this.nominalAttVals=str;
 
         this.isBuiltModel = false;
         type = MODEL_TYPE.BATCH_PROCESS;
@@ -46,7 +52,7 @@ public class StreamingClassification extends Thread {
         this.cepEvents = new ConcurrentLinkedQueue<double[]>();
         this.samoaClassifiers = new ConcurrentLinkedQueue<Vector>();
         try {
-            this.classificationTask = new StreamingClassificationTaskBuilder(this.numClasses, this.cepEvents, this.samoaClassifiers, this.numAttributes, this.maxInstance, this.batchSize);
+            this.classificationTask = new StreamingClassificationTaskBuilder(this.maxInstance, this.batchSize,this.numClasses, this.numAttributes, this.numNominals,  this.cepEvents, this.samoaClassifiers);
         } catch (Exception e) {
             System.out.println(e.toString());
         }
@@ -55,7 +61,7 @@ public class StreamingClassification extends Thread {
     }
 
     public void run() {
-        classificationTask.initTask(numAttributes, numClasses, maxInstance, batchSize);
+        classificationTask.initTask(maxInstance, batchSize , numClasses,numAttributes ,numNominals, nominalAttVals);
 
     }
 
