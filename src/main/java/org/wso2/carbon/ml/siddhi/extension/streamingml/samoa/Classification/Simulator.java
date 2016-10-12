@@ -12,6 +12,12 @@ import java.util.Scanner;
 
 /**
  * Created by wso2123 on 9/2/16.
+ * <p>
+ * <p>
+ * CEP Query
+ * from inputStream#streamingml:streamclassification(maxInstance, displayInterval, numberOfClasses,NumberOfAllAttributes,NumberOfNominalAttributesWithoutClass,"numberOfValuesPerEachNominalAttribute", attribute_0, attribute_1 ,...........)
+ * select *
+ * insert into outputStream
  */
 public class Simulator {
     private static final Logger logger = LoggerFactory.getLogger(Simulator.class);
@@ -21,7 +27,7 @@ public class Simulator {
     public static void main(String[] args) {
         System.out.println("Starts");
         try {
-            File f = new File("test1.csv");
+            File f = new File("iris.csv");
             FileReader fr = new FileReader(f);
             BufferedReader br = new BufferedReader(fr);
             scn = new Scanner(br);
@@ -31,13 +37,14 @@ public class Simulator {
         }
         int learnType = 0;
         int maxinstance = 100000;
-        int batchSize = 1000;
-        int numClasses = 4;                    //Number of classes
-        int paramCount = 19;                    //Number of all attributes with numeric,nominal and class
-        int nominalOption =15 ;                 //Number of nominal attributes without class attribute
-        String nominalAttributeValues = "2,2,2,2,2,2,2,2,2,2,2,2,2,2,3,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,3";    //A string that contain number of values that each nominal attribute has
-
-        StreamingClassification streamingClassification = new StreamingClassification(maxinstance, batchSize, numClasses, paramCount, nominalOption,nominalAttributeValues);
+        int batchSize = 1000;                  //Display interval
+        int numClasses = 3;                    //Number of classes
+        int paramCount = 5;                    //Number of all attributes with numeric,nominal and class
+        int nominalOption = 0;                 //Number of nominal attributes without class attribute
+        String nominalAttributeValues = "  ";
+        int paralesum = 1;
+        int bagging = 0;
+        StreamingClassification streamingClassification = new StreamingClassification(maxinstance, batchSize, numClasses, paramCount, nominalOption, nominalAttributeValues, paralesum, bagging);
 
         new Thread(streamingClassification).start();
 
@@ -65,23 +72,23 @@ public class Simulator {
                     classes.add(classValue);
                     cepEvent[paramCount - 1] = classes.indexOf(classValue);
                 }
-                int j =0;
+                int j = 0;
 
                 for (int i = 0; i < paramCount - 1; i++) {
 
-                    if(i<paramCount-1-nominalOption) {
+                    if (i < paramCount - 1 - nominalOption) {
                         cepEvent[i] = Double.parseDouble(event[i]);
-                    }else{
-                        String v= event[i];
+                    } else {
+                        String v = event[i];
                         try {
                             if (!nominals.get(j).contains(event[i])) {
                                 nominals.get(j).add(v);
                             }
-                        }catch (IndexOutOfBoundsException e){
+                        } catch (IndexOutOfBoundsException e) {
                             nominals.add(new ArrayList<String>());
                             nominals.get(j).add(v);
                         }
-                        cepEvent[i]=(nominals.get(j).indexOf(event[i]));
+                        cepEvent[i] = (nominals.get(j).indexOf(event[i]));
                         j++;
                     }
 
@@ -96,6 +103,8 @@ public class Simulator {
 //                        System.out.println( outputData[i]);
 //                    }
 //                }
+            } else {
+                break;
             }
 
 

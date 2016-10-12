@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import scala.util.parsing.combinator.testing.Str;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -18,6 +19,8 @@ public class StreamingClassification extends Thread {
     private int numClasses = 2;
     private int numAttributes = 0;
     private int numNominals= 0;
+    private int paralle=1;
+    private int bagging=1;
     private String nominalAttVals="";
     public int numEventsReceived = 0;
 
@@ -37,7 +40,7 @@ public class StreamingClassification extends Thread {
     private static final Logger logger = LoggerFactory.getLogger(StreamingClassification.class);
 
 
-    public StreamingClassification(int maxInstance, int batchSize, int classes, int paraCount, int nominals ,String str) {
+    public StreamingClassification(int maxInstance, int batchSize, int classes, int paraCount, int nominals ,String str, int par,int bagging) {
 
         this.maxInstance = maxInstance;
         this.numClasses = classes;
@@ -45,6 +48,8 @@ public class StreamingClassification extends Thread {
         this.numNominals= nominals;
         this.batchSize = batchSize;
         this.nominalAttVals=str;
+        this.paralle=par;
+        this.bagging=bagging;
 
         this.isBuiltModel = false;
         type = MODEL_TYPE.BATCH_PROCESS;
@@ -52,7 +57,7 @@ public class StreamingClassification extends Thread {
         this.cepEvents = new ConcurrentLinkedQueue<double[]>();
         this.samoaClassifiers = new ConcurrentLinkedQueue<Vector>();
         try {
-            this.classificationTask = new StreamingClassificationTaskBuilder(this.maxInstance, this.batchSize,this.numClasses, this.numAttributes, this.numNominals,  this.cepEvents, this.samoaClassifiers);
+            this.classificationTask = new StreamingClassificationTaskBuilder(this.maxInstance, this.batchSize,this.numClasses, this.numAttributes, this.numNominals,  this.cepEvents, this.samoaClassifiers,this.paralle,this.bagging);
         } catch (Exception e) {
             System.out.println(e.toString());
         }
@@ -61,7 +66,7 @@ public class StreamingClassification extends Thread {
     }
 
     public void run() {
-        classificationTask.initTask(maxInstance, batchSize , numClasses,numAttributes ,numNominals, nominalAttVals);
+        classificationTask.initTask(maxInstance, batchSize , numClasses,numAttributes ,numNominals, nominalAttVals,paralle,bagging);
 
     }
 
@@ -69,20 +74,54 @@ public class StreamingClassification extends Thread {
         numEventsReceived++;
         //logger.info("CEP Event Received : "+numEventsReceived);
         cepEvents.add(eventData);
+        int numObjects= 4+(numClasses*4);
         Object[] output;
+
         if (!samoaClassifiers.isEmpty()) {
 //            logger.info("Update the Model");
-            output = new Object[4];
+            String str="";
+            output = new Object[8];
             output[0] = 0.0;
             Vector classifiers = samoaClassifiers.poll();
+            int l=0;
+            for (int i = 0; i < 8; i++) {
 
-            for (int i = 0; i < 4; i++) {
-                output[i] = classifiers.get(i + 1);
-                System.out.println(classifiers.get(i + 1));
+                if(i<4){
+                    output[i] = classifiers.get(l+1);
+                    String inter= classifiers.get(l+1).toString();
+                    String sss= inter.substring(inter.lastIndexOf("=") + 1);
+                    String ww=String.valueOf(sss).replace(",", "");
+                    str= str+"," + ww;
+
+                    //System.out.println(classifiers.get(l + 1));
+                    l++;
+                }
+                else {
+                    String[] o = new String[numClasses];
+                    for(int j=0;j<numClasses;j++){
+                        o[j] = classifiers.get(l+1).toString();
+
+                        String inter= classifiers.get(l+1).toString();
+                        String sss= inter.substring(inter.lastIndexOf("=") + 1);
+                        String ww=String.valueOf(sss).replace(",", "");
+                        str= str+"," + ww;
+
+                        l++;
+
+                    }
+                    String b =Arrays.toString(o);
+                    output[i] =b.toString();
+
+
+                    //System.out.println(b);
+                }
+
             }
+            System.out.println(str.substring(2));
         } else {
             output = null;
         }
+
         return output;
     }
 

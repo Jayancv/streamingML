@@ -143,7 +143,7 @@ public class StreamingClassificationEntranceProcessor implements EntranceProcess
     public ContentEvent nextEvent() {
         InstanceContentEvent contentEvent = null;
         if (hasReachedEndOfStream()) {
-            contentEvent = new InstanceContentEvent(-1, firstInstance, false, true);
+            contentEvent = new InstanceContentEvent(-1, firstInstance, true, true);
             contentEvent.setLast(true);
             // set finished status _after_ tagging last event
             System.out.println("Finish");

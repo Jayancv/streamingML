@@ -9,11 +9,7 @@ import java.util.Date;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import org.apache.samoa.evaluation.BasicClassificationPerformanceEvaluator;
-import org.apache.samoa.evaluation.BasicRegressionPerformanceEvaluator;
-import org.apache.samoa.evaluation.ClassificationPerformanceEvaluator;
-import org.apache.samoa.evaluation.PerformanceEvaluator;
-import org.apache.samoa.evaluation.RegressionPerformanceEvaluator;
+import org.apache.samoa.evaluation.*;
 import org.apache.samoa.learners.ClassificationLearner;
 import org.apache.samoa.learners.Learner;
 import org.apache.samoa.learners.RegressionLearner;
@@ -48,7 +44,7 @@ public class StreamingClassificationTask implements Task, Configurable {
 
     public ClassOption evaluatorOption = new ClassOption("evaluator", 'e',
             "StreamingClassification performance evaluation method.",
-            PerformanceEvaluator.class, BasicClassificationPerformanceEvaluator.class.getName());
+            PerformanceEvaluator.class, StreamingClassificationPerformanceEvaluator.class.getName());
 
     public IntOption instanceLimitOption = new IntOption("instanceLimit", 'i',
             "Maximum number of instances to test/train on  (-1 = no limit).", 1000000, -1,

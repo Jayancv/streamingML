@@ -31,6 +31,8 @@ public class StreamingClassificationWithSamoaStreamProcessor extends StreamProce
     private int numNominals = 0;
     private String nominalAttVals = "";
     private int paramPosition = 0;
+    private int parallelism=0;
+    private int numModelsBagging=0;
     private StreamingClassification streamingClassification = null;
 
     List<String> classes = new ArrayList<String>();           //values of class attribute
@@ -40,7 +42,7 @@ public class StreamingClassificationWithSamoaStreamProcessor extends StreamProce
     @Override
     protected List<Attribute> init(AbstractDefinition inputDefinition, ExpressionExecutor[] attributeExpressionExecutors, ExecutionPlanContext executionPlanContext) {
         paramCount = attributeExpressionLength;
-        int PARAM_WIDTH = 6;
+        int PARAM_WIDTH = 8;
 
         // Capture constant inputs
         if (attributeExpressionExecutors[0] instanceof ConstantExpressionExecutor) {
@@ -54,14 +56,16 @@ public class StreamingClassificationWithSamoaStreamProcessor extends StreamProce
                 paramCount = ((Integer) attributeExpressionExecutors[3].execute(null));
                 numNominals = ((Integer) attributeExpressionExecutors[4].execute(null));
                 nominalAttVals = ((String) attributeExpressionExecutors[5].execute(null));
+                parallelism = ((Integer) attributeExpressionExecutors[6].execute(null));
+                numModelsBagging = ((Integer) attributeExpressionExecutors[7].execute(null));
 
 
             } catch (ClassCastException c) {
                 throw new ExecutionPlanCreationException("should be of type int");
             }
         }
-        System.out.println("StreamingClassification  Parameters: " + " " + maxInstance + " " + " " + batchSize + "\n");
-        streamingClassification = new StreamingClassification(maxInstance, batchSize, numClasses, paramCount, numNominals, nominalAttVals);
+        System.out.println("StreamingClassification  Parameters: " + " Maximum instances = " + maxInstance + ", Batch size =  " + batchSize +" , Number of classes = "+numClasses+ "\n");
+        streamingClassification = new StreamingClassification(maxInstance, batchSize, numClasses, paramCount, numNominals, nominalAttVals,parallelism,numModelsBagging);
         try {
             Thread.sleep(1000);
         } catch (Exception e) {
@@ -69,13 +73,17 @@ public class StreamingClassificationWithSamoaStreamProcessor extends StreamProce
         }
         new Thread(streamingClassification).start();
 
-        // Add attributes for standard error and all beta values
+        // Add attributes
         String betaVal;
-        ArrayList<Attribute> attributes = new ArrayList<Attribute>(4);
+        ArrayList<Attribute> attributes = new ArrayList<Attribute>(8);
         attributes.add(new Attribute("numInstance", Attribute.Type.INT));
         attributes.add(new Attribute("correctness", Attribute.Type.DOUBLE));
         attributes.add(new Attribute("kappa", Attribute.Type.DOUBLE));
         attributes.add(new Attribute("tempKappa", Attribute.Type.DOUBLE));
+        attributes.add(new Attribute("support", Attribute.Type.STRING));
+        attributes.add(new Attribute("precision", Attribute.Type.STRING));
+        attributes.add(new Attribute("recall", Attribute.Type.STRING));
+        attributes.add(new Attribute("f1score", Attribute.Type.STRING));
 
 
         return attributes;
@@ -100,8 +108,6 @@ public class StreamingClassificationWithSamoaStreamProcessor extends StreamProce
 //                    value = eventData[i - paramPosition] = (Double) attributeExpressionExecutors[i].execute(complexEvent);
 //                    cepEvent[i - paramPosition] = (double) value;
 //                }
-
-
 
 
                 String classValue = (String) attributeExpressionExecutors[attributeExpressionLength - 1].execute(complexEvent).toString();
@@ -133,17 +139,8 @@ public class StreamingClassificationWithSamoaStreamProcessor extends StreamProce
                         j++;
                     }
                 }
-//                System.out.println("Event");
-//                for(int i=0;i<cepEvent.length;i++){
-//                    System.out.println(cepEvent[i]);
-//                }
-
-                //Object[] outputData = regressionCalculator.calculateLinearRegression(inputData);
                 Object[] outputData = null;
 
-                // Object[] outputData= streamingLinearRegression.addToRDD(eventData);
-                //Calling the regress function
-                // System.out.println("Process");
                 outputData = streamingClassification.classify(cepEvent);
 
                 // Skip processing if user has specified calculation interval

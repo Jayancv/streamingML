@@ -58,7 +58,7 @@ public class StreamingClassificationEvaluationProcessor implements Processor {
             long sampleEnd = System.nanoTime();
             long sampleDuration = TimeUnit.SECONDS.convert(sampleEnd - this.sampleStart, TimeUnit.NANOSECONDS);
             this.sampleStart = sampleEnd;
-           logger.info("{} seconds for {} instances", Long.valueOf(sampleDuration), Integer.valueOf(this.samplingFrequency));
+//           logger.info("{} seconds for {} instances", Long.valueOf(sampleDuration), Integer.valueOf(this.samplingFrequency));
             this.addMeasurement();
         }
 
@@ -142,7 +142,7 @@ public class StreamingClassificationEvaluationProcessor implements Processor {
         }
         //  logger.debug("evaluator id = {}", Integer.valueOf(this.id));
 //        logger.info("evaluator id = {}", Integer.valueOf(this.id));
-        //  logger.info(learningEvaluation.toString());
+        //logger.info(learningEvaluation.toString());
         if (this.immediateResultStream != null) {
             if (this.firstDump) {
                 this.immediateResultStream.println(this.learningCurve.headerToString());
