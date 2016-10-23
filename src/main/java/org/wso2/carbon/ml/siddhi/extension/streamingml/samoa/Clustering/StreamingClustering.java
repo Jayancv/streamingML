@@ -12,7 +12,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * Created by mahesh on 6/4/16.
  */
 public class StreamingClustering extends Thread{
-    private int learnType;
+   // private int learnType;
     private int paramCount = 0;
     private int numAttributes=0;// Number of x variables +1
     private int batchSize = 10;                                 // Maximum # of events, used for regression calculation
@@ -36,8 +36,8 @@ public class StreamingClustering extends Thread{
     public StreamingClusteringTaskBuilder clusteringTask;
     private static final Logger logger = LoggerFactory.getLogger(StreamingClustering.class);
 
-    public StreamingClustering(int learnType,int paramCount, int batchSize, double ci, int numClusters,int numIteration, double alpha){
-        this.learnType = learnType;
+    public StreamingClustering(int paramCount, int batchSize, double ci, int numClusters,int numIteration, double alpha){
+        //this.learnType = learnType;
         this.paramCount =paramCount;
         this.numAttributes = paramCount;
         this.batchSize = batchSize;

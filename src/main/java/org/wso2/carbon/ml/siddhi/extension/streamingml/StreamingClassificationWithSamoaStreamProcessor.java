@@ -31,8 +31,8 @@ public class StreamingClassificationWithSamoaStreamProcessor extends StreamProce
     private int numNominals = 0;
     private String nominalAttVals = "";
     private int paramPosition = 0;
-    private int parallelism=0;
-    private int numModelsBagging=0;
+    private int parallelism = 0;
+    private int numModelsBagging = 0;
     private StreamingClassification streamingClassification = null;
 
     List<String> classes = new ArrayList<String>();           //values of class attribute
@@ -64,8 +64,8 @@ public class StreamingClassificationWithSamoaStreamProcessor extends StreamProce
                 throw new ExecutionPlanCreationException("should be of type int");
             }
         }
-        System.out.println("StreamingClassification  Parameters: " + " Maximum instances = " + maxInstance + ", Batch size =  " + batchSize +" , Number of classes = "+numClasses+ "\n");
-        streamingClassification = new StreamingClassification(maxInstance, batchSize, numClasses, paramCount, numNominals, nominalAttVals,parallelism,numModelsBagging);
+        System.out.println("StreamingClassification  Parameters: " + " Maximum instances = " + maxInstance + ", Batch size =  " + batchSize + " , Number of classes = " + numClasses + "\n");
+        streamingClassification = new StreamingClassification(maxInstance, batchSize, numClasses, paramCount, numNominals, nominalAttVals, parallelism, numModelsBagging);
         try {
             Thread.sleep(1000);
         } catch (Exception e) {
@@ -75,7 +75,7 @@ public class StreamingClassificationWithSamoaStreamProcessor extends StreamProce
 
         // Add attributes
         String betaVal;
-        ArrayList<Attribute> attributes = new ArrayList<Attribute>(8);
+        ArrayList<Attribute> attributes = new ArrayList<Attribute>(9);
         attributes.add(new Attribute("numInstance", Attribute.Type.INT));
         attributes.add(new Attribute("correctness", Attribute.Type.DOUBLE));
         attributes.add(new Attribute("kappa", Attribute.Type.DOUBLE));
@@ -84,6 +84,7 @@ public class StreamingClassificationWithSamoaStreamProcessor extends StreamProce
         attributes.add(new Attribute("precision", Attribute.Type.STRING));
         attributes.add(new Attribute("recall", Attribute.Type.STRING));
         attributes.add(new Attribute("f1score", Attribute.Type.STRING));
+        attributes.add(new Attribute("prediction", Attribute.Type.STRING));
 
 
         return attributes;
@@ -109,21 +110,24 @@ public class StreamingClassificationWithSamoaStreamProcessor extends StreamProce
 //                    cepEvent[i - paramPosition] = (double) value;
 //                }
 
-
-                String classValue = (String) attributeExpressionExecutors[attributeExpressionLength - 1].execute(complexEvent).toString();
-                if (classes.contains(classValue)) {
-                    cepEvent[paramCount - 1] = classes.indexOf(classValue);
-                } else {
-                    classes.add(classValue);
-                    cepEvent[paramCount - 1] = classes.indexOf(classValue);
+                if (paramCount==attributeExpressionLength-9) {
+                    String classValue = (String) attributeExpressionExecutors[attributeExpressionLength - 1].execute(complexEvent).toString();
+                    if (classes.contains(classValue)) {
+                        cepEvent[paramCount - 1] = classes.indexOf(classValue);
+                    } else {
+                        classes.add(classValue);
+                        cepEvent[paramCount - 1] = classes.indexOf(classValue);
+                    }
+                }else{
+                    cepEvent[paramCount - 1] = -1;
                 }
                 int j = 0;
 
                 for (int i = 0; i < paramCount - 1; i++) {
-                    evt =attributeExpressionExecutors[i+paramPosition].execute(complexEvent);
-                    inputData[i]=evt;
+                    evt = attributeExpressionExecutors[i + paramPosition].execute(complexEvent);
+                    inputData[i] = evt;
                     if (i < paramCount - 1 - numNominals) {
-                        value=eventData[i]=(Double)evt;
+                        value = eventData[i] = (Double) evt;
                         cepEvent[i] = value;
                     } else {
                         String v = (String) evt;

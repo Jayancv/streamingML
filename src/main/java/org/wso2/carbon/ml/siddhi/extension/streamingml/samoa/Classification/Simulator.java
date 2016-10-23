@@ -19,6 +19,8 @@ import java.util.Scanner;
  * select *
  * insert into outputStream
  */
+
+
 public class Simulator {
     private static final Logger logger = LoggerFactory.getLogger(Simulator.class);
 
@@ -37,13 +39,14 @@ public class Simulator {
         }
         int learnType = 0;
         int maxinstance = 100000;
-        int batchSize = 1000;                  //Display interval
+        int batchSize = 2;                     //Display interval
         int numClasses = 3;                    //Number of classes
         int paramCount = 5;                    //Number of all attributes with numeric,nominal and class
         int nominalOption = 0;                 //Number of nominal attributes without class attribute
         String nominalAttributeValues = "  ";
         int paralesum = 1;
         int bagging = 0;
+        int numInstant = 0;
         StreamingClassification streamingClassification = new StreamingClassification(maxinstance, batchSize, numClasses, paramCount, nominalOption, nominalAttributeValues, paralesum, bagging);
 
         new Thread(streamingClassification).start();
@@ -61,17 +64,22 @@ public class Simulator {
             Object[] outputData = null;
 
             if (scn.hasNext()) {
+                numInstant++;
                 String eventStr = scn.nextLine();
                 String[] event = eventStr.split(",");
                 int k = numClasses - 1;
-                String classValue = event[(paramCount - 1)];
+//                if (numInstant) {
+                    String classValue = event[(paramCount - 1)];
 
-                if (classes.contains(classValue)) {
-                    cepEvent[paramCount - 1] = classes.indexOf(classValue);
-                } else {
-                    classes.add(classValue);
-                    cepEvent[paramCount - 1] = classes.indexOf(classValue);
-                }
+                    if (classes.contains(classValue)) {
+                        cepEvent[paramCount - 1] = classes.indexOf(classValue);
+                    } else {
+                        classes.add(classValue);
+                        cepEvent[paramCount - 1] = classes.indexOf(classValue);
+                    }
+//                } else {
+//                    cepEvent[paramCount - 1] = 6;
+//                }
                 int j = 0;
 
                 for (int i = 0; i < paramCount - 1; i++) {

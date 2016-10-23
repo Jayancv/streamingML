@@ -3,10 +3,12 @@ package org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.Classification;
 import org.apache.samoa.core.ContentEvent;
 import org.apache.samoa.core.Processor;
 import org.apache.samoa.evaluation.PerformanceEvaluator;
+import org.apache.samoa.instances.Utils;
 import org.apache.samoa.learners.ResultContentEvent;
 import org.apache.samoa.moa.core.Measurement;
 import org.apache.samoa.moa.evaluation.LearningCurve;
 import org.apache.samoa.moa.evaluation.LearningEvaluation;
+import org.apache.spark.sql.catalyst.expressions.In;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,6 +16,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -38,6 +41,7 @@ public class StreamingClassificationEvaluationProcessor implements Processor {
     private LearningCurve learningCurve;
     private int id;
     public ConcurrentLinkedQueue<Vector> classifiers;
+    private ArrayList<Integer> predictions= new ArrayList<Integer>();
 
     private StreamingClassificationEvaluationProcessor(StreamingClassificationEvaluationProcessor.Builder builder) {
 
@@ -68,6 +72,8 @@ public class StreamingClassificationEvaluationProcessor implements Processor {
         } else {
             this.evaluator.addResult(result.getInstance(), result.getClassVotes());
             ++this.totalCount;
+            int pre=Utils.maxIndex(result.getClassVotes());
+            predictions.add(pre);
             if (this.totalCount == 1L) {
                 this.sampleStart = System.nanoTime();
                 this.experimentStart = this.sampleStart;
@@ -132,6 +138,8 @@ public class StreamingClassificationEvaluationProcessor implements Processor {
         Vector measurements = new Vector();
         measurements.add(new Measurement("evaluation instances", (double) this.totalCount));
         Collections.addAll(measurements, this.evaluator.getPerformanceMeasurements());
+        ///Collections.addAll(measurements,predictions);
+       // predictions.clear();
         Measurement[] finalMeasurements = (Measurement[]) measurements.toArray(new Measurement[measurements.size()]);
         LearningEvaluation learningEvaluation = new LearningEvaluation(finalMeasurements);
         this.learningCurve.insertEntry(learningEvaluation);
@@ -146,12 +154,12 @@ public class StreamingClassificationEvaluationProcessor implements Processor {
         if (this.immediateResultStream != null) {
             if (this.firstDump) {
                 this.immediateResultStream.println(this.learningCurve.headerToString());
-                logger.info("checked");
+              //  logger.info("checked");
                 this.firstDump = false;
             }
 
             this.immediateResultStream.println(this.learningCurve.entryToString(this.learningCurve.numEntries() - 1));
-            logger.info("checked");
+           // logger.info("checked");
             this.immediateResultStream.flush();
         }
 

@@ -6,6 +6,7 @@ import org.apache.samoa.instances.Utils;
 import org.apache.samoa.moa.AbstractMOAObject;
 import org.apache.samoa.moa.core.Measurement;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Vector;
 
@@ -27,6 +28,8 @@ public class StreamingClassificationPerformanceEvaluator extends AbstractMOAObje
     protected double[] rowKappa;
     private double weightCorrectNoChangeClassifier;
     private int lastSeenClass;
+
+    private ArrayList<Double> predictionsarray = new ArrayList<Double>();
 
     public StreamingClassificationPerformanceEvaluator() {
     }
@@ -69,6 +72,8 @@ public class StreamingClassificationPerformanceEvaluator extends AbstractMOAObje
         }
         double weight = inst.weight();
         int trueClass = (int) inst.classValue();
+        //  Measurement aaa= new Measurement("predictions", Utils.maxIndex(classVotes), 10);
+         predictionsarray.add((double) Utils.maxIndex(classVotes));
 
         if (weight > 0.0D) {
             if (this.weightObserved == 0.0D) {
@@ -78,7 +83,7 @@ public class StreamingClassificationPerformanceEvaluator extends AbstractMOAObje
             this.weightObserved += weight;
             int predictedClass = Utils.maxIndex(classVotes);
 
-            System.out.println(trueClass +" "+predictedClass);
+            //  System.out.println(trueClass +" "+predictedClass);
 
             if (predictedClass == trueClass) {
                 this.weightCorrect += weight;
@@ -101,6 +106,7 @@ public class StreamingClassificationPerformanceEvaluator extends AbstractMOAObje
 
         ++this.support[trueClass];
         int predictedClass = Utils.maxIndex(classVotes);
+
         int i;
         if (predictedClass == trueClass) {
             ++this.truePos[trueClass];
@@ -134,6 +140,9 @@ public class StreamingClassificationPerformanceEvaluator extends AbstractMOAObje
         Collections.addAll(measurements, this.getPrecisionMeasurements());
         Collections.addAll(measurements, this.getRecallMeasurements());
         Collections.addAll(measurements, this.getF1Measurements());
+        Collections.addAll(measurements,this.getPredictions());
+        //Collections.addAll(predictionsarray);
+        predictionsarray.clear();
 
         return (Measurement[]) measurements.toArray(new Measurement[measurements.size()]);
     }
@@ -179,6 +188,15 @@ public class StreamingClassificationPerformanceEvaluator extends AbstractMOAObje
             measurements[i] = new Measurement(ml, this.getF1Score(i), 10);
         }
 
+        return measurements;
+    }
+
+    private Measurement[] getPredictions() {
+        Measurement[] measurements = new Measurement[predictionsarray.size()];
+        Object[] pre = predictionsarray.toArray();
+
+        for (int i=0;i<predictionsarray.size();i++)
+            measurements[i] = new Measurement("prediction ", (Double) pre[i],10);
         return measurements;
     }
 

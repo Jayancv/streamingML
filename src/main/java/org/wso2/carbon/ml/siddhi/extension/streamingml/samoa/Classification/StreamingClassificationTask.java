@@ -100,7 +100,7 @@ public class StreamingClassificationTask implements Task, Configurable {
         streamTrain = this.streamTrainOption.getValue();
 
         if (streamTrain instanceof StreamingClassificationStream) {
-            logger.info("Stream is a StreamingClusteringStream");
+            logger.info("Stream is a StreamingClassificationStream");
             StreamingClassificationStream myStream = (StreamingClassificationStream) streamTrain;
             myStream.setCepEvents(this.cepEvents);
         } else {

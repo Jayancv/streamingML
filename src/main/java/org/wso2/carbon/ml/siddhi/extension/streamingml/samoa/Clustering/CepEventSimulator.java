@@ -27,7 +27,7 @@ public class CepEventSimulator {
         }catch (Exception e){
             logger.info(e.toString());
         }
-        int learnType = 0;
+        //int learnType = 0;
         int paramCount = 5;
         int batchSize = 1000;
         double ci = 0.95;
@@ -36,7 +36,7 @@ public class CepEventSimulator {
         int alpha = 1;
         int numInsancesSent=0;
         int numAttribute = 5;
-        StreamingClustering streamingClusteringWithSamoa = new StreamingClustering(learnType,paramCount, batchSize, ci,numClusters, numIterations,alpha);
+        StreamingClustering streamingClusteringWithSamoa = new StreamingClustering(paramCount, batchSize, ci,numClusters, numIterations,alpha);
 
         new Thread(streamingClusteringWithSamoa).start();
 

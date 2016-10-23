@@ -143,6 +143,7 @@ public class StreamingClassificationEntranceProcessor implements EntranceProcess
     public ContentEvent nextEvent() {
         InstanceContentEvent contentEvent = null;
         if (hasReachedEndOfStream()) {
+
             contentEvent = new InstanceContentEvent(-1, firstInstance, true, true);
             contentEvent.setLast(true);
             // set finished status _after_ tagging last event
@@ -150,8 +151,14 @@ public class StreamingClassificationEntranceProcessor implements EntranceProcess
             finished = true;
         } else if (hasNext()) {
             numInstanceSent++;
-            contentEvent = new InstanceContentEvent(numInstanceSent, nextInstance(), true, true);
+            if (numInstanceSent<5) {
+                contentEvent = new InstanceContentEvent(numInstanceSent, nextInstance(), true, true);
+              //  logger.info("training");
+            } else {
+                contentEvent = new InstanceContentEvent(numInstanceSent, nextInstance(), false, true);
 
+               // logger.info("not training");
+            }
             // first call to this method will trigger the timer
             if (schedule == null && delay > 0) {
                 schedule = timer.scheduleWithFixedDelay(new DelayTimeoutHandler(this), delay, delay,

@@ -36,10 +36,8 @@ public class StreamingClassificationStream extends ClusteringStream {
 
     ArrayList<Integer> valsForNominals = new ArrayList<Integer>();
 
-    public IntOption numClassesOption = new IntOption("numClasses", 'K',
-            "The number of classes in the model.", 2, 2, Integer.MAX_VALUE);
-    public IntOption numAttOption = new IntOption("numAttributes", 'A',
-            "The number of classes in the model.", 2, 1, Integer.MAX_VALUE);
+    public IntOption numClassesOption = new IntOption("numClasses", 'K', "The number of classes in the model.", 2, 2, Integer.MAX_VALUE);
+    public IntOption numAttOption = new IntOption("numAttributes", 'A', "The number of classes in the model.", 2, 1, Integer.MAX_VALUE);
     public IntOption numNominalsOption = new IntOption("numNominals", 'N', "The number of nominal attributes to generate.", 0, 0, 2147483647);
     public IntOption numNumericsOption = new IntOption("numNumerics", 'u', "The number of numeric attributes to generate.", 1, 0, 2147483647);
 
@@ -145,7 +143,9 @@ public class StreamingClassificationStream extends ClusteringStream {
             System.arraycopy(values, 0, values_new, 0, values.length - 1);
             Instance inst = new DenseInstance(1.0, values_new);
             inst.setDataset(getHeader());
+
             inst.setClassValue(values[values.length - 1]);
+
             return new InstanceExample(inst);
         }
     }

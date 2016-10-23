@@ -18,18 +18,11 @@ public class StreamingClassification extends Thread {
     private int batchSize = 500;            //Output display interval
     private int numClasses = 2;
     private int numAttributes = 0;
-    private int numNominals= 0;
-    private int paralle=1;
-    private int bagging=1;
-    private String nominalAttVals="";
+    private int numNominals = 0;
+    private int paralle = 1;
+    private int bagging = 1;
+    private String nominalAttVals = "";
     public int numEventsReceived = 0;
-
-    private List<String> eventsMem = null;
-
-    private boolean isBuiltModel;
-    private MODEL_TYPE type;
-
-    public enum MODEL_TYPE {BATCH_PROCESS, MOVING_WINDOW, TIME_BASED}
 
 
     public ConcurrentLinkedQueue<double[]> cepEvents;
@@ -40,24 +33,21 @@ public class StreamingClassification extends Thread {
     private static final Logger logger = LoggerFactory.getLogger(StreamingClassification.class);
 
 
-    public StreamingClassification(int maxInstance, int batchSize, int classes, int paraCount, int nominals ,String str, int par,int bagging) {
+    public StreamingClassification(int maxInstance, int batchSize, int classes, int paraCount, int nominals, String str, int par, int bagging) {
 
         this.maxInstance = maxInstance;
         this.numClasses = classes;
         this.numAttributes = paraCount;
-        this.numNominals= nominals;
+        this.numNominals = nominals;
         this.batchSize = batchSize;
-        this.nominalAttVals=str;
-        this.paralle=par;
-        this.bagging=bagging;
-
-        this.isBuiltModel = false;
-        type = MODEL_TYPE.BATCH_PROCESS;
+        this.nominalAttVals = str;
+        this.paralle = par;
+        this.bagging = bagging;
 
         this.cepEvents = new ConcurrentLinkedQueue<double[]>();
         this.samoaClassifiers = new ConcurrentLinkedQueue<Vector>();
         try {
-            this.classificationTask = new StreamingClassificationTaskBuilder(this.maxInstance, this.batchSize,this.numClasses, this.numAttributes, this.numNominals,  this.cepEvents, this.samoaClassifiers,this.paralle,this.bagging);
+            this.classificationTask = new StreamingClassificationTaskBuilder(this.maxInstance, this.batchSize, this.numClasses, this.numAttributes, this.numNominals, this.cepEvents, this.samoaClassifiers, this.paralle, this.bagging);
         } catch (Exception e) {
             System.out.println(e.toString());
         }
@@ -66,7 +56,7 @@ public class StreamingClassification extends Thread {
     }
 
     public void run() {
-        classificationTask.initTask(maxInstance, batchSize , numClasses,numAttributes ,numNominals, nominalAttVals,paralle,bagging);
+        classificationTask.initTask(maxInstance, batchSize, numClasses, numAttributes, numNominals, nominalAttVals, paralle, bagging);
 
     }
 
@@ -74,46 +64,59 @@ public class StreamingClassification extends Thread {
         numEventsReceived++;
         //logger.info("CEP Event Received : "+numEventsReceived);
         cepEvents.add(eventData);
-        int numObjects= 4+(numClasses*4);
+        int numObjects = 4 + (numClasses * 4) + 1;
         Object[] output;
 
         if (!samoaClassifiers.isEmpty()) {
 //            logger.info("Update the Model");
-            String str="";
-            output = new Object[8];
+            String str = "";
+            output = new Object[9];
             output[0] = 0.0;
             Vector classifiers = samoaClassifiers.poll();
-            int l=0;
-            for (int i = 0; i < 8; i++) {
+            int l = 0;
+            for (int i = 0; i < 9; i++) {
 
-                if(i<4){
-                    output[i] = classifiers.get(l+1);
-                    String inter= classifiers.get(l+1).toString();
-                    String sss= inter.substring(inter.lastIndexOf("=") + 1);
-                    String ww=String.valueOf(sss).replace(",", "");
-                    str= str+"," + ww;
+                if (i < 4) {
+                    output[i] = classifiers.get(l + 1);
+                    String inter = classifiers.get(l + 1).toString();
+                    String sss = inter.substring(inter.lastIndexOf("=") + 1);
+                    String ww = String.valueOf(sss).replace(",", "");
+                    str = str + "," + ww;
 
-                    //System.out.println(classifiers.get(l + 1));
+                    //System.out.println(regressionData.get(l + 1));
                     l++;
-                }
-                else {
+                } else if (8 > i) {
                     String[] o = new String[numClasses];
-                    for(int j=0;j<numClasses;j++){
-                        o[j] = classifiers.get(l+1).toString();
+                    for (int j = 0; j < numClasses; j++) {
+                        o[j] = classifiers.get(l + 1).toString();
 
-                        String inter= classifiers.get(l+1).toString();
-                        String sss= inter.substring(inter.lastIndexOf("=") + 1);
-                        String ww=String.valueOf(sss).replace(",", "");
-                        str= str+"," + ww;
+                        String inter = classifiers.get(l + 1).toString();
+                        String sss = inter.substring(inter.lastIndexOf("=") + 1);
+                        String ww = String.valueOf(sss).replace(",", "");
+                        str = str + "," + ww;
 
                         l++;
 
                     }
-                    String b =Arrays.toString(o);
-                    output[i] =b.toString();
+                    String b = Arrays.toString(o);
+                    output[i] = b.toString();
 
 
                     //System.out.println(b);
+                } else {
+                    String[] o = new String[batchSize];
+                    for (int j = 0; j < batchSize; j++) {
+                        o[j] = classifiers.get(l + 1).toString();
+                        String inter = classifiers.get(l + 1).toString();
+                        String sss = inter.substring(inter.lastIndexOf("=") + 1);
+                        String ww = String.valueOf(sss).replace(",", "");
+                        str = str + "," + ww;
+
+                        l++;
+
+                    }
+                    String b = Arrays.toString(o);
+                    output[i] = b.toString();
                 }
 
             }

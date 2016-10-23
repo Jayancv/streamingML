@@ -2,8 +2,7 @@ package org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.Regression;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.Clustering.CepEventSimulator;
-import org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.Clustering.StreamingClustering;
+
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -14,7 +13,7 @@ import java.util.Scanner;
  * Created by wso2123 on 10/11/16.
  */
 public class RegressionSimulator {
-    private static final Logger logger = LoggerFactory.getLogger(CepEventSimulator.class);
+    private static final Logger logger = LoggerFactory.getLogger(RegressionSimulator.class);
 
     public static Scanner scn;
 
@@ -29,18 +28,16 @@ public class RegressionSimulator {
         } catch (Exception e) {
             logger.info(e.toString());
         }
-        int learnType = 0;
-        int paramCount = 5;
-        int batchSize = 1000;
-        double ci = 0.95;
-        int numClusters = 2;
-        int numIterations = 10;
-        int alpha = 1;
-        int numInsancesSent = 0;
-        int numAttribute = 5;
-        StreamingClustering streamingClusteringWithSamoa = new StreamingClustering(learnType, paramCount, batchSize, ci, numClusters, numIterations, alpha);
 
-        new Thread(streamingClusteringWithSamoa).start();
+         int maxInstance = 1000000;
+         int batchSize = 500;
+         int paramCount = 5;
+         int parallelism = 1;
+         int numModelsBagging = 0;
+
+        StreamingRegression streamingRegression = new StreamingRegression(maxInstance,paramCount, batchSize,parallelism,numModelsBagging );
+
+        new Thread(streamingRegression).start();
 
         try {
             Thread.sleep(1000);
@@ -66,15 +63,12 @@ public class RegressionSimulator {
                     cepEvent[i] = Double.parseDouble(event[i]);
 
                 }
-                outputData = streamingClusteringWithSamoa.cluster(cepEvent);
+                outputData = streamingRegression.regress(cepEvent);
 
                 if (outputData == null) {
                     //  System.out.println("null");
                 } else {
-                    System.out.println("Error: " + outputData[0]);
-                    for (int i = 0; i < numClusters; i++) {
-                        System.out.println("center " + i + ": " + outputData[i + 1]);
-                    }
+
                 }
             }
 
