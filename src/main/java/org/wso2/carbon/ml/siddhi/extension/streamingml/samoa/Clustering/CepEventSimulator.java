@@ -19,7 +19,7 @@ public class CepEventSimulator {
     public static void main(String[] args){
         System.out.println("Starts");
         try {
-            File f = new File("ccpp.csv");
+            File f = new File("3dNetwork.csv");
             FileReader fr = new FileReader(f);
             BufferedReader br = new BufferedReader(fr);
             scn = new Scanner(br);
@@ -28,10 +28,10 @@ public class CepEventSimulator {
             logger.info(e.toString());
         }
         //int learnType = 0;
-        int paramCount = 5;
-        int batchSize = 1000;
+        int paramCount = 4;
+        int batchSize =1000;
         double ci = 0.95;
-        int numClusters = 2;
+        int numClusters = 3;
         int numIterations = 10;
         int alpha = 1;
         int numInsancesSent=0;
@@ -65,15 +65,15 @@ public class CepEventSimulator {
 
                 }
                 outputData = streamingClusteringWithSamoa.cluster(cepEvent);
-
-                if (outputData == null) {
+//
+//                if (outputData == null) {
                     //  System.out.println("null");
-                } else {
-                    System.out.println("Error: " + outputData[0]);
-                    for (int i = 0; i < numClusters; i++) {
-                        System.out.println("center " + i + ": " + outputData[i + 1]);
-                    }
-                }
+//                } else {
+//                    System.out.println("Error: " + outputData[0]);
+//                    for (int i = 0; i < numClusters; i++) {
+//                        System.out.println("center " + i + ": " + outputData[i + 1]);
+//                    }
+//                }
             }
 
 

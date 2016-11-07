@@ -21,18 +21,8 @@ import java.util.concurrent.*;
 public class StreamingRegressionEntranceProcessor implements EntranceProcessor {
 
     private static final long serialVersionUID = 4169053337917578558L;
-
     private static final Logger logger = LoggerFactory.getLogger(StreamingRegressionEntranceProcessor.class);
 
-
-    private StreamSource streamSource;
-    private Instance firstInstance;
-    private boolean isInited = false;
-
-    private int numberInstances;
-    private int numInstanceSent = 0;
-
-    protected InstanceStream sourceStream;
 
     /*
      * ScheduledExecutorService to schedule sending events after each delay
@@ -42,43 +32,21 @@ public class StreamingRegressionEntranceProcessor implements EntranceProcessor {
     private transient ScheduledExecutorService timer;
     private transient ScheduledFuture<?> schedule = null;
     private int readyEventIndex = 1; // No waiting for the first event
-    private int delay = 0;
+    private int delay = 10000;
     private int batchSize = 1;
     private boolean finished = false;
+    private StreamSource streamSource;
+    private Instance firstInstance;
+    private boolean isInited = false;
 
-    String evalPoint;
-
-    public ConcurrentLinkedQueue<Vector> predictions;
-
-
-    public void setSamoaClassifiers(ConcurrentLinkedQueue<Vector> samoaPredictions) {
-        this.predictions = samoaPredictions;
-    }
-
-
-    @Override
-    public boolean process(ContentEvent event) {
-        // TODO: possible refactor of the super-interface implementation
-        // of source processor does not need this method
-        return false;
-    }
-
-    @Override
-    public boolean isFinished() {
-        return finished;
-    }
-
-    @Override
-    public boolean hasNext() {
-        return !isFinished() && (delay <= 0 || numInstanceSent < readyEventIndex);
-    }
-
-    private boolean hasReachedEndOfStream() {
-        return (!streamSource.hasMoreInstances() || (numberInstances >= 0 && numInstanceSent >= numberInstances));
-    }
+    private int numberInstances;
+    private int numInstanceSent = 0;
+    protected InstanceStream sourceStream;
+    public ConcurrentLinkedQueue<Vector> samoaPredictions;
 
     @Override
     public ContentEvent nextEvent() {
+
         InstanceContentEvent contentEvent = null;
         if (hasReachedEndOfStream()) {
             contentEvent = new InstanceContentEvent(-1, firstInstance, false, true);
@@ -87,8 +55,14 @@ public class StreamingRegressionEntranceProcessor implements EntranceProcessor {
             finished = true;
         } else if (hasNext()) {
             numInstanceSent++;
-            contentEvent = new InstanceContentEvent(numInstanceSent, nextInstance(), true, true);
+            Instance next = nextInstance();
+            Object a=next.classValue();
+            if (a.toString().equals("-0.0")) {
+                contentEvent = new InstanceContentEvent(numInstanceSent, next, false, true);
+            } else {
+                contentEvent = new InstanceContentEvent(numInstanceSent, next, true, true);
 
+            }
             // first call to this method will trigger the timer
             if (schedule == null && delay > 0) {
                 schedule = timer.scheduleWithFixedDelay(new DelayTimeoutHandler(this), delay, delay,
@@ -98,18 +72,26 @@ public class StreamingRegressionEntranceProcessor implements EntranceProcessor {
         return contentEvent;
     }
 
-    private void increaseReadyEventIndex() {
-        readyEventIndex += batchSize;
-        // if we exceed the max, cancel the timer
-        if (schedule != null && isFinished()) {
-            schedule.cancel(false);
+    private Instance nextInstance() {
+        if (this.isInited) {
+            return streamSource.nextInstance().getData();
+        } else {
+            this.isInited = true;
+            return firstInstance;
         }
     }
 
     @Override
+    public boolean process(ContentEvent event) {
+        // TODO: possible refactor of the super-interface implementation
+        // of source processor does not need this method
+        return false;
+    }
+
+    @Override
     public void onCreate(int id) {
-        initStreamSource(sourceStream);
-        timer = Executors.newScheduledThreadPool(1);
+      //  initStreamSource(sourceStream);
+        //timer = Executors.newScheduledThreadPool(1);
         logger.debug("Creating PrequentialSourceProcessor with id {}", id);
     }
 
@@ -123,6 +105,19 @@ public class StreamingRegressionEntranceProcessor implements EntranceProcessor {
         return newProcessor;
     }
 
+    @Override
+    public boolean hasNext() {
+        return !isFinished() && (delay <= 0 || numInstanceSent < readyEventIndex);
+    }
+
+    @Override
+    public boolean isFinished() {
+        return finished;
+    }
+
+    private boolean hasReachedEndOfStream() {
+        return (!streamSource.hasMoreInstances() || (numberInstances >= 0 && numInstanceSent >= numberInstances));
+    }
 
     public StreamSource getStreamSource() {
         return streamSource;
@@ -144,21 +139,18 @@ public class StreamingRegressionEntranceProcessor implements EntranceProcessor {
         return firstInstance.dataset();
     }
 
-    private Instance nextInstance() {
-        if (this.isInited) {
-            return streamSource.nextInstance().getData();
-        } else {
-            this.isInited = true;
-            return firstInstance;
+
+    private void increaseReadyEventIndex() {
+        readyEventIndex += batchSize;
+        // if we exceed the max, cancel the timer
+        if (schedule != null && isFinished()) {
+            schedule.cancel(false);
         }
     }
 
-    // private void sendEndEvaluationInstance(Stream inputStream) {
-    // InstanceContentEvent contentEvent = new InstanceContentEvent(-1,
-    // firstInstance, false, true);
-    // contentEvent.setLast(true);
-    // inputStream.put(contentEvent);
-    // }
+    public void setSamoaData(ConcurrentLinkedQueue<Vector> samoaPredictions) {
+        this.samoaPredictions = samoaPredictions;
+    }
 
     private void initStreamSource(InstanceStream stream) {
         if (stream instanceof AbstractOptionHandler) {

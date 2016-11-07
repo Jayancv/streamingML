@@ -3,7 +3,6 @@ package org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.Regression;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -11,6 +10,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * Created by wso2123 on 10/14/16.
  */
 public class StreamingRegression extends Thread {
+    private static final Logger logger = LoggerFactory.getLogger(StreamingRegression.class);
 
     private int maxInstance = 100000;
     private int batchSize = 500;            //Output display interval
@@ -20,108 +20,65 @@ public class StreamingRegression extends Thread {
     public int numEventsReceived = 0;
 
     public ConcurrentLinkedQueue<double[]> cepEvents;
-    public ConcurrentLinkedQueue<Vector> samoaData;
+    public ConcurrentLinkedQueue<Vector> samoaPredictions;
 
-    public StreamingRegressionTaskBuilder regressingTask;
+    public StreamingRegressionTaskBuilder regressionTask;
 
-    private static final Logger logger = LoggerFactory.getLogger(StreamingRegression.class);
 
-    public StreamingRegression(int maxint, int paramCount, int batchSize, int par, int bagging) {
+    public StreamingRegression(int maxint, int batchSize, int paramCount, int parallelism, int bagging) {
 
         this.maxInstance = maxint;
         this.numAttributes = paramCount;
         this.batchSize = batchSize;
-        this.paralle = par;
+        this.paralle = parallelism;
         this.bagging = bagging;
 
         this.cepEvents = new ConcurrentLinkedQueue<double[]>();
-        this.samoaData = new ConcurrentLinkedQueue<Vector>();
+        this.samoaPredictions = new ConcurrentLinkedQueue<Vector>();
         try {
-            this.regressingTask = new StreamingRegressionTaskBuilder(this.maxInstance, this.batchSize, this.numAttributes, this.cepEvents, this.samoaData, this.paralle, this.bagging);
+            this.regressionTask = new StreamingRegressionTaskBuilder(this.maxInstance, this.batchSize, this.numAttributes, this.cepEvents, this.samoaPredictions, this.paralle, this.bagging);
         } catch (Exception e) {
             System.out.println(e.toString());
         }
-        logger.info("Successfully Initiated the Streaming StreamingClassification Topology");
-
+        logger.info("Successfully Initiated the Streaming StreamingRegression Topology");
     }
-
-    public static Object[] regress(double[] cepEvent) {
-        return null;
-    }
-
 
     public void run() {
-        regressingTask.initTask(maxInstance, batchSize, numAttributes, paralle, bagging);
-
+        regressionTask.initTask(maxInstance, batchSize, numAttributes, paralle, bagging);
     }
 
-    public Object[] classify(double[] eventData) {
+    public Object[] regress(double[] cepEvent) {
         numEventsReceived++;
-        //logger.info("CEP Event Received : "+numEventsReceived);
-        cepEvents.add(eventData);
-        int numObjects = 5;
+        cepEvents.add(cepEvent);
         Object[] output;
 
-        if (!samoaData.isEmpty()) {
-//            logger.info("Update the Model");
+        if (!samoaPredictions.isEmpty()) {                     // poll predicted events from prediction queue 
             String str = "";
-            output = new Object[5];
-            output[0] = 0.0;
-            Vector data = samoaData.poll();
-            int l = 0;
-//            for (int i = 0; i < 9; i++) {
-//
-//                if (i < 4) {
-//                    output[i] = classifiers.get(l + 1);
-//                    String inter = classifiers.get(l + 1).toString();
-//                    String sss = inter.substring(inter.lastIndexOf("=") + 1);
-//                    String ww = String.valueOf(sss).replace(",", "");
-//                    str = str + "," + ww;
-//
-//                    //System.out.println(regressionData.get(l + 1));
-//                    l++;
-//                } else if (8 > i) {
-//                    String[] o = new String[numClasses];
-//                    for (int j = 0; j < numClasses; j++) {
-//                        o[j] = classifiers.get(l + 1).toString();
-//
-//                        String inter = classifiers.get(l + 1).toString();
-//                        String sss = inter.substring(inter.lastIndexOf("=") + 1);
-//                        String ww = String.valueOf(sss).replace(",", "");
-//                        str = str + "," + ww;
-//
-//                        l++;
-//
-//                    }
-//                    String b = Arrays.toString(o);
-//                    output[i] = b.toString();
-//
-//
-//                    //System.out.println(b);
-//                } else {
-//                    String[] o = new String[batchSize];
-//                    for (int j = 0; j < batchSize; j++) {
-//                        o[j] = classifiers.get(l + 1).toString();
-//                        String inter = classifiers.get(l + 1).toString();
-//                        String sss = inter.substring(inter.lastIndexOf("=") + 1);
-//                        String ww = String.valueOf(sss).replace(",", "");
-//                        str = str + "," + ww;
-//
-//                        l++;
-//
-//                    }
-//                    String b = Arrays.toString(o);
-//                    output[i] = b.toString();
-//                }
-//
-//            }
-//            System.out.println(str.substring(2));
+            output = new Object[numAttributes];
+            Vector prediction = samoaPredictions.poll();
+            for (int i = 0; i < prediction.size(); i++) {
+                output[i] = prediction.get(i);
+            }
+            System.out.println(prediction);
         } else {
             output = null;
         }
-
         return output;
     }
 
-
+    public Object[] regress() {                                       // for cep timeEvents
+        numEventsReceived++;
+        Object[] output;
+        if (!samoaPredictions.isEmpty()) {
+            String str = "";
+            output = new Object[numAttributes];
+            Vector prediction = samoaPredictions.poll();
+            for (int i = 0; i < prediction.size(); i++) {
+                output[i] = prediction.get(i);
+            }
+        } else {
+            output = null;
+        }
+        return output;
+    }
 }

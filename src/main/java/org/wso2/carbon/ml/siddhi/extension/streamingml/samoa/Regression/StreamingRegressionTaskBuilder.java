@@ -25,7 +25,7 @@ public class StreamingRegressionTaskBuilder {
     private static final Logger logger = LoggerFactory.getLogger(StreamingRegressionTaskBuilder.class);
 
     public ConcurrentLinkedQueue<double[]> cepEvents;
-    public ConcurrentLinkedQueue<Vector> samoaData;
+    public ConcurrentLinkedQueue<Vector> samoaPredictions;
 
     public int maxInstances = 1000000;
     public int batchSize = 1000;
@@ -39,7 +39,7 @@ public class StreamingRegressionTaskBuilder {
         this.maxInstances = maxInstance;
         this.batchSize = batchSize;
         this.numAttr = numAtts;
-        this.samoaData = data;
+        this.samoaPredictions = data;
         this.parallel = par;
         this.bagging = bag;
 
@@ -53,23 +53,29 @@ public class StreamingRegressionTaskBuilder {
             //---------Bagging
             query = "org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.Regression.StreamingRegressionTask -f " + batchSize + " -i " + maxInstances + " -s (org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.Regression.StreamingRegressionStream -A " + numAttributes + ") -l (classifiers.ensemble.Bagging -s " + bagging + " -l (org.apache.samoa.learners.classifiers.rules.VerticalAMRulesRegressor -p " + paralle + "))";
         } else {
-            query = "org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.Regression.StreamingRegressionTask -f " + batchSize + " -i " + maxInstances + " -s (org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.Regression.StreamingRegressionStream -A " + numAttributes + " ) -l (org.apache.samoa.learners.classifiers.rules.VerticalAMRulesRegressor -p " + paralle + "))";
+            query = "org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.Regression.StreamingRegressionTask -f " + batchSize + " -i " + maxInstances + " -s (org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.Regression.StreamingRegressionStream -A " + numAttributes + " ) -l   (org.apache.samoa.learners.classifiers.rules.HorizontalAMRulesRegressor -r 9 -p "+paralle+")";
+
+            //query = "org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.Regression.StreamingRegressionTask -f " + batchSize + " -i " + maxInstances + " -s (org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.Regression.StreamingRegressionStream -A " + numAttributes + " ) -l (org.apache.samoa.learners.classifiers.rules.VerticalAMRulesRegressor -p " + paralle + ")";
         }
+
+
 
         logger.info("QUERY: " + query);
         String args[] = {query};
-        this.initClassificationTask(args);
+        this.initRegressionTask(args);
     }
 
-    private void initClassificationTask(String[] args) {
+    private void initRegressionTask(String[] args) {
 
         logger.info("Initializing Samoa StreamingRegression Topology");
 
+        /// No idea about about these variables
         FlagOption suppressStatusOutOpt = new FlagOption("suppressStatusOut", 'S', SUPPRESS_STATUS_OUT_MSG);
         FlagOption suppressResultOutOpt = new FlagOption("suppressResultOut", 'R', SUPPRESS_RESULT_OUT_MSG);
         IntOption statusUpdateFreqOpt = new IntOption("statusUpdateFrequency", 'F', STATUS_UPDATE_FREQ_MSG, 1000, 0, Integer.MAX_VALUE);
 
         Option[] extraOptions = new Option[]{suppressStatusOutOpt, suppressResultOutOpt, statusUpdateFreqOpt};
+        ///
 
         StringBuilder cliString = new StringBuilder();
         for (String arg : args) {
@@ -82,7 +88,6 @@ public class StreamingRegressionTaskBuilder {
         try {
             logger.info(String.valueOf(cliString));
             task = ClassOption.cliStringToObject(cliString.toString(), Task.class, extraOptions);
-
             logger.info("Successfully instantiating {}", task.getClass().getCanonicalName());
         } catch (Exception e) {
             logger.error("Fail to initialize the task", e);
@@ -95,8 +100,7 @@ public class StreamingRegressionTaskBuilder {
             logger.info("Task is a Instance of StreamingRegressionTask");
             StreamingRegressionTask t = (StreamingRegressionTask) task;
             t.setCepEvents(this.cepEvents);
-            t.setSamoaClassifiers(this.samoaData);
-          //  t.setNumClasses(this.numClasses);
+            t.setSamoaData(this.samoaPredictions);
 
         } else {
             logger.info("Check Task: Not a StreamingRegressionTask");

@@ -23,24 +23,22 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class StreamingClassificationStream extends ClusteringStream {
 
 
-    public ConcurrentLinkedQueue<double[]> cepEvents;
     private static final Logger logger = LoggerFactory.getLogger(StreamingClassificationStream.class);
     protected InstancesHeader streamHeader;
     private int numGeneratedInstances;
     private int nextEventCounter;
-    LinkedList<DataPoint> points = new LinkedList<DataPoint>();
-    double[] values; //Cep Event
     private int numAttributes = 2;
     private int numNorminals = 0;
     private int numClasses = 2;
 
+    double[] values;                       //Cep Event
+    public ConcurrentLinkedQueue<double[]> cepEvents;
     ArrayList<Integer> valsForNominals = new ArrayList<Integer>();
 
     public IntOption numClassesOption = new IntOption("numClasses", 'K', "The number of classes in the model.", 2, 2, Integer.MAX_VALUE);
     public IntOption numAttOption = new IntOption("numAttributes", 'A', "The number of classes in the model.", 2, 1, Integer.MAX_VALUE);
     public IntOption numNominalsOption = new IntOption("numNominals", 'N', "The number of nominal attributes to generate.", 0, 0, 2147483647);
     public IntOption numNumericsOption = new IntOption("numNumerics", 'u', "The number of numeric attributes to generate.", 1, 0, 2147483647);
-
     public StringOption numValsPerNominalOption = new StringOption("numValsPerNominalOption", 'Z', "The number of values per nominal attributes", "null");
 
     @Override
@@ -70,15 +68,18 @@ public class StreamingClassificationStream extends ClusteringStream {
     private void generateHeader() {
         ArrayList<Attribute> attributes = new ArrayList<Attribute>();
         ArrayList<String> nominalAttValls = new ArrayList<>();
+
+        // Add numerical values
         for (int i = 0; i < numAttributes - 1 - numNominalsOption.getValue(); i++) {
             attributes.add(new Attribute("numeric" + (i + 1)));
         }
 
-
+        // Add nominal values
         for (int i = 0; i < this.numNominalsOption.getValue(); ++i) {
-            attributes.add(new Attribute("nominal" + (i + 1), getvals(i)));
+            attributes.add(new Attribute("nominal" + (i + 1), getNominalAttributeValues(i)));
         }
 
+        // Add class value
         ArrayList<String> classLabels = new ArrayList<String>();
         for (int i = 0; i < this.numClassesOption.getValue(); i++) {
             classLabels.add("class" + (i + 1));
@@ -86,17 +87,17 @@ public class StreamingClassificationStream extends ClusteringStream {
 
         attributes.add(new Attribute("class", classLabels));
         streamHeader = new InstancesHeader(new Instances(getCLICreationString(InstanceStream.class), attributes, 0));
+        // Set class value
         streamHeader.setClassIndex(streamHeader.numAttributes() - 1);
     }
 
-    private ArrayList<String> getvals(int count) {
+    // Get nomber of values each nominal attribute has
+    private ArrayList<String> getNominalAttributeValues(int count) {
         ArrayList<String> nominalAttValls = new ArrayList<>();
 
         for (int i = 0; i < valsForNominals.get(count); ++i) {
             nominalAttValls.add("value" + (i + 1));
         }
-
-
         return nominalAttValls;
     }
 
@@ -129,14 +130,15 @@ public class StreamingClassificationStream extends ClusteringStream {
             System.arraycopy(values, 0, values_new, 0, values.length - 1);
             Instance inst = new DenseInstance(1.0, values_new);
             inst.setDataset(getHeader());
-            //inst.numClasses();
+
+            // Set the relevant class value to the data set
             inst.setClassValue(values[values.length - 1]);
             return new InstanceExample(inst);
 
         } else {
             numGeneratedInstances++;
-            double[] values_new = new double[numAttributes]; // +1
 
+            double[] values_new = new double[numAttributes]; // +1
             while (cepEvents.isEmpty()) ;
             double[] values = cepEvents.poll();
 
@@ -144,8 +146,9 @@ public class StreamingClassificationStream extends ClusteringStream {
             Instance inst = new DenseInstance(1.0, values_new);
             inst.setDataset(getHeader());
 
-            inst.setClassValue(values[values.length - 1]);
 
+            inst.setClassValue(values[values.length - 1]);
+//            System.out.println(inst.classValue());
             return new InstanceExample(inst);
         }
     }

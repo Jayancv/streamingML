@@ -14,13 +14,12 @@ import java.util.Scanner;
  */
 public class RegressionSimulator {
     private static final Logger logger = LoggerFactory.getLogger(RegressionSimulator.class);
-
     public static Scanner scn;
 
     public static void main(String[] args) {
         System.out.println("Starts");
         try {
-            File f = new File("ccpp.csv");
+            File f = new File("CASP.csv");
             FileReader fr = new FileReader(f);
             BufferedReader br = new BufferedReader(fr);
             scn = new Scanner(br);
@@ -29,56 +28,45 @@ public class RegressionSimulator {
             logger.info(e.toString());
         }
 
-         int maxInstance = 1000000;
-         int batchSize = 500;
-         int paramCount = 5;
-         int parallelism = 1;
-         int numModelsBagging = 0;
+        int maxInstance = 1000000;
+        int batchSize = 5000;
+        int paramCount = 10;
+        int parallelism = 1;
+        int numModelsBagging = 0;
+        int numInstant = 0;
+        StreamingRegression streamingRegression = new StreamingRegression(maxInstance, batchSize, paramCount, parallelism, numModelsBagging);
 
-        StreamingRegression streamingRegression = new StreamingRegression(maxInstance,paramCount, batchSize,parallelism,numModelsBagging );
-
-        new Thread(streamingRegression).start();
+        new Thread(streamingRegression).start();                     // Start new regression thread
 
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        logger.info("Successfully Instatiated the Clustering with samoa");
+        logger.info("Successfully Instantiated the Regression with samoa");
 
         double[] cepEvent = new double[paramCount];
-       /*for(int i=0;i<paramCount;i++){
-            cepEvent[i]=(int)(Math.random()*100);
-
-        }*/
         while (true) {
             Object[] outputData = null;
-            // logger.info("Sending Next Event"+numInsancesSent++);
-            // Object[] outputData= streamingLinearRegression.addToRDD(eventData);
-            //Calling the regress function
             if (scn.hasNext()) {
+                numInstant++;
                 String eventStr = scn.nextLine();
                 String[] event = eventStr.split(",");
                 for (int i = 0; i < paramCount; i++) {
                     cepEvent[i] = Double.parseDouble(event[i]);
-
                 }
-                outputData = streamingRegression.regress(cepEvent);
+                outputData = streamingRegression.regress(cepEvent);            // add cepEvent to cepevent concurrentQueue and get output
 
-                if (outputData == null) {
-                    //  System.out.println("null");
-                } else {
-
-                }
+            } else {
+                System.out.println(numInstant + " events added from CEP");
+                break;
             }
 
-
             try {
-                Thread.sleep(1);
+                Thread.sleep(1);                        // Delay between two events
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-
 
         }
     }

@@ -11,7 +11,9 @@ import org.wso2.siddhi.core.exception.ExecutionPlanCreationException;
 import org.wso2.siddhi.core.executor.ConstantExpressionExecutor;
 import org.wso2.siddhi.core.executor.ExpressionExecutor;
 import org.wso2.siddhi.core.query.processor.Processor;
+import org.wso2.siddhi.core.query.processor.SchedulingProcessor;
 import org.wso2.siddhi.core.query.processor.stream.StreamProcessor;
+import org.wso2.siddhi.core.util.Scheduler;
 import org.wso2.siddhi.query.api.definition.AbstractDefinition;
 import org.wso2.siddhi.query.api.definition.Attribute;
 
@@ -21,7 +23,7 @@ import java.util.List;
 /**
  * Created by wso2123 on 8/29/16.
  */
-public class StreamingClassificationWithSamoaStreamProcessor extends StreamProcessor {
+public class StreamingClassificationWithSamoaStreamProcessor extends StreamProcessor implements SchedulingProcessor {
 
 
     private int maxInstance = 1000000;
@@ -34,6 +36,11 @@ public class StreamingClassificationWithSamoaStreamProcessor extends StreamProce
     private int parallelism = 0;
     private int numModelsBagging = 0;
     private StreamingClassification streamingClassification = null;
+
+    private ExpressionExecutor timestampExecutor;
+    private long lastScheduledTimestamp = -1;
+    private long TIMER_DURATION = 100;
+    private Scheduler scheduler;
 
     List<String> classes = new ArrayList<String>();           //values of class attribute
     ArrayList<ArrayList<String>> nominals = new ArrayList<ArrayList<String>>();     //values of other nominal attributes
@@ -59,11 +66,13 @@ public class StreamingClassificationWithSamoaStreamProcessor extends StreamProce
                 parallelism = ((Integer) attributeExpressionExecutors[6].execute(null));
                 numModelsBagging = ((Integer) attributeExpressionExecutors[7].execute(null));
 
-
             } catch (ClassCastException c) {
                 throw new ExecutionPlanCreationException("should be of type int");
             }
         }
+
+        lastScheduledTimestamp = executionPlanContext.getTimestampGenerator().currentTime();
+
         System.out.println("StreamingClassification  Parameters: " + " Maximum instances = " + maxInstance + ", Batch size =  " + batchSize + " , Number of classes = " + numClasses + "\n");
         streamingClassification = new StreamingClassification(maxInstance, batchSize, numClasses, paramCount, numNominals, nominalAttVals, parallelism, numModelsBagging);
         try {
@@ -75,83 +84,116 @@ public class StreamingClassificationWithSamoaStreamProcessor extends StreamProce
 
         // Add attributes
         String betaVal;
-        ArrayList<Attribute> attributes = new ArrayList<Attribute>(9);
-        attributes.add(new Attribute("numInstance", Attribute.Type.INT));
-        attributes.add(new Attribute("correctness", Attribute.Type.DOUBLE));
-        attributes.add(new Attribute("kappa", Attribute.Type.DOUBLE));
-        attributes.add(new Attribute("tempKappa", Attribute.Type.DOUBLE));
-        attributes.add(new Attribute("support", Attribute.Type.STRING));
-        attributes.add(new Attribute("precision", Attribute.Type.STRING));
-        attributes.add(new Attribute("recall", Attribute.Type.STRING));
-        attributes.add(new Attribute("f1score", Attribute.Type.STRING));
+        ArrayList<Attribute> attributes = new ArrayList<Attribute>(paramCount);
+        for (int i = 0; i < paramCount - 1; i++) {
+            if (i < paramCount - numNominals - 1)
+                attributes.add(new Attribute("att_" + i, Attribute.Type.DOUBLE));
+            else
+                attributes.add(new Attribute("att_" + i, Attribute.Type.STRING));
+        }
         attributes.add(new Attribute("prediction", Attribute.Type.STRING));
-
-
         return attributes;
     }
 
     @Override
     protected void process(ComplexEventChunk<StreamEvent> streamEventChunk, Processor nextProcessor, StreamEventCloner streamEventCloner, ComplexEventPopulater complexEventPopulater) {
 
-
         synchronized (this) {
             while (streamEventChunk.hasNext()) {
                 ComplexEvent complexEvent = streamEventChunk.next();
+                if (complexEvent.getType() != ComplexEvent.Type.TIMER) {
 
-                Object[] inputData = new Object[attributeExpressionLength - paramPosition];
-                Double[] eventData = new Double[attributeExpressionLength - paramPosition];
-                double[] cepEvent = new double[attributeExpressionLength - paramPosition];
-                Object evt;
-                Double value;
+                    Object[] inputData = new Object[attributeExpressionLength - paramPosition];
+                    Double[] eventData = new Double[attributeExpressionLength - paramPosition];
+                    double[] cepEvent = new double[attributeExpressionLength - paramPosition];
+                    Object evt;
+                    Double value;
 
-//                for (int i = paramPosition; i < attributeExpressionLength; i++) {
-//                    inputData[i - paramPosition] = attributeExpressionExecutors[i].execute(complexEvent);
-//                    value = eventData[i - paramPosition] = (Double) attributeExpressionExecutors[i].execute(complexEvent);
-//                    cepEvent[i - paramPosition] = (double) value;
-//                }
-
-                if (paramCount==attributeExpressionLength-9) {
+                    // Set cep event values
                     String classValue = (String) attributeExpressionExecutors[attributeExpressionLength - 1].execute(complexEvent).toString();
-                    if (classes.contains(classValue)) {
-                        cepEvent[paramCount - 1] = classes.indexOf(classValue);
-                    } else {
-                        classes.add(classValue);
-                        cepEvent[paramCount - 1] = classes.indexOf(classValue);
-                    }
-                }else{
-                    cepEvent[paramCount - 1] = -1;
-                }
-                int j = 0;
+                    if (classValue.equals("?")) {           //this data points for prediction
+                        cepEvent[paramCount - 1] = -1;
 
-                for (int i = 0; i < paramCount - 1; i++) {
-                    evt = attributeExpressionExecutors[i + paramPosition].execute(complexEvent);
-                    inputData[i] = evt;
-                    if (i < paramCount - 1 - numNominals) {
-                        value = eventData[i] = (Double) evt;
-                        cepEvent[i] = value;
-                    } else {
-                        String v = (String) evt;
-                        try {
-                            if (!nominals.get(j).contains(evt)) {
+                    } else {                              // This data points have class valu therefore these data use to train and test the modle
+                        if (classes.contains(classValue)) {
+                            cepEvent[paramCount - 1] = classes.indexOf(classValue);
+                        } else {
+                            if (classes.size() < numClasses) {
+                                //System.out.println("class value " + classValue);
+                                classes.add(classValue);
+                                cepEvent[paramCount - 1] = classes.indexOf(classValue);
+                            }
+                        }
+                    }
+                    int j = 0;
+
+                    for (int i = 0; i < paramCount - 1; i++) {
+                        evt = attributeExpressionExecutors[i + paramPosition].execute(complexEvent);
+                        inputData[i] = evt;
+                        if (i < paramCount - 1 - numNominals) {
+                            value = eventData[i] = (Double) evt;
+                            cepEvent[i] = value;
+                        } else {
+                            String v = (String) evt;
+                            try {
+                                if (!nominals.get(j).contains(evt)) {
+                                    nominals.get(j).add(v);
+                                }
+                            } catch (IndexOutOfBoundsException e) {
+                                nominals.add(new ArrayList<String>());
                                 nominals.get(j).add(v);
                             }
-                        } catch (IndexOutOfBoundsException e) {
-                            nominals.add(new ArrayList<String>());
-                            nominals.get(j).add(v);
+                            cepEvent[i] = (nominals.get(j).indexOf(v));
+                            j++;
                         }
-                        cepEvent[i] = (nominals.get(j).indexOf(v));
-                        j++;
                     }
-                }
-                Object[] outputData = null;
+                    Object[] outputData = null;
 
-                outputData = streamingClassification.classify(cepEvent);
+                    outputData = streamingClassification.classify(cepEvent);
 
-                // Skip processing if user has specified calculation interval
-                if (outputData == null) {
-                    streamEventChunk.remove();
-                } else {
-                    complexEventPopulater.populateComplexEvent(complexEvent, outputData);
+                    // Skip processing if user has specified calculation interval
+                    if (outputData == null) {
+                        streamEventChunk.remove();
+                    } else {
+                        int index_predic = (int) outputData[outputData.length - 1];
+                        outputData[outputData.length - 1] = classes.get(index_predic);
+                        if (numNominals != 0) {
+
+                            for (int k = paramCount - numNominals - 1; k < paramCount - 1; k++) {
+
+                                int nominal_index = (int) outputData[k];
+                                outputData[k] = nominals.get(k - paramCount - numNominals - 1).get(nominal_index);
+
+                            }
+                        }
+                        complexEventPopulater.populateComplexEvent(complexEvent, outputData);
+                    }
+                } else if (complexEvent.getType() == ComplexEvent.Type.TIMER) {
+                    //System.out.println("Time");
+                    lastScheduledTimestamp = lastScheduledTimestamp + TIMER_DURATION;
+                    scheduler.notifyAt(lastScheduledTimestamp);
+
+                    Object[] outputData = null;
+                    outputData = streamingClassification.getClassify();
+
+                    // Skip processing if user has specified calculation interval
+                    if (outputData == null) {
+                        streamEventChunk.remove();
+                    } else {
+                        int index_predic = (int) outputData[outputData.length - 1];
+                        outputData[outputData.length - 1] = classes.get(index_predic);
+                        if (numNominals != 0) {
+
+                            for (int k = paramCount - numNominals - 1; k < paramCount - 1; k++) {
+
+                                int nominal_index = (int) outputData[k];
+                                outputData[k] = nominals.get(k - paramCount - numNominals - 1).get(nominal_index);
+
+                            }
+                        }
+                        complexEventPopulater.populateComplexEvent(complexEvent, outputData);
+                    }
+
                 }
             }
         }
@@ -177,5 +219,19 @@ public class StreamingClassificationWithSamoaStreamProcessor extends StreamProce
     @Override
     public void restoreState(Object[] state) {
 
+    }
+
+    @Override
+    public void setScheduler(Scheduler scheduler) {
+        this.scheduler = scheduler;
+        if (lastScheduledTimestamp > 0) {
+            lastScheduledTimestamp = executionPlanContext.getTimestampGenerator().currentTime() + TIMER_DURATION;
+            scheduler.notifyAt(lastScheduledTimestamp);
+        }
+    }
+
+    @Override
+    public Scheduler getScheduler() {
+        return this.scheduler;
     }
 }

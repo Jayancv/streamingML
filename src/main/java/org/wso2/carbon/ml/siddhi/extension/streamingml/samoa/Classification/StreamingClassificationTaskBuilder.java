@@ -9,8 +9,6 @@ import org.apache.samoa.topology.impl.SimpleComponentFactory;
 import org.apache.samoa.topology.impl.SimpleEngine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-
 import java.util.Vector;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -52,7 +50,6 @@ public class StreamingClassificationTaskBuilder {
         this.classifiers = classifiers;
         this.parallel = par;
         this.bagging = bag;
-
     }
 
     public void initTask(int maxInstances, int batchSize, int numClasses, int numAttributes, int numNominals, String str, int parallel, int bagging) {
@@ -61,6 +58,9 @@ public class StreamingClassificationTaskBuilder {
         if (bagging != 0) {
             //---------Bagging
             query = "org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.Classification.StreamingClassificationTask -f " + batchSize + " -i " + maxInstances + " -s (org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.Classification.StreamingClassificationStream -K " + numClasses + " -A " + numAttributes + " -N " + numNominals + " -Z " + str + " ) -l (classifiers.ensemble.Bagging -s " + bagging + " -l (classifiers.trees.VerticalHoeffdingTree -p " + parallel + "))";
+        } else {
+            query = "org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.Classification.StreamingClassificationTask -f " + batchSize + " -i " + maxInstances + " -s (org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.Classification.StreamingClassificationStream -K " + numClasses + " -A " + numAttributes + " -N " + numNominals + " -Z " + str + " ) -l (org.apache.samoa.learners.classifiers.trees.VerticalHoeffdingTree -p " + parallel + ")";
+
         }
         //--------Adaptive Bagging
         // query ="org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.Classification.StreamingClassificationTask -f " + batchSize + " -i " + maxInstances + " -s (org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.Classification.StreamingClassificationStream -K " + numClasses + " -A "+numAttributes+" -N "+numNominals+" -Z "+str+" ) -l (classifiers.ensemble.Bagging -s 10 -l (classifiers.ensemble.AdaptiveBagging -s 10 -l (classifiers.trees.VerticalHoeffdingTree -p 10)))";
@@ -70,10 +70,6 @@ public class StreamingClassificationTaskBuilder {
         //query = "org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.Classification.StreamingClassificationTask -f 1000 -i 1000000 -s (org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.Classification.StreamingClassificationStream -K " + numAttributes + " ) -l (org.apache.samoa.learners.classifiers.ensemble.Bagging -l (org.apache.samoa.learners.classifiers.trees.VerticalHoeffdingTree))";
         /////////////////////////////////////////////   query = "org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.Classification.StreamingClassificationTask -f 1000 -i 1000000 -s (org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.Classification.StreamingClassificationStream  -K " + numAttributes + " ) -l (org.apache.samoa.learners.classifiers.SingleClassifier -l (org.apache.samoa.learners.classifiers.SimpleClassifierAdapter -l (org.apache.samoa.learners.classifiers.trees.VerticalHoeffdingTree)))";
 
-        else {
-            query = "org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.Classification.StreamingClassificationTask -f " + batchSize + " -i " + maxInstances + " -s (org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.Classification.StreamingClassificationStream -K " + numClasses + " -A " + numAttributes + " -N " + numNominals + " -Z " + str + " ) -l (org.apache.samoa.learners.classifiers.trees.VerticalHoeffdingTree -p " + parallel + ")";
-
-        }
         //--------RandomTreeGeneration
         // query = "org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.Classification.StreamingClassificationTask -f 1000 -i 1000000 -s (org.apache.samoa.streams.generators.RandomTreeGenerator ) -l (org.apache.samoa.learners.classifiers.trees.VerticalHoeffdingTree)";
         //2,2,2,2,2,2,2,2,2,2,2,2,2,2,3,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,3
@@ -87,11 +83,12 @@ public class StreamingClassificationTaskBuilder {
 
         logger.info("Initializing Samoa StreamingClassification Topology");
 
+        /// No idea about about these variables
         FlagOption suppressStatusOutOpt = new FlagOption("suppressStatusOut", 'S', SUPPRESS_STATUS_OUT_MSG);
         FlagOption suppressResultOutOpt = new FlagOption("suppressResultOut", 'R', SUPPRESS_RESULT_OUT_MSG);
         IntOption statusUpdateFreqOpt = new IntOption("statusUpdateFrequency", 'F', STATUS_UPDATE_FREQ_MSG, 1000, 0, Integer.MAX_VALUE);
-
         Option[] extraOptions = new Option[]{suppressStatusOutOpt, suppressResultOutOpt, statusUpdateFreqOpt};
+        ///
 
         StringBuilder cliString = new StringBuilder();
         for (String arg : args) {
@@ -99,31 +96,26 @@ public class StreamingClassificationTaskBuilder {
             cliString.append(" ").append(arg);
         }
         logger.debug("Command line string = {}", cliString.toString());
-        // logger.info("Command line string = " + cliString.toString());
-
 
         Task task;
         try {
             logger.info(String.valueOf(cliString));
-            task = ClassOption.cliStringToObject(cliString.toString(), Task.class, extraOptions);
-
+            task = ClassOption.cliStringToObject(cliString.toString(), Task.class, extraOptions);       // Convert that query to a Object of a Task
             logger.info("Successfully instantiating {}", task.getClass().getCanonicalName());
         } catch (Exception e) {
             logger.error("Fail to initialize the task", e);
-            logger.info("Fail to initialize the task" + e);
             return;
         }
 
-        logger.info("A");
         if (task instanceof StreamingClassificationTask) {
             logger.info("Task is a Instance of StreamingClassificationTask");
-            StreamingClassificationTask t = (StreamingClassificationTask) task;
-            t.setCepEvents(this.cepEvents);
+            StreamingClassificationTask t = (StreamingClassificationTask) task;  // Cast that created task to streamingclassificationTask
+            t.setCepEvents(this.cepEvents);                                      //link task events to cepEvents
             t.setSamoaClassifiers(this.classifiers);
             t.setNumClasses(this.numClasses);
 
         } else {
-            logger.info("Check Task: Not a StreamingClassificationTask");
+            logger.info("Check Task:It is not a StreamingClassificationTask");
         }
 
         logger.info("Successfully Convert the Task into StreamingClassificationTask");

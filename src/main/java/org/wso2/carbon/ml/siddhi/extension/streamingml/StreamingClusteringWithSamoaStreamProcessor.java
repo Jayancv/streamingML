@@ -115,7 +115,7 @@ public class StreamingClusteringWithSamoaStreamProcessor extends StreamProcessor
 
                 // Object[] outputData= streamingLinearRegression.addToRDD(eventData);
                 //Calling the regress function
-                System.out.println("Processs ");
+               // System.out.println("Processs ");
                 outputData = streamingClusteringWithSamoa.cluster(cepEvent);
 
                 // Skip processing if user has specified calculation interval

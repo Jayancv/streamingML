@@ -29,10 +29,7 @@ public class StreamingClassificationPerformanceEvaluator extends AbstractMOAObje
     private double weightCorrectNoChangeClassifier;
     private int lastSeenClass;
 
-    private ArrayList<Double> predictionsarray = new ArrayList<Double>();
 
-    public StreamingClassificationPerformanceEvaluator() {
-    }
 
     public void reset() {
         this.reset(this.numClasses);
@@ -72,27 +69,23 @@ public class StreamingClassificationPerformanceEvaluator extends AbstractMOAObje
         }
         double weight = inst.weight();
         int trueClass = (int) inst.classValue();
+        //System.out.println(trueClass);
         //  Measurement aaa= new Measurement("predictions", Utils.maxIndex(classVotes), 10);
-         predictionsarray.add((double) Utils.maxIndex(classVotes));
+
 
         if (weight > 0.0D) {
             if (this.weightObserved == 0.0D) {
                 this.reset(inst.numClasses());
             }
-
             this.weightObserved += weight;
             int predictedClass = Utils.maxIndex(classVotes);
-
             //  System.out.println(trueClass +" "+predictedClass);
-
             if (predictedClass == trueClass) {
                 this.weightCorrect += weight;
             }
-
             if (this.rowKappa.length > 0) {
                 this.rowKappa[predictedClass] += weight;
             }
-
             if (this.columnKappa.length > 0) {
                 this.columnKappa[trueClass] += weight;
             }
@@ -103,7 +96,6 @@ public class StreamingClassificationPerformanceEvaluator extends AbstractMOAObje
         }
 
         this.lastSeenClass = trueClass;
-
         ++this.support[trueClass];
         int predictedClass = Utils.maxIndex(classVotes);
 
@@ -129,6 +121,7 @@ public class StreamingClassificationPerformanceEvaluator extends AbstractMOAObje
 
     }
 
+
     public Measurement[] getPerformanceMeasurements() {
         Measurement[] a1 = new Measurement[]{new Measurement("classified instances", this.getTotalWeightObserved()), new Measurement("classifications correct (percent)", this.getFractionCorrectlyClassified() * 100.0D), new Measurement("Kappa Statistic (percent)", this.getKappaStatistic() * 100.0D), new Measurement("Kappa Temporal Statistic (percent)", this.getKappaTemporalStatistic() * 100.0D)};
 
@@ -140,9 +133,7 @@ public class StreamingClassificationPerformanceEvaluator extends AbstractMOAObje
         Collections.addAll(measurements, this.getPrecisionMeasurements());
         Collections.addAll(measurements, this.getRecallMeasurements());
         Collections.addAll(measurements, this.getF1Measurements());
-        Collections.addAll(measurements,this.getPredictions());
-        //Collections.addAll(predictionsarray);
-        predictionsarray.clear();
+
 
         return (Measurement[]) measurements.toArray(new Measurement[measurements.size()]);
     }
@@ -191,14 +182,6 @@ public class StreamingClassificationPerformanceEvaluator extends AbstractMOAObje
         return measurements;
     }
 
-    private Measurement[] getPredictions() {
-        Measurement[] measurements = new Measurement[predictionsarray.size()];
-        Object[] pre = predictionsarray.toArray();
-
-        for (int i=0;i<predictionsarray.size();i++)
-            measurements[i] = new Measurement("prediction ", (Double) pre[i],10);
-        return measurements;
-    }
 
     public void getDescription(StringBuilder sb, int indent) {
         Measurement.getMeasurementsDescription(this.getSupportMeasurements(), sb, indent);

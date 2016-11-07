@@ -40,8 +40,12 @@ public class StreamingClassificationEvaluationProcessor implements Processor {
     private long sampleStart;
     private LearningCurve learningCurve;
     private int id;
+
+    public ConcurrentLinkedQueue<Vector> statistics = new ConcurrentLinkedQueue<>();
     public ConcurrentLinkedQueue<Vector> classifiers;
-    private ArrayList<Integer> predictions= new ArrayList<Integer>();
+
+    private int count = 0;
+
 
     private StreamingClassificationEvaluationProcessor(StreamingClassificationEvaluationProcessor.Builder builder) {
 
@@ -57,30 +61,52 @@ public class StreamingClassificationEvaluationProcessor implements Processor {
 
 
     public boolean process(ContentEvent event) {
+        boolean predicting = false;
         ResultContentEvent result = (ResultContentEvent) event;
-        if (this.totalCount > 0L && this.totalCount % (long) this.samplingFrequency == 0L) {
+        count++;
+
+        if (result.getInstance().classValue() == -1) {          // Identify the event that uses to predict or train
+            predicting = true;
+        }
+
+        if (this.totalCount > 0L && this.totalCount % (long) this.samplingFrequency == 0L && !predicting) {            // After every interval log the current statistics
             long sampleEnd = System.nanoTime();
             long sampleDuration = TimeUnit.SECONDS.convert(sampleEnd - this.sampleStart, TimeUnit.NANOSECONDS);
             this.sampleStart = sampleEnd;
-//           logger.info("{} seconds for {} instances", Long.valueOf(sampleDuration), Integer.valueOf(this.samplingFrequency));
-            this.addMeasurement();
+            this.addMeasurement();                                                                                     //calculate measurements
+            if (!statistics.isEmpty()) {
+                Vector stat = statistics.poll();
+                System.out.println(stat.toString());
+            }
         }
 
         if (result.isLastEvent()) {
             this.concludeMeasurement();
             return true;
         } else {
-            this.evaluator.addResult(result.getInstance(), result.getClassVotes());
-            ++this.totalCount;
-            int pre=Utils.maxIndex(result.getClassVotes());
-            predictions.add(pre);
+            int pre = Utils.maxIndex(result.getClassVotes());
+            if (predicting) {
+                Vector t = new Vector();
+                for (int i = 0; i < result.getInstance().numValues() - 1; i++) {                   // add event attribute to vector t and add that vector to samoaClassifier
+                    t.add(result.getInstance().value(i));
+                }
+                t.add(pre);
+                classifiers.add(t);
+
+                //  System.out.println(pre +" total "+ totalCount);
+            } else {                                                         // Training event data added to model statistics
+                this.evaluator.addResult(result.getInstance(), result.getClassVotes());
+                ++this.totalCount;
+            }
             if (this.totalCount == 1L) {
                 this.sampleStart = System.nanoTime();
                 this.experimentStart = this.sampleStart;
             }
 
-            return false;
+            return true;
         }
+
+
     }
 
     public void onCreate(int id) {
@@ -138,28 +164,24 @@ public class StreamingClassificationEvaluationProcessor implements Processor {
         Vector measurements = new Vector();
         measurements.add(new Measurement("evaluation instances", (double) this.totalCount));
         Collections.addAll(measurements, this.evaluator.getPerformanceMeasurements());
-        ///Collections.addAll(measurements,predictions);
-       // predictions.clear();
         Measurement[] finalMeasurements = (Measurement[]) measurements.toArray(new Measurement[measurements.size()]);
         LearningEvaluation learningEvaluation = new LearningEvaluation(finalMeasurements);
         this.learningCurve.insertEntry(learningEvaluation);
         try {
-            classifiers.add(measurements);
+            statistics.add(measurements);
         } catch (Exception e) {
             logger.info(e.getMessage());
         }
-        //  logger.debug("evaluator id = {}", Integer.valueOf(this.id));
-//        logger.info("evaluator id = {}", Integer.valueOf(this.id));
-        //logger.info(learningEvaluation.toString());
+        ;
         if (this.immediateResultStream != null) {
             if (this.firstDump) {
                 this.immediateResultStream.println(this.learningCurve.headerToString());
-              //  logger.info("checked");
+                //  logger.info("checked");
                 this.firstDump = false;
             }
 
             this.immediateResultStream.println(this.learningCurve.entryToString(this.learningCurve.numEntries() - 1));
-           // logger.info("checked");
+            logger.info("checked");
             this.immediateResultStream.flush();
         }
 

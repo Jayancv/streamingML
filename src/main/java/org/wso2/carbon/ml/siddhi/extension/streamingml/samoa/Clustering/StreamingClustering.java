@@ -30,7 +30,7 @@ public class StreamingClustering extends Thread{
 
     public ConcurrentLinkedQueue<double[]>cepEvents;
     public ConcurrentLinkedQueue<Clustering>samoaClusters;
-    public int maxNumEvents=1000000;
+    public int maxNumEvents=Integer.MAX_VALUE;
     public int numEventsReceived=0;
 
     public StreamingClusteringTaskBuilder clusteringTask;

@@ -1,7 +1,6 @@
 package org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.Regression;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -15,12 +14,8 @@ import org.apache.samoa.learners.ClassificationLearner;
 import org.apache.samoa.learners.Learner;
 import org.apache.samoa.learners.RegressionLearner;
 import org.apache.samoa.learners.classifiers.rules.VerticalAMRulesRegressor;
-import org.apache.samoa.moa.core.ObjectRepository;
 import org.apache.samoa.tasks.Task;
-import org.apache.samoa.moa.tasks.TaskMonitor;
 import org.apache.samoa.streams.InstanceStream;
-import org.apache.samoa.streams.PrequentialSourceProcessor;
-import org.apache.samoa.streams.generators.RandomTreeGenerator;
 import org.apache.samoa.topology.ComponentFactory;
 import org.apache.samoa.topology.Stream;
 import org.apache.samoa.topology.Topology;
@@ -42,8 +37,6 @@ import com.github.javacliparser.StringOption;
 public class StreamingRegressionTask implements Task, Configurable {
 
     private static final long serialVersionUID = -8246537378371580550L;
-
-
     private static Logger logger = LoggerFactory.getLogger(StreamingRegression.class);
 
     public ClassOption learnerOption = new ClassOption("learner", 'l', "Learner.", Learner.class,
@@ -84,27 +77,18 @@ public class StreamingRegressionTask implements Task, Configurable {
     public IntOption batchDelayOption = new IntOption("delayBatchSize", 'b',
             "The delay batch size: delay of x milliseconds after each batch ", 1, 1, Integer.MAX_VALUE);
 
-   // protected PrequentialSourceProcessor preqSource;
-
-    // private PrequentialSourceTopologyStarter preqStarter;
-
-    // private EntranceProcessingItem sourcePi;
 
     protected StreamingRegressionEntranceProcessor preqSource;
     private InstanceStream streamTrain;
     protected Stream sourcePiOutputStream;
-    private Learner reggressionCal;
+    private Learner reggressionLearner;
     private StreamingRegressionEvaluationProcessor evaluator;
-
-    // private ProcessingItem evaluatorPi;
-
-    // private Stream evaluatorPiInputStream;
 
     protected Topology prequentialTopology;
     protected TopologyBuilder builder;
 
     public ConcurrentLinkedQueue<double[]> cepEvents;
-    public ConcurrentLinkedQueue<Vector> predictions;
+    public ConcurrentLinkedQueue<Vector> samoaPredictions;
 
 
     public void getDescription(StringBuilder sb, int indent) {
@@ -113,10 +97,6 @@ public class StreamingRegressionTask implements Task, Configurable {
 
     @Override
     public void init() {
-        // TODO remove the if statement
-        // theoretically, dynamic binding will work here!
-        // test later!
-        // for now, the if statement is used by Storm
         streamTrain = this.streamTrainOption.getValue();
 
         if (streamTrain instanceof StreamingRegressionStream) {
@@ -138,40 +118,33 @@ public class StreamingRegressionTask implements Task, Configurable {
         // instantiate PrequentialSourceProcessor and its output stream
         // (sourcePiOutputStream)
         preqSource = new StreamingRegressionEntranceProcessor();
+
         preqSource.setStreamSource(streamTrain);
         builder.addEntranceProcessor(preqSource);
         preqSource.setMaxNumInstances(instanceLimitOption.getValue());
         preqSource.setSourceDelay(sourceDelayOption.getValue());
         preqSource.setDelayBatchSize(batchDelayOption.getValue());
 
-        logger.debug("Successfully instantiating PrequentialSourceProcessor");
-
-        // preqStarter = new PrequentialSourceTopologyStarter(preqSource,
-        // instanceLimitOption.getValue());
-        // sourcePi = builder.createEntrancePi(preqSource, preqStarter);
-        // sourcePiOutputStream = builder.createStream(sourcePi);
+        logger.debug("Successfully instantiating Entrance Processor");
 
         sourcePiOutputStream = builder.createStream(preqSource);
-        // preqStarter.setInputStream(sourcePiOutputStream);
 
         // instantiate classifier and connect it to sourcePiOutputStream
-        reggressionCal = this.learnerOption.getValue();
-        reggressionCal.init(builder, preqSource.getDataset(), 1);
-        builder.connectInputShuffleStream(sourcePiOutputStream, reggressionCal.getInputProcessor());
+        reggressionLearner = this.learnerOption.getValue();
+        reggressionLearner.init(builder, preqSource.getDataset(), 1);
+        builder.connectInputShuffleStream(sourcePiOutputStream, reggressionLearner.getInputProcessor());
         logger.debug("Successfully instantiating Regression Calculator");
 
         PerformanceEvaluator evaluatorOptionValue = this.evaluatorOption.getValue();
-        if (!StreamingRegressionTask.isLearnerAndEvaluatorCompatible(reggressionCal, evaluatorOptionValue)) {
-            evaluatorOptionValue = getDefaultPerformanceEvaluatorForLearner(reggressionCal);
+        if (!StreamingRegressionTask.isLearnerAndEvaluatorCompatible(reggressionLearner, evaluatorOptionValue)) {
+            evaluatorOptionValue = getDefaultPerformanceEvaluatorForLearner(reggressionLearner);
         }
         evaluator = new StreamingRegressionEvaluationProcessor.Builder(evaluatorOptionValue)
                 .samplingFrequency(sampleFrequencyOption.getValue()).dumpFile(dumpFileOption.getFile()).build();
 
-        // evaluatorPi = builder.createPi(evaluator);
-        // evaluatorPi.connectInputShuffleStream(evaluatorPiInputStream);
-        evaluator.setPredictions((ArrayList<Integer>) reggressionCal);
+        evaluator.setSamoaPredictions(samoaPredictions);
         builder.addProcessor(evaluator);
-        for (Stream evaluatorPiInputStream : reggressionCal.getResultStreams()) {
+        for (Stream evaluatorPiInputStream : reggressionLearner.getResultStreams()) {
             builder.connectInputShuffleStream(evaluatorPiInputStream, evaluator);
         }
 
@@ -198,12 +171,6 @@ public class StreamingRegressionTask implements Task, Configurable {
         return prequentialTopology;
     }
 
-    //
-    // @Override
-    // public TopologyStarter getTopologyStarter() {
-    // return this.preqStarter;
-    // }
-
     protected static boolean isLearnerAndEvaluatorCompatible(Learner learner, PerformanceEvaluator evaluator) {
         return (learner instanceof RegressionLearner && evaluator instanceof RegressionPerformanceEvaluator) ||
                 (learner instanceof ClassificationLearner && evaluator instanceof ClassificationPerformanceEvaluator);
@@ -221,8 +188,8 @@ public class StreamingRegressionTask implements Task, Configurable {
         this.cepEvents = cepEvents;
     }
 
-    public void setSamoaClassifiers(ConcurrentLinkedQueue<Vector> classifiers) {
-        this.predictions = classifiers;
+    public void setSamoaData(ConcurrentLinkedQueue<Vector> data) {
+        this.samoaPredictions = data;
 
     }
 

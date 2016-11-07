@@ -17,26 +17,13 @@ import java.util.concurrent.*;
 
 /**
  * Created by wso2123 on 8/30/16.
+ * <p>
+ * Source => https://github.com/apache/incubator-samoa/blob/master/samoa-api/src/main/java/org/apache/samoa/streams/PrequentialSourceProcessor.java
  */
 public class StreamingClassificationEntranceProcessor implements EntranceProcessor {
 
     private static final long serialVersionUID = 4169053337917578558L;
-
     private static final Logger logger = LoggerFactory.getLogger(StreamingClassificationEntranceProcessor.class);
-
-
-    private double samplingThreshold;
-    private int groundTruthSamplingFrequency;
-    private int maxNumInstances;
-
-    private StreamSource streamSource;
-    private Instance firstInstance;
-    private boolean isInited = false;
-
-    private int numberInstances;
-    private int numInstanceSent = 0;
-
-    protected InstanceStream sourceStream;
 
 
     /*
@@ -47,25 +34,61 @@ public class StreamingClassificationEntranceProcessor implements EntranceProcess
     private transient ScheduledExecutorService timer;
     private transient ScheduledFuture<?> schedule = null;
     private int readyEventIndex = 1; // No waiting for the first event
-    private int delay = 0;
+    private int delay = 1000000;
+    private double samplingThreshold;
+    private int groundTruthSamplingFrequency;
+    private int maxNumInstances;
+    protected InstanceStream sourceStream;
+
+    private StreamSource streamSource;
+    private Instance firstInstance;
+    private boolean isInited = false;
+    private int numberInstances;
+    private int numInstanceSent = 0;
+
     private int batchSize = 1;
     private boolean finished = false;
-
-
-    String evalPoint;
-
-    public ConcurrentLinkedQueue<Vector> samoaClassifiers;
     public int numClasses = 0;
+    public ConcurrentLinkedQueue<Vector> samoaClassifiers;
 
 
-    public void setNumClasses(int numClasses) {
-        this.numClasses = numClasses;
+    @Override
+    public ContentEvent nextEvent() {
+        InstanceContentEvent contentEvent = null;
+        if (hasReachedEndOfStream()) {
+            contentEvent = new InstanceContentEvent(-1, firstInstance, false, true);
+            contentEvent.setLast(true);
+            // set finished status _after_ tagging last event
+            System.out.println("Finish");
+            finished = true;
+
+        } else if (hasNext()) {
+            numInstanceSent++;
+            Instance next = nextInstance();
+            if (next.classValue() == -1.0) {                                     // If this event is a prediction event
+                contentEvent = new InstanceContentEvent(numInstanceSent, next, false, true); // This instance is only uses to test
+            } else {                                                            //If it is not a prediction data then it use to train the model and test
+                contentEvent = new InstanceContentEvent(numInstanceSent, next, true, true);
+
+            }
+            // first call to this method will trigger the timer
+            if (schedule == null && delay > 0) {
+                schedule = timer.scheduleWithFixedDelay(new DelayTimeoutHandler(this), delay, delay,
+                        TimeUnit.MICROSECONDS);
+            }
+        }
+        //System.out.println(contentEvent.getInstance().value(1)+" "+ contentEvent.getInstance().classValue());
+        return contentEvent;
     }
 
-    public void setSamoaClassifiers(ConcurrentLinkedQueue<Vector> samoaClassifiers) {
-        this.samoaClassifiers = samoaClassifiers;
+    private Instance nextInstance() {
+        if (this.isInited) {
+            return streamSource.nextInstance().getData();
+        } else {
+            this.isInited = true;
+            return firstInstance;
+        }
     }
-
 
     @Override
     public boolean process(ContentEvent event) {
@@ -124,49 +147,9 @@ public class StreamingClassificationEntranceProcessor implements EntranceProcess
         return firstInstance.dataset();
     }
 
-    private Instance nextInstance() {
-        if (this.isInited) {
-            return streamSource.nextInstance().getData();
-        } else {
-            this.isInited = true;
-            return firstInstance;
-        }
-    }
-
 
     public void setMaxNumInstances(int value) {
         numberInstances = value;
-    }
-
-
-    @Override
-    public ContentEvent nextEvent() {
-        InstanceContentEvent contentEvent = null;
-        if (hasReachedEndOfStream()) {
-
-            contentEvent = new InstanceContentEvent(-1, firstInstance, true, true);
-            contentEvent.setLast(true);
-            // set finished status _after_ tagging last event
-            System.out.println("Finish");
-            finished = true;
-        } else if (hasNext()) {
-            numInstanceSent++;
-            if (numInstanceSent<5) {
-                contentEvent = new InstanceContentEvent(numInstanceSent, nextInstance(), true, true);
-              //  logger.info("training");
-            } else {
-                contentEvent = new InstanceContentEvent(numInstanceSent, nextInstance(), false, true);
-
-               // logger.info("not training");
-            }
-            // first call to this method will trigger the timer
-            if (schedule == null && delay > 0) {
-                schedule = timer.scheduleWithFixedDelay(new DelayTimeoutHandler(this), delay, delay,
-                        TimeUnit.MICROSECONDS);
-            }
-        }
-        return contentEvent;
-
     }
 
 
@@ -188,6 +171,13 @@ public class StreamingClassificationEntranceProcessor implements EntranceProcess
         firstInstance = streamSource.nextInstance().getData();
     }
 
+    public void setNumClasses(int numClasses) {
+        this.numClasses = numClasses;
+    }
+
+    public void setSamoaClassifiers(ConcurrentLinkedQueue<Vector> samoaClassifiers) {
+        this.samoaClassifiers = samoaClassifiers;
+    }
 
     public int getMaxNumInstances() {
         return this.numberInstances;
