@@ -23,15 +23,15 @@ public class StreamingRegressionEntranceProcessor implements EntranceProcessor {
     private static final long serialVersionUID = 4169053337917578558L;
     private static final Logger logger = LoggerFactory.getLogger(StreamingRegressionEntranceProcessor.class);
 
-
     /*
      * ScheduledExecutorService to schedule sending events after each delay
      * interval. It is expected to have only one event in the queue at a time, so
      * we need only one thread in the pool.
      */
+
     private transient ScheduledExecutorService timer;
     private transient ScheduledFuture<?> schedule = null;
-    private int readyEventIndex = 1; // No waiting for the first event
+    private int readyEventIndex = 1;      // No waiting for the first event
     private int delay = 10000;
     private int batchSize = 1;
     private boolean finished = false;
@@ -57,7 +57,7 @@ public class StreamingRegressionEntranceProcessor implements EntranceProcessor {
             numInstanceSent++;
             Instance next = nextInstance();
             Object a=next.classValue();
-            if (a.toString().equals("-0.0")) {
+            if (a.toString().equals("-0.0")) {                                      // Check the last value of the event; If it equals -0.0 then use it as predicting event
                 contentEvent = new InstanceContentEvent(numInstanceSent, next, false, true);
             } else {
                 contentEvent = new InstanceContentEvent(numInstanceSent, next, true, true);

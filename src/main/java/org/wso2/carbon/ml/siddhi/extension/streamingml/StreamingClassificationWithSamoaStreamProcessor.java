@@ -111,10 +111,11 @@ public class StreamingClassificationWithSamoaStreamProcessor extends StreamProce
 
                     // Set cep event values
                     String classValue = (String) attributeExpressionExecutors[attributeExpressionLength - 1].execute(complexEvent).toString();
+                    //Set class value
                     if (classValue.equals("?")) {           //this data points for prediction
                         cepEvent[paramCount - 1] = -1;
 
-                    } else {                              // This data points have class valu therefore these data use to train and test the modle
+                    } else {                              // This data points have class values, therefore these data use to train and test the model
                         if (classes.contains(classValue)) {
                             cepEvent[paramCount - 1] = classes.indexOf(classValue);
                         } else {
@@ -127,13 +128,14 @@ public class StreamingClassificationWithSamoaStreamProcessor extends StreamProce
                     }
                     int j = 0;
 
+                    // Set other attributes
                     for (int i = 0; i < paramCount - 1; i++) {
                         evt = attributeExpressionExecutors[i + paramPosition].execute(complexEvent);
                         inputData[i] = evt;
-                        if (i < paramCount - 1 - numNominals) {
+                        if (i < paramCount - 1 - numNominals) {                       // set Numerical attributes
                             value = eventData[i] = (Double) evt;
                             cepEvent[i] = value;
-                        } else {
+                        } else {                                                      // Set nominal attributes
                             String v = (String) evt;
                             try {
                                 if (!nominals.get(j).contains(evt)) {
@@ -149,12 +151,12 @@ public class StreamingClassificationWithSamoaStreamProcessor extends StreamProce
                     }
                     Object[] outputData = null;
 
-                    outputData = streamingClassification.classify(cepEvent);
+                    outputData = streamingClassification.classify(cepEvent);          // get Output
 
                     // Skip processing if user has specified calculation interval
                     if (outputData == null) {
                         streamEventChunk.remove();
-                    } else {
+                    } else {                                                          // If output have values, then add thoses values to output stream
                         int index_predic = (int) outputData[outputData.length - 1];
                         outputData[outputData.length - 1] = classes.get(index_predic);
                         if (numNominals != 0) {
@@ -168,7 +170,8 @@ public class StreamingClassificationWithSamoaStreamProcessor extends StreamProce
                         }
                         complexEventPopulater.populateComplexEvent(complexEvent, outputData);
                     }
-                } else if (complexEvent.getType() == ComplexEvent.Type.TIMER) {
+
+                } else if (complexEvent.getType() == ComplexEvent.Type.TIMER) {                  // Timer events for poll output events from prediction queue
                     //System.out.println("Time");
                     lastScheduledTimestamp = lastScheduledTimestamp + TIMER_DURATION;
                     scheduler.notifyAt(lastScheduledTimestamp);

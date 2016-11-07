@@ -16,27 +16,26 @@ public class CepEventSimulator {
     private static final Logger logger = LoggerFactory.getLogger(CepEventSimulator.class);
 
     public static Scanner scn;
-    public static void main(String[] args){
+
+    public static void main(String[] args) {
         System.out.println("Starts");
         try {
             File f = new File("3dNetwork.csv");
             FileReader fr = new FileReader(f);
             BufferedReader br = new BufferedReader(fr);
             scn = new Scanner(br);
-
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.info(e.toString());
         }
-        //int learnType = 0;
+
         int paramCount = 4;
-        int batchSize =1000;
+        int batchSize = 1000;
         double ci = 0.95;
         int numClusters = 3;
         int numIterations = 10;
         int alpha = 1;
-        int numInsancesSent=0;
-        int numAttribute = 5;
-        StreamingClustering streamingClusteringWithSamoa = new StreamingClustering(paramCount, batchSize, ci,numClusters, numIterations,alpha);
+        int numInsancesSent = 0;
+        StreamingClustering streamingClusteringWithSamoa = new StreamingClustering(paramCount, batchSize, ci, numClusters, numIterations, alpha);
 
         new Thread(streamingClusteringWithSamoa).start();
 
@@ -47,33 +46,33 @@ public class CepEventSimulator {
         }
         logger.info("Successfully Instatiated the Clustering with samoa");
 
-        double [] cepEvent=new double[paramCount];
-       /*for(int i=0;i<paramCount;i++){
-            cepEvent[i]=(int)(Math.random()*100);
+        double[] cepEvent = new double[paramCount];
 
-        }*/
-        while(true){
+        while (true) {
             Object[] outputData = null;
-            // logger.info("Sending Next Event"+numInsancesSent++);
-            // Object[] outputData= streamingLinearRegression.addToRDD(eventData);
+
             //Calling the regress function
-            if(scn.hasNext()) {
+            if (scn.hasNext()) {
+                numInsancesSent++;
                 String eventStr = scn.nextLine();
-                String[] event=eventStr.split(",");
-                for(int i=0;i<paramCount;i++){
-                    cepEvent[i]=Double.parseDouble(event[i]);
+                String[] event = eventStr.split(",");
+                for (int i = 0; i < paramCount; i++) {
+                    cepEvent[i] = Double.parseDouble(event[i]);
 
                 }
-                outputData = streamingClusteringWithSamoa.cluster(cepEvent);
+                outputData = streamingClusteringWithSamoa.cluster(cepEvent);                 // Get output data
 //
 //                if (outputData == null) {
-                    //  System.out.println("null");
+                //  System.out.println("null");
 //                } else {
 //                    System.out.println("Error: " + outputData[0]);
 //                    for (int i = 0; i < numClusters; i++) {
 //                        System.out.println("center " + i + ": " + outputData[i + 1]);
 //                    }
 //                }
+            } else {
+                System.out.println(numInsancesSent + " events added from CEP");
+                break;
             }
 
 

@@ -26,53 +26,27 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class StreamingClusteringTask implements Task, Configurable {
 
     private static final long serialVersionUID = -8246537378371580550L;
-
     private static final int DISTRIBUTOR_PARALLELISM = 1;
-
     private static final Logger logger = LoggerFactory.getLogger(StreamingClusteringTask.class);
 
 
-    public ClassOption learnerOption = new ClassOption("learner", 'l', "Clustering to run.", Learner.class,
-            DistributedClusterer.class.getName());
-
-    public ClassOption streamTrainOption = new ClassOption("streamTrain", 's', "Input stream.", InstanceStream.class,
-            StreamingClusteringStream.class.getName());
-
-    public IntOption instanceLimitOption = new IntOption("instanceLimit", 'i',
-            "Maximum number of instances to test/train on  (-1 = no limit).", 100000, -1,
-            Integer.MAX_VALUE);
-
-    public IntOption measureCollectionTypeOption = new IntOption("measureCollectionType", 'm',
-            "Type of measure collection", 0, 0, Integer.MAX_VALUE);
-
-    public IntOption timeLimitOption = new IntOption("timeLimit", 't',
-            "Maximum number of seconds to test/train for (-1 = no limit).", -1, -1,
-            Integer.MAX_VALUE);
-
-    public IntOption sampleFrequencyOption = new IntOption("sampleFrequency", 'f',
-            "How many instances between samples of the learning performance.", 1000, 0,
-            Integer.MAX_VALUE);
-
-    public StringOption evaluationNameOption = new StringOption("evaluationName", 'n', "Identifier of the evaluation",
-            "Clustering__"
-                    + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()));
-
-    public FileOption dumpFileOption = new FileOption("dumpFile", 'd', "File to append intermediate csv results to",
-            null, "csv", true);
-
-    public FloatOption samplingThresholdOption = new FloatOption("samplingThreshold", 'a',
-            "Ratio of instances sampled that will be used for evaluation.", 0.5,
-            0.0, 1.0);
+    public ClassOption learnerOption = new ClassOption("learner", 'l', "Clustering to run.", Learner.class, DistributedClusterer.class.getName());
+    public ClassOption streamTrainOption = new ClassOption("streamTrain", 's', "Input stream.", InstanceStream.class, StreamingClusteringStream.class.getName());
+    public IntOption instanceLimitOption = new IntOption("instanceLimit", 'i', "Maximum number of instances to test/train on  (-1 = no limit).", 100000, -1, Integer.MAX_VALUE);
+    public IntOption measureCollectionTypeOption = new IntOption("measureCollectionType", 'm', "Type of measure collection", 0, 0, Integer.MAX_VALUE);
+    public IntOption timeLimitOption = new IntOption("timeLimit", 't', "Maximum number of seconds to test/train for (-1 = no limit).", -1, -1, Integer.MAX_VALUE);
+    public IntOption sampleFrequencyOption = new IntOption("sampleFrequency", 'f', "How many instances between samples of the learning performance.", 1000, 0, Integer.MAX_VALUE);
+    public StringOption evaluationNameOption = new StringOption("evaluationName", 'n', "Identifier of the evaluation", "Clustering__" + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()));
+    public FileOption dumpFileOption = new FileOption("dumpFile", 'd', "File to append intermediate csv results to", null, "csv", true);
+    public FloatOption samplingThresholdOption = new FloatOption("samplingThreshold", 'a', "Ratio of instances sampled that will be used for evaluation.", 0.5, 0.0, 1.0);
     // Default=0: no delay/waiting
-    public IntOption sourceDelayOption = new IntOption("sourceDelay", 'w',
-            "How many miliseconds between injections of two instances.", 0, 0, Integer.MAX_VALUE);
+    public IntOption sourceDelayOption = new IntOption("sourceDelay", 'w', "How many miliseconds between injections of two instances.", 0, 0, Integer.MAX_VALUE);
 
     private StreamingClusteringEntranceProcessor source;
     private InstanceStream streamTrain;
     private ClusteringDistributorProcessor distributor;
     private Stream distributorStream;
     private Stream evaluationStream;
-
     private Learner learner;
     private ClusteringEvaluatorProcessor evaluator;
 
@@ -89,16 +63,11 @@ public class StreamingClusteringTask implements Task, Configurable {
 
     @Override
     public void init() {
-        // TODO remove the if statement theoretically, dynamic binding will work
-        // here! for now, the if statement is used by Storm
-
 
         if (builder == null) {
             logger.warn("Builder was not initialized, initializing it from the Task");
-
             builder = new TopologyBuilder();
             logger.debug("Successfully instantiating TopologyBuilder");
-
             builder.initTopology(evaluationNameOption.getValue(), sourceDelayOption.getValue());
             logger.debug("Successfully initializing SAMOA topology with name {}", evaluationNameOption.getValue());
         }
@@ -117,7 +86,7 @@ public class StreamingClusteringTask implements Task, Configurable {
             logger.info("Check Stream: Stream is not a StreamingClusteringStream");
         }
 
-
+          // set stream to entranceProcessor
         source.setStreamSource(streamTrain);
         builder.addEntranceProcessor(source);
         source.setSamplingThreshold(samplingThresholdOption.getValue());

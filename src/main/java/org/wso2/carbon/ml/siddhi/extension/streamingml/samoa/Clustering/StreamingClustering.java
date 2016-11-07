@@ -12,9 +12,9 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  * Created by mahesh on 6/4/16.
  */
 public class StreamingClustering extends Thread{
-   // private int learnType;
+
     private int paramCount = 0;
-    private int numAttributes=0;// Number of x variables +1
+    private int numAttributes=0;                                // Number of x variables +1
     private int batchSize = 10;                                 // Maximum # of events, used for regression calculation
     private double ci = 0.95;                                           // Confidence Interval
     private int numClusters=1;
@@ -49,9 +49,8 @@ public class StreamingClustering extends Thread{
         type= MODEL_TYPE.BATCH_PROCESS;
 
         this.cepEvents = new ConcurrentLinkedQueue<double[]>();
-        //StreamingClusteringStream.cepEvents = this.cepEvents;
         this.samoaClusters = new  ConcurrentLinkedQueue<Clustering>();
-        this.maxNumEvents = 1000000;
+
         try {
             this.clusteringTask = new StreamingClusteringTaskBuilder(this.numClusters,this.cepEvents, this.samoaClusters, this.maxNumEvents);
         }catch(Exception e){
@@ -69,12 +68,12 @@ public class StreamingClustering extends Thread{
         numEventsReceived++;
         //logger.info("CEP Event Received : "+numEventsReceived);
         cepEvents.add(eventData);
+
         Object[] output;
         if(!samoaClusters.isEmpty()){
             logger.info("Micro Clustering Done : Update the Model");
             output = new Object[numClusters +1];
             output[0] = 0.0;
-            //System.out.println("++++ We got a hit ++++");
             Clustering clusters = samoaClusters.poll();
             int dim = clusters.dimension();
             logger.info("Number of KMeans Clusters : "+ clusters.size());

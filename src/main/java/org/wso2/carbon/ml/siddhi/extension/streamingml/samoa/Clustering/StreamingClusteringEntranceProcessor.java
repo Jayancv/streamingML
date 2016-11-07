@@ -134,10 +134,7 @@ public class StreamingClusteringEntranceProcessor implements EntranceProcessor {
         } else {
             DataPoint nextDataPoint = new DataPoint(nextInstance(), numInstanceSent);
             numInstanceSent++;
-
             ClusteringContentEvent contentEvent = new ClusteringContentEvent(numInstanceSent, nextDataPoint);
-
-            //logger.info("Number Of Instanced Sent"+numInstanceSent);
             return contentEvent;
 
         }

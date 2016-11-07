@@ -39,49 +39,26 @@ public class StreamingRegressionTask implements Task, Configurable {
     private static final long serialVersionUID = -8246537378371580550L;
     private static Logger logger = LoggerFactory.getLogger(StreamingRegression.class);
 
-    public ClassOption learnerOption = new ClassOption("learner", 'l', "Learner.", Learner.class,
-            VerticalAMRulesRegressor.class.getName());
-
-    public ClassOption streamTrainOption = new ClassOption("trainStream", 's', "Stream to learn from.",
-            InstanceStream.class,
-            StreamingRegressionStream.class.getName());
-
-    public ClassOption evaluatorOption = new ClassOption("evaluator", 'e',
-            "Classification performance evaluation method.",
-            PerformanceEvaluator.class, BasicRegressionPerformanceEvaluator.class.getName());
-
-    public IntOption instanceLimitOption = new IntOption("instanceLimit", 'i',
-            "Maximum number of instances to test/train on  (-1 = no limit).", 1000000, -1,
-            Integer.MAX_VALUE);
-
-    public IntOption timeLimitOption = new IntOption("timeLimit", 't',
-            "Maximum number of seconds to test/train for (-1 = no limit).", -1, -1,
-            Integer.MAX_VALUE);
-
-    public IntOption sampleFrequencyOption = new IntOption("sampleFrequency", 'f',
-            "How many instances between samples of the learning performance.", 100000,
-            0, Integer.MAX_VALUE);
-
-    public StringOption evaluationNameOption = new StringOption("evaluationName", 'n', "Identifier of the evaluation",
-            "Prequential_"
-                    + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()));
-
-    public FileOption dumpFileOption = new FileOption("dumpFile", 'd', "File to append intermediate csv results to",
-            null, "csv", true);
+    public ClassOption learnerOption = new ClassOption("learner", 'l', "Learner.", Learner.class, VerticalAMRulesRegressor.class.getName());
+    public ClassOption streamTrainOption = new ClassOption("trainStream", 's', "Stream to learn from.", InstanceStream.class, StreamingRegressionStream.class.getName());
+    public ClassOption evaluatorOption = new ClassOption("evaluator", 'e', "Classification performance evaluation method.", PerformanceEvaluator.class, BasicRegressionPerformanceEvaluator.class.getName());
+    public IntOption instanceLimitOption = new IntOption("instanceLimit", 'i', "Maximum number of instances to test/train on  (-1 = no limit).", 1000000, -1, Integer.MAX_VALUE);
+    public IntOption timeLimitOption = new IntOption("timeLimit", 't', "Maximum number of seconds to test/train for (-1 = no limit).", -1, -1, Integer.MAX_VALUE);
+    public IntOption sampleFrequencyOption = new IntOption("sampleFrequency", 'f', "How many instances between samples of the learning performance.", 100000, 0, Integer.MAX_VALUE);
+    public StringOption evaluationNameOption = new StringOption("evaluationName", 'n', "Identifier of the evaluation", "Prequential_" + new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()));
+    public FileOption dumpFileOption = new FileOption("dumpFile", 'd', "File to append intermediate csv results to", null, "csv", true);
 
     // Default=0: no delay/waiting
-    public IntOption sourceDelayOption = new IntOption("sourceDelay", 'w',
-            "How many microseconds between injections of two instances.", 0, 0, Integer.MAX_VALUE);
+    public IntOption sourceDelayOption = new IntOption("sourceDelay", 'w', "How many microseconds between injections of two instances.", 0, 0, Integer.MAX_VALUE);
     // Batch size to delay the incoming stream: delay of x milliseconds after each
     // batch
-    public IntOption batchDelayOption = new IntOption("delayBatchSize", 'b',
-            "The delay batch size: delay of x milliseconds after each batch ", 1, 1, Integer.MAX_VALUE);
+    public IntOption batchDelayOption = new IntOption("delayBatchSize", 'b', "The delay batch size: delay of x milliseconds after each batch ", 1, 1, Integer.MAX_VALUE);
 
 
-    protected StreamingRegressionEntranceProcessor preqSource;
-    private InstanceStream streamTrain;
-    protected Stream sourcePiOutputStream;
-    private Learner reggressionLearner;
+    protected StreamingRegressionEntranceProcessor preqSource;      // EntranceProcessor
+    private InstanceStream streamTrain;                             // Input stream
+    protected Stream sourcePiOutputStream;                          //Result stream
+    private Learner reggressionLearner;                             // VerticalAMRulesRegressor
     private StreamingRegressionEvaluationProcessor evaluator;
 
     protected Topology prequentialTopology;
@@ -89,11 +66,6 @@ public class StreamingRegressionTask implements Task, Configurable {
 
     public ConcurrentLinkedQueue<double[]> cepEvents;
     public ConcurrentLinkedQueue<Vector> samoaPredictions;
-
-
-    public void getDescription(StringBuilder sb, int indent) {
-        sb.append("Prequential evaluation");
-    }
 
     @Override
     public void init() {
@@ -193,4 +165,7 @@ public class StreamingRegressionTask implements Task, Configurable {
 
     }
 
+    public void getDescription(StringBuilder sb, int indent) {
+        sb.append("Prequential evaluation");
+    }
 }

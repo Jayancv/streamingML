@@ -95,7 +95,6 @@ public class StreamingRegressionTaskBuilder {
             return;
         }
 
-        logger.info("A");
         if (task instanceof StreamingRegressionTask) {
             logger.info("Task is a Instance of StreamingRegressionTask");
             StreamingRegressionTask t = (StreamingRegressionTask) task;
