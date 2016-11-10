@@ -43,7 +43,7 @@ public class Simulator {
         int nominalOption = 0;                                       //Number of nominal attributes without class attribute
         String nominalAttributeValues = " ";
         int paralesum = 1;
-        int bagging = 0;
+        int bagging = 20;
         int numInstant = 0;
 
         StreamingClassification streamingClassification = new StreamingClassification(maxinstance, batchSize, numClasses, paramCount, nominalOption, nominalAttributeValues, paralesum, bagging);

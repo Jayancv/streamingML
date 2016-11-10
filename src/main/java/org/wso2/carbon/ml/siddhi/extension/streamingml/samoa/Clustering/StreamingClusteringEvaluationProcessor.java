@@ -25,6 +25,7 @@ public class StreamingClusteringEvaluationProcessor implements Processor {
     public ConcurrentLinkedQueue<Clustering>samoaClusters;
     public int numClusters=0;
 
+
     Clustering gtClustering;
     StreamingClusteringEvaluationProcessor(String evalPoint){
         this.evalPoint = evalPoint;

@@ -124,7 +124,9 @@ public class StreamingClusteringEntranceProcessor implements EntranceProcessor {
 
     @Override
     public ContentEvent nextEvent() {
-
+        if(numInstanceSent%1000==0){
+            System.out.println("Number Of Instance Sent : "+ numInstanceSent);
+        }
         groundTruthSamplingFrequency = ((ClusteringStream) streamSource.getStream()).getDecayHorizon(); // FIXME should it be takend from the ClusteringEvaluation -f option instead?
         if (isFinished()) {
             // send ending event
@@ -138,5 +140,6 @@ public class StreamingClusteringEntranceProcessor implements EntranceProcessor {
             return contentEvent;
 
         }
+
     }
 }

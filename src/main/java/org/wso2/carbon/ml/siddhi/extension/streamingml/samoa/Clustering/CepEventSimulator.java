@@ -31,7 +31,7 @@ public class CepEventSimulator {
         int paramCount = 4;
         int batchSize = 1000;
         double ci = 0.95;
-        int numClusters = 3;
+        int numClusters = 2;
         int numIterations = 10;
         int alpha = 1;
         int numInsancesSent = 0;
@@ -54,6 +54,9 @@ public class CepEventSimulator {
             //Calling the regress function
             if (scn.hasNext()) {
                 numInsancesSent++;
+                if(numInsancesSent%10000==0){
+                    System.out.println("events = "+numInsancesSent);
+                }
                 String eventStr = scn.nextLine();
                 String[] event = eventStr.split(",");
                 for (int i = 0; i < paramCount; i++) {
