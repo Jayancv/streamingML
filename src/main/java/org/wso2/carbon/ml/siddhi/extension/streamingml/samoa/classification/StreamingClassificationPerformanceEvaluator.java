@@ -1,4 +1,22 @@
-package org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.Classification;
+/*
+ * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ * WSO2 Inc. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+package org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.classification;
 
 import org.apache.samoa.evaluation.ClassificationPerformanceEvaluator;
 import org.apache.samoa.instances.Instance;
@@ -6,12 +24,13 @@ import org.apache.samoa.instances.Utils;
 import org.apache.samoa.moa.AbstractMOAObject;
 import org.apache.samoa.moa.core.Measurement;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Vector;
 
 /**
- * Created by wso2123 on 10/4/16.
+ * Uses for evaluate classification performance
+ * Combination of Samoa  samoa/samoa-api/src/main/java/com/yahoo/labs/samoa/evaluation/BasicClassificationPerformanceEvaluator.java
+ * and  samoa/samoa-api/src/main/java/com/yahoo/labs/samoa/evaluation/ClassificationPerformanceEvaluator.java
  */
 public class StreamingClassificationPerformanceEvaluator extends AbstractMOAObject implements ClassificationPerformanceEvaluator {
     private static final long serialVersionUID = 1L;
@@ -28,8 +47,6 @@ public class StreamingClassificationPerformanceEvaluator extends AbstractMOAObje
     protected double[] rowKappa;
     private double weightCorrectNoChangeClassifier;
     private int lastSeenClass;
-
-
 
     public void reset() {
         this.reset(this.numClasses);
@@ -69,9 +86,6 @@ public class StreamingClassificationPerformanceEvaluator extends AbstractMOAObje
         }
         double weight = inst.weight();
         int trueClass = (int) inst.classValue();
-        //System.out.println(trueClass);
-        //  Measurement aaa= new Measurement("predictions", Utils.maxIndex(classVotes), 10);
-
 
         if (weight > 0.0D) {
             if (this.weightObserved == 0.0D) {
@@ -79,7 +93,6 @@ public class StreamingClassificationPerformanceEvaluator extends AbstractMOAObje
             }
             this.weightObserved += weight;
             int predictedClass = Utils.maxIndex(classVotes);
-            //  System.out.println(trueClass +" "+predictedClass);
             if (predictedClass == trueClass) {
                 this.weightCorrect += weight;
             }
@@ -123,12 +136,12 @@ public class StreamingClassificationPerformanceEvaluator extends AbstractMOAObje
 
 
     public Measurement[] getPerformanceMeasurements() {
-        Measurement[] a1 = new Measurement[]{new Measurement("classified instances", this.getTotalWeightObserved()), new Measurement("classifications correct (percent)", this.getFractionCorrectlyClassified() * 100.0D), new Measurement("Kappa Statistic (percent)", this.getKappaStatistic() * 100.0D), new Measurement("Kappa Temporal Statistic (percent)", this.getKappaTemporalStatistic() * 100.0D)};
-
+        Measurement[] a1 = new Measurement[]{new Measurement("classified instances", this.getTotalWeightObserved()),
+                new Measurement("classifications correct (percent)", this.getFractionCorrectlyClassified() * 100.0D),
+                new Measurement("Kappa Statistic (percent)", this.getKappaStatistic() * 100.0D),
+                new Measurement("Kappa Temporal Statistic (percent)", this.getKappaTemporalStatistic() * 100.0D)};
         Vector measurements = new Vector();
-
         Collections.addAll(measurements, a1);
-
         Collections.addAll(measurements, this.getSupportMeasurements());
         Collections.addAll(measurements, this.getPrecisionMeasurements());
         Collections.addAll(measurements, this.getRecallMeasurements());
@@ -178,10 +191,8 @@ public class StreamingClassificationPerformanceEvaluator extends AbstractMOAObje
             String ml = String.format("class %s f1-score", new Object[]{Integer.valueOf(i)});
             measurements[i] = new Measurement(ml, this.getF1Score(i), 10);
         }
-
         return measurements;
     }
-
 
     public void getDescription(StringBuilder sb, int indent) {
         Measurement.getMeasurementsDescription(this.getSupportMeasurements(), sb, indent);
@@ -189,7 +200,6 @@ public class StreamingClassificationPerformanceEvaluator extends AbstractMOAObje
         Measurement.getMeasurementsDescription(this.getRecallMeasurements(), sb, indent);
         Measurement.getMeasurementsDescription(this.getF1Measurements(), sb, indent);
         Measurement.getMeasurementsDescription(this.getPerformanceMeasurements(), sb, indent);
-
     }
 
     private double getPrecision(int classIndex) {
@@ -205,7 +215,6 @@ public class StreamingClassificationPerformanceEvaluator extends AbstractMOAObje
         double recall = this.getRecall(classIndex);
         return 2.0D * precision * recall / (precision + recall);
     }
-
 
     public double getTotalWeightObserved() {
         return this.weightObserved;

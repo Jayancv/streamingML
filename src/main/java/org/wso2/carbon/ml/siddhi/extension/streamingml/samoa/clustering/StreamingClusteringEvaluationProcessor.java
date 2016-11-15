@@ -1,21 +1,36 @@
-package org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.Clustering;
+/*
+ * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ * WSO2 Inc. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+package org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.clustering;
 
 import org.apache.samoa.core.ContentEvent;
 import org.apache.samoa.core.Processor;
 import org.apache.samoa.evaluation.ClusteringEvaluationContentEvent;
 import org.apache.samoa.evaluation.ClusteringResultContentEvent;
-import org.apache.samoa.instances.Instance;
 import org.apache.samoa.learners.clusterers.ClusteringContentEvent;
 import org.apache.samoa.moa.cluster.Clustering;
 import org.apache.samoa.moa.clusterers.clustream.WithKmeans;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-/**
- * Created by mahesh on 7/19/16.
- */
 public class StreamingClusteringEvaluationProcessor implements Processor {
     private static final long serialVersionUID = -6043613438148776446L;
     private int processorId;
@@ -26,35 +41,27 @@ public class StreamingClusteringEvaluationProcessor implements Processor {
     public int numClusters=0;
 
 
-    Clustering gtClustering;
     StreamingClusteringEvaluationProcessor(String evalPoint){
         this.evalPoint = evalPoint;
     }
     @Override
     public boolean process(ContentEvent event) {
         if (event instanceof ClusteringContentEvent) {
-            logger.info(event.getKey()+""+evalPoint+"ClusteringContentEvent");
-            ClusteringContentEvent e= (ClusteringContentEvent)event;
-            Instance inst = e.getInstance();
-
-            int numAttributes=inst.numAttributes();
+            logger.info(event.getKey()+" "+evalPoint+"ClusteringContentEvent");
         }
 
         else if(event instanceof ClusteringResultContentEvent){
             logger.info(event.getKey()+" "+evalPoint+" ClusteringResultContentEvent "+numClusters);
             ClusteringResultContentEvent resultEvent = (ClusteringResultContentEvent)event;
-
             Clustering clustering=resultEvent.getClustering();
-
             Clustering kmeansClustering = WithKmeans.kMeans_rand(numClusters,clustering);
-            logger.info("Kmean Clusters: "+kmeansClustering.size()+" with dimention of : "+kmeansClustering.dimension());
+            logger.info("Kmean Clusters: "+kmeansClustering.size()+" with dimention of : "
+                    +kmeansClustering.dimension());
             //Adding samoa Clusters into my class
             samoaClusters.add(kmeansClustering);
-
             int numClusters = clustering.size();
-            logger.info("Number of Kernal Clusters : "+numClusters+" Number of KMeans Clusters :"+kmeansClustering.size());
-
-
+            logger.info("Number of Kernal Clusters : "+numClusters+" Number of KMeans Clusters :"
+                    +kmeansClustering.size());
         }
 
         else if(event instanceof ClusteringEvaluationContentEvent){
@@ -63,7 +70,6 @@ public class StreamingClusteringEvaluationProcessor implements Processor {
         else{
             logger.info(event.getKey()+""+evalPoint+"ContentEvent\n");
         }
-
         return true;
     }
 

@@ -1,4 +1,22 @@
-package org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.Regression;
+/*
+ * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ * WSO2 Inc. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+package org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.regression;
 
 import org.apache.samoa.core.ContentEvent;
 import org.apache.samoa.core.EntranceProcessor;
@@ -9,15 +27,13 @@ import org.apache.samoa.learners.InstanceContentEvent;
 import org.apache.samoa.moa.options.AbstractOptionHandler;
 import org.apache.samoa.streams.InstanceStream;
 import org.apache.samoa.streams.StreamSource;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Vector;
 import java.util.concurrent.*;
 
-/**
- * Created by wso2123 on 10/11/16.
- */
 public class StreamingRegressionEntranceProcessor implements EntranceProcessor {
 
     private static final long serialVersionUID = 4169053337917578558L;
@@ -38,11 +54,9 @@ public class StreamingRegressionEntranceProcessor implements EntranceProcessor {
     private StreamSource streamSource;
     private Instance firstInstance;
     private boolean isInited = false;
-
-    private int numberInstances;
+    private int maxNumInstances;
     private int numInstanceSent = 0;
     protected InstanceStream sourceStream;
-    public ConcurrentLinkedQueue<Vector> samoaPredictions;
 
     @Override
     public ContentEvent nextEvent() {
@@ -56,12 +70,11 @@ public class StreamingRegressionEntranceProcessor implements EntranceProcessor {
         } else if (hasNext()) {
             numInstanceSent++;
             Instance next = nextInstance();
-            Object a=next.classValue();
-            if (a.toString().equals("-0.0")) {                                      // Check the last value of the event; If it equals -0.0 then use it as predicting event
+            Object a = next.classValue();
+            if (a.toString().equals("-0.0")) {  // Check the last value of the event; If it equals -0.0 then use it as predicting event
                 contentEvent = new InstanceContentEvent(numInstanceSent, next, false, true);
             } else {
                 contentEvent = new InstanceContentEvent(numInstanceSent, next, true, true);
-
             }
             // first call to this method will trigger the timer
             if (schedule == null && delay > 0) {
@@ -90,8 +103,7 @@ public class StreamingRegressionEntranceProcessor implements EntranceProcessor {
 
     @Override
     public void onCreate(int id) {
-      //  initStreamSource(sourceStream);
-        //timer = Executors.newScheduledThreadPool(1);
+        timer = Executors.newScheduledThreadPool(1);
         logger.debug("Creating PrequentialSourceProcessor with id {}", id);
     }
 
@@ -116,7 +128,7 @@ public class StreamingRegressionEntranceProcessor implements EntranceProcessor {
     }
 
     private boolean hasReachedEndOfStream() {
-        return (!streamSource.hasMoreInstances() || (numberInstances >= 0 && numInstanceSent >= numberInstances));
+        return (!streamSource.hasMoreInstances() || (maxNumInstances >= 0 && numInstanceSent >= maxNumInstances));
     }
 
     public StreamSource getStreamSource() {
@@ -127,7 +139,6 @@ public class StreamingRegressionEntranceProcessor implements EntranceProcessor {
         if (stream instanceof AbstractOptionHandler) {
             ((AbstractOptionHandler) (stream)).prepareForUse();
         }
-
         this.streamSource = new StreamSource(stream);
         firstInstance = streamSource.nextInstance().getData();
     }
@@ -139,17 +150,12 @@ public class StreamingRegressionEntranceProcessor implements EntranceProcessor {
         return firstInstance.dataset();
     }
 
-
     private void increaseReadyEventIndex() {
         readyEventIndex += batchSize;
         // if we exceed the max, cancel the timer
         if (schedule != null && isFinished()) {
             schedule.cancel(false);
         }
-    }
-
-    public void setSamoaData(ConcurrentLinkedQueue<Vector> samoaPredictions) {
-        this.samoaPredictions = samoaPredictions;
     }
 
     private void initStreamSource(InstanceStream stream) {
@@ -162,19 +168,11 @@ public class StreamingRegressionEntranceProcessor implements EntranceProcessor {
     }
 
     public void setMaxNumInstances(int value) {
-        numberInstances = value;
-    }
-
-    public int getMaxNumInstances() {
-        return this.numberInstances;
+        maxNumInstances = value;
     }
 
     public void setSourceDelay(int delay) {
         this.delay = delay;
-    }
-
-    public int getSourceDelay() {
-        return this.delay;
     }
 
     public void setDelayBatchSize(int batch) {

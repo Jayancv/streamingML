@@ -1,18 +1,31 @@
-package org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.Classification;
+/*
+ * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ * WSO2 Inc. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 
-import org.apache.spark.sql.catalyst.expressions.In;
+package org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.classification;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import scala.util.parsing.combinator.testing.Str;
 
-import java.util.Arrays;
-import java.util.List;
+import org.wso2.siddhi.core.exception.ExecutionPlanRuntimeException;
+
 import java.util.Vector;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-/**
- * Created by wso2123 on 8/30/16.
- */
 public class StreamingClassification extends Thread {
     private static final Logger logger = LoggerFactory.getLogger(StreamingClassification.class);
 
@@ -23,7 +36,7 @@ public class StreamingClassification extends Thread {
     private int numNominals = 0;
     private int paralle = 1;
     private int bagging = 1;
-    private String nominalAttVals = "";
+    private String nominalAttVals ;
     public int numEventsReceived = 0;
 
     public ConcurrentLinkedQueue<double[]> cepEvents;                                    //Cep events
@@ -31,7 +44,8 @@ public class StreamingClassification extends Thread {
 
     public StreamingClassificationTaskBuilder classificationTask;
 
-    public StreamingClassification(int maxInstance, int batchSize, int classes, int paraCount, int nominals, String str, int par, int bagging) {
+    public StreamingClassification(int maxInstance, int batchSize, int classes, int paraCount, int nominals, String str,
+                                   int par, int bagging) {
 
         this.maxInstance = maxInstance;
         this.numClasses = classes;
@@ -46,24 +60,24 @@ public class StreamingClassification extends Thread {
         this.samoaClassifiers = new ConcurrentLinkedQueue<Vector>();
 
         try {
-            this.classificationTask = new StreamingClassificationTaskBuilder(this.maxInstance, this.batchSize, this.numClasses, this.numAttributes, this.numNominals, this.cepEvents, this.samoaClassifiers, this.paralle, this.bagging);
+            this.classificationTask = new StreamingClassificationTaskBuilder(this.maxInstance, this.batchSize, this.numClasses,
+                    this.numAttributes, this.numNominals, this.cepEvents, this.samoaClassifiers, this.paralle, this.bagging);
         } catch (Exception e) {
-            System.out.println(e.toString());
+            throw new ExecutionPlanRuntimeException("Fail to Initiate the Streaming Classification : ", e);
         }
-        logger.info("Successfully Initiated the Streaming StreamingClassification Topology");
     }
 
     public void run() {
-        classificationTask.initTask(maxInstance, batchSize, numClasses, numAttributes, numNominals, nominalAttVals, paralle, bagging);
+        classificationTask.initTask(maxInstance, batchSize, numClasses, numAttributes, numNominals, nominalAttVals, paralle,
+                bagging);
     }
 
     public Object[] classify(double[] eventData) {
         numEventsReceived++;
         cepEvents.add(eventData);
-        Object[] output;
 
+        Object[] output;
         if (!samoaClassifiers.isEmpty()) {
-            String str = "";
             output = new Object[numAttributes];
             Vector prediction = samoaClassifiers.poll();
             for (int i = 0; i < prediction.size(); i++) {
@@ -79,7 +93,6 @@ public class StreamingClassification extends Thread {
     public Object[] getClassify() {
         Object[] output;
         if (!samoaClassifiers.isEmpty()) {
-            String str = "";
             output = new Object[numAttributes];
             Vector prediction = samoaClassifiers.poll();
             for (int i = 0; i < prediction.size(); i++) {

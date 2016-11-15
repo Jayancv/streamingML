@@ -1,6 +1,25 @@
+
+/*
+ * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ * WSO2 Inc. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
 package org.wso2.carbon.ml.siddhi.extension.streamingml;
 
-import org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.Clustering.StreamingClustering;
+import org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.clustering.StreamingClustering;
 import org.wso2.siddhi.core.config.ExecutionPlanContext;
 import org.wso2.siddhi.core.event.ComplexEvent;
 import org.wso2.siddhi.core.event.ComplexEventChunk;
@@ -8,82 +27,83 @@ import org.wso2.siddhi.core.event.stream.StreamEvent;
 import org.wso2.siddhi.core.event.stream.StreamEventCloner;
 import org.wso2.siddhi.core.event.stream.populater.ComplexEventPopulater;
 import org.wso2.siddhi.core.exception.ExecutionPlanCreationException;
+import org.wso2.siddhi.core.exception.ExecutionPlanRuntimeException;
 import org.wso2.siddhi.core.executor.ConstantExpressionExecutor;
 import org.wso2.siddhi.core.executor.ExpressionExecutor;
 import org.wso2.siddhi.core.query.processor.Processor;
 import org.wso2.siddhi.core.query.processor.stream.StreamProcessor;
 import org.wso2.siddhi.query.api.definition.AbstractDefinition;
 import org.wso2.siddhi.query.api.definition.Attribute;
+import org.wso2.siddhi.query.api.exception.ExecutionPlanValidationException;
+import org.wso2.siddhi.query.api.expression.condition.In;
 
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by mahesh on 6/4/16.
- */
 public class StreamingClusteringWithSamoaStreamProcessor extends StreamProcessor {
 
-    /*
-    Removed learnType and WindowShift becasue those variables not relevant to SAMOA
-     */
-   // private int learnType=0;
-   // private int windowShift =0 ;
-
     private int paramCount = 0;                                         // Number of x variables +1
-    private int calcInterval = 1;                                       // The frequency of regression calculation
     private int batchSize = 10;                                 // Maximum # of events, used for regression calculation
-    private double ci = 0.95;                                           // Confidence Interval
-    private double miniBatchFraction=1;
     private int paramPosition = 0;
-
-    private int numIterations = 100;
+    private int maxInstance = Integer.MAX_VALUE;
     private int numClusters = 1;
-    private int alpha = 0;
-    private double stepSize = 0.00000001;
-    private int featureSize=1;  //P
     private StreamingClustering streamingClusteringWithSamoa = null;
 
     @Override
-    protected List<Attribute> init(AbstractDefinition inputDefinition, ExpressionExecutor[] attributeExpressionExecutors, ExecutionPlanContext executionPlanContext) {
+    protected List<Attribute> init(AbstractDefinition inputDefinition, ExpressionExecutor[] attributeExpressionExecutors
+            , ExecutionPlanContext executionPlanContext) {
         paramCount = attributeExpressionLength;
-        int PARAM_WIDTH=5;
-        // Capture constant inputs
-        if (attributeExpressionExecutors[0] instanceof ConstantExpressionExecutor) {
+        int PARAM_WIDTH = 3;
 
-            paramCount = paramCount - PARAM_WIDTH;
-            featureSize=paramCount;//
+        if (attributeExpressionExecutors.length > PARAM_WIDTH) {
+            if (attributeExpressionExecutors[0].getReturnType() == Attribute.Type.INT) {
+                maxInstance = ((Integer) attributeExpressionExecutors[0].execute(null));
+                if (maxInstance == -1) {
+                    maxInstance = Integer.MAX_VALUE;
+                }
+            } else {
+                throw new ExecutionPlanValidationException("Invalid parameter type found for the first argument, " +
+                        "required " + Attribute.Type.INT + " but found " +
+                        attributeExpressionExecutors[0].getReturnType().toString());
+            }
 
-            paramPosition = PARAM_WIDTH;
-            try {
-              //  learnType = ((Integer) attributeExpressionExecutors[0].execute(null));
-              //   windowShift = ((Integer) attributeExpressionExecutors[1].execute(null));
-                batchSize = ((Integer) attributeExpressionExecutors[0].execute(null));
-                numIterations = ((Integer) attributeExpressionExecutors[1].execute(null));
+            if (attributeExpressionExecutors[1].getReturnType() == Attribute.Type.INT) {
+                batchSize = ((Integer) attributeExpressionExecutors[1].execute(null));
+            } else {
+                throw new ExecutionPlanValidationException("Invalid parameter type found for the second argument, " +
+                        "required " + Attribute.Type.INT + " but found " +
+                        attributeExpressionExecutors[1].getReturnType().toString());
+            }
+
+
+            if (attributeExpressionExecutors[2].getReturnType() == Attribute.Type.INT) {
                 numClusters = ((Integer) attributeExpressionExecutors[2].execute(null));
-                alpha         = ((Integer) attributeExpressionExecutors[3].execute(null));
-            } catch (ClassCastException c) {
-                throw new ExecutionPlanCreationException("learn type, windowShift, batchSize and number of Iterations should be of type int");
+            } else {
+                throw new ExecutionPlanValidationException("Invalid parameter type found for the fourth argument, " +
+                        "required " + Attribute.Type.INT + " but found " +
+                        attributeExpressionExecutors[2].getReturnType().toString());
             }
 
-            try {
-                ci = ((Double) attributeExpressionExecutors[4].execute(null));
-            } catch (ClassCastException c) {
-                throw new ExecutionPlanCreationException("Confidence interval should be of type double and a value between 0 and 1");
-            }
+
+        } else {
+            throw new ExecutionPlanValidationException("Invalid no of arguments, required more than " + (PARAM_WIDTH) +
+                    ", but found " + attributeExpressionExecutors.length + "(Attribute count should be equal or" +
+                    " grater than 1) : streamingClusteringSamoa(numMaxEvents,miniBatch, numClusters, " +
+                    " ,attribute_set)");
         }
-        System.out.println("Streaming Clustering  Parameters: "+" "+batchSize+" "+" "+ci+"\n");
-        // Pick the appropriate regression calculator
 
-        streamingClusteringWithSamoa = new StreamingClustering(paramCount, batchSize, ci,numClusters, numIterations,alpha);
+        paramCount = paramCount - PARAM_WIDTH;
+        paramPosition = PARAM_WIDTH;
+        streamingClusteringWithSamoa = new StreamingClustering(paramCount, batchSize, numClusters);
         try {
             Thread.sleep(1000);
-        }catch(Exception e){
+        } catch (Exception e) {
 
         }
         new Thread(streamingClusteringWithSamoa).start();
         // Add attributes for standard error and all beta values
         String betaVal;
-        ArrayList<Attribute> attributes = new ArrayList<Attribute>(numClusters+1);
+        ArrayList<Attribute> attributes = new ArrayList<Attribute>(numClusters + 1);
         attributes.add(new Attribute("stderr", Attribute.Type.DOUBLE));
 
         for (int itr = 0; itr < numClusters; itr++) {
@@ -95,27 +115,19 @@ public class StreamingClusteringWithSamoaStreamProcessor extends StreamProcessor
     }
 
     @Override
-    protected void process(ComplexEventChunk<StreamEvent> streamEventChunk, Processor nextProcessor, StreamEventCloner streamEventCloner, ComplexEventPopulater complexEventPopulater) {
+    protected void process(ComplexEventChunk<StreamEvent> streamEventChunk, Processor nextProcessor, StreamEventCloner
+            streamEventCloner, ComplexEventPopulater complexEventPopulater) {
         synchronized (this) {
             while (streamEventChunk.hasNext()) {
                 ComplexEvent complexEvent = streamEventChunk.next();
 
-                Object[] inputData = new Object[attributeExpressionLength - paramPosition];
-                Double[] eventData = new Double[attributeExpressionLength - paramPosition];
-                double [] cepEvent = new double[attributeExpressionLength - paramPosition];
+                double[] cepEvent = new double[attributeExpressionLength - paramPosition];
                 Double value;
                 for (int i = paramPosition; i < attributeExpressionLength; i++) {
-                    inputData[i - paramPosition] = attributeExpressionExecutors[i].execute(complexEvent);
-                    value=eventData[i - paramPosition] = (Double) attributeExpressionExecutors[i].execute(complexEvent);
-                    cepEvent[i - paramPosition] = (double)value;
+                    cepEvent[i - paramPosition] = (double) attributeExpressionExecutors[i].execute(complexEvent);
                 }
 
-                //Object[] outputData = regressionCalculator.calculateLinearRegression(inputData);
                 Object[] outputData = null;
-
-                // Object[] outputData= streamingLinearRegression.addToRDD(eventData);
-                //Calling the regress function
-               // System.out.println("Processs ");
                 outputData = streamingClusteringWithSamoa.cluster(cepEvent);
 
                 // Skip processing if user has specified calculation interval
@@ -132,12 +144,12 @@ public class StreamingClusteringWithSamoaStreamProcessor extends StreamProcessor
 
     @Override
     public void start() {
-
+        //Do nothing
     }
 
     @Override
     public void stop() {
-
+        //Do nothing
     }
 
     @Override
@@ -147,7 +159,7 @@ public class StreamingClusteringWithSamoaStreamProcessor extends StreamProcessor
 
     @Override
     public void restoreState(Object[] state) {
-
+        //Do nothing
     }
 
 }

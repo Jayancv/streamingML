@@ -1,6 +1,25 @@
-package org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.Clustering;
+/*
+ * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ * WSO2 Inc. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+package org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.clustering;
 
 import com.github.javacliparser.IntOption;
+
 import org.apache.samoa.instances.*;
 import org.apache.samoa.moa.core.DataPoint;
 import org.apache.samoa.moa.core.Example;
@@ -9,6 +28,7 @@ import org.apache.samoa.moa.core.ObjectRepository;
 import org.apache.samoa.moa.tasks.TaskMonitor;
 import org.apache.samoa.streams.InstanceStream;
 import org.apache.samoa.streams.clustering.ClusteringStream;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,21 +36,15 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-/**
- * Created by mahesh on 7/17/16.
- */
-public class StreamingClusteringStream  extends ClusteringStream {
+public class StreamingClusteringStream extends ClusteringStream {
     private static final Logger logger = LoggerFactory.getLogger(StreamingClusteringStream.class);
+
     protected InstancesHeader streamHeader;
     private int numGeneratedInstances;
-    private int nextEventCounter;
     LinkedList<DataPoint> points = new LinkedList<DataPoint>();
 
-    //LinkedList<double[]>cepEvents;
     public ConcurrentLinkedQueue<double[]> cepEvents;
-    //public ConcurrentLinkedQueue<Clustering>samoaClusters;
-
-    double [] values; //Cep Event
+    double[] values;
     private int numAttributes;
 
     public IntOption numClusterOption = new IntOption("numCluster", 'K',
@@ -39,21 +53,20 @@ public class StreamingClusteringStream  extends ClusteringStream {
     @Override
     protected void prepareForUseImpl(TaskMonitor taskMonitor, ObjectRepository objectRepository) {
         taskMonitor.setCurrentActivity("Preparing random RBF...", -1.0);
-        this.numAttributes =this.numAttsOption.getValue();
-        logger.info("Number of Attributes in the Stream : "+this.numAttributes);
+        this.numAttributes = this.numAttsOption.getValue();
         generateHeader();
         restart();
-        //logger.info("Succefully Prepare MyClusteringStream for Implementation");
         values = new double[numAttributes];
 
-        for(int i=0;i<numAttributes;i++){
-            values[i]=0;
+        for (int i = 0; i < numAttributes; i++) {
+            values[i] = 0;
         }
     }
 
     @Override
     public InstancesHeader getHeader() {
-        return streamHeader;}
+        return streamHeader;
+    }
 
     @Override
     public long estimatedRemainingInstances() {
@@ -68,13 +81,11 @@ public class StreamingClusteringStream  extends ClusteringStream {
     @Override
     public Example<Instance> nextInstance() {
 
-        if(numGeneratedInstances == 0){
-            logger.info("Sending First Samoa Instance.....");
+        if (numGeneratedInstances == 0) {
+
             numGeneratedInstances++;
-            //double[] values = this.values;
-            double[] values_new = new double[numAttsOption.getValue()]; // +1
-            int clusterChoice = -1;
-            while(cepEvents == null);
+            double[] values_new = new double[numAttsOption.getValue()];
+            while (cepEvents == null) ;
             while (cepEvents.isEmpty()) ;
             double[] values = cepEvents.poll();
             System.arraycopy(values, 0, values_new, 0, values.length);
@@ -82,17 +93,11 @@ public class StreamingClusteringStream  extends ClusteringStream {
             inst.setDataset(getHeader());
             return new InstanceExample(inst);
 
-        }else {
+        } else {
             numGeneratedInstances++;
-           // logger.info("Sending Samoa Instance :"+numGeneratedInstances);
-            double[] values_new = new double[numAttsOption.getValue()]; // +1
-            //logger.info("I am here");
-
-            //while(cepEvents == null);
+            double[] values_new = new double[numAttsOption.getValue()];
             while (cepEvents.isEmpty()) ;
-            //logger.info("Cep Events Not Empty");
             double[] values = cepEvents.poll();
-            int clusterChoice = -1;
             System.arraycopy(values, 0, values_new, 0, values.length);
             Instance inst = new DenseInstance(1.0, values_new);
             inst.setDataset(getHeader());
@@ -121,7 +126,7 @@ public class StreamingClusteringStream  extends ClusteringStream {
 
     }
 
-    protected void generateHeader() { // 2013/06/02: Noise label
+    protected void generateHeader() {
         ArrayList<Attribute> attributes = new ArrayList<Attribute>();
         for (int i = 0; i < this.numAttsOption.getValue(); i++) {
             attributes.add(new Attribute("att" + (i + 1)));
@@ -137,8 +142,7 @@ public class StreamingClusteringStream  extends ClusteringStream {
         streamHeader.setClassIndex(streamHeader.numAttributes() - 1);
     }
 
-
-    public void setCepEvents(ConcurrentLinkedQueue<double[]>cepEvents){
+    public void setCepEvents(ConcurrentLinkedQueue<double[]> cepEvents) {
         this.cepEvents = cepEvents;
     }
 }

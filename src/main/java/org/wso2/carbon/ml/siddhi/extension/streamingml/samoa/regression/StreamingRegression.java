@@ -1,14 +1,29 @@
-package org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.Regression;
+/*
+ * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ * WSO2 Inc. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+package org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.regression;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.wso2.siddhi.core.exception.ExecutionPlanRuntimeException;
 
 import java.util.Vector;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-/**
- * Created by wso2123 on 10/14/16.
- */
 public class StreamingRegression extends Thread {
     private static final Logger logger = LoggerFactory.getLogger(StreamingRegression.class);
 
@@ -16,7 +31,6 @@ public class StreamingRegression extends Thread {
     private int batchSize = 500;            //Output display interval
     private int numAttributes = 0;
     private int paralle = 1;
-    private int bagging = 1;
     public int numEventsReceived = 0;
 
     public ConcurrentLinkedQueue<double[]> cepEvents;
@@ -24,27 +38,25 @@ public class StreamingRegression extends Thread {
 
     public StreamingRegressionTaskBuilder regressionTask;
 
-
-    public StreamingRegression(int maxint, int batchSize, int paramCount, int parallelism, int bagging) {
+    public StreamingRegression(int maxint, int batchSize, int paramCount, int parallelism) {
 
         this.maxInstance = maxint;
         this.numAttributes = paramCount;
         this.batchSize = batchSize;
         this.paralle = parallelism;
-        this.bagging = bagging;
 
         this.cepEvents = new ConcurrentLinkedQueue<double[]>();
         this.samoaPredictions = new ConcurrentLinkedQueue<Vector>();
         try {
-            this.regressionTask = new StreamingRegressionTaskBuilder(this.maxInstance, this.batchSize, this.numAttributes, this.cepEvents, this.samoaPredictions, this.paralle, this.bagging);
+            this.regressionTask = new StreamingRegressionTaskBuilder(this.maxInstance, this.batchSize,
+                    this.numAttributes, this.cepEvents, this.samoaPredictions, this.paralle);
         } catch (Exception e) {
-            System.out.println(e.toString());
+            throw new ExecutionPlanRuntimeException("Fail to Initiate the Streaming Regression.", e);
         }
-        logger.info("Successfully Initiated the Streaming StreamingRegression Topology");
     }
 
     public void run() {
-        regressionTask.initTask(maxInstance, batchSize, numAttributes, paralle, bagging);
+        regressionTask.initTask();
     }
 
     public Object[] regress(double[] cepEvent) {
@@ -52,8 +64,7 @@ public class StreamingRegression extends Thread {
         cepEvents.add(cepEvent);
         Object[] output;
 
-        if (!samoaPredictions.isEmpty()) {                     // poll predicted events from prediction queue 
-            String str = "";
+        if (!samoaPredictions.isEmpty()) {                     // poll predicted events from prediction queue
             output = new Object[numAttributes];
             Vector prediction = samoaPredictions.poll();
             for (int i = 0; i < prediction.size(); i++) {
@@ -66,11 +77,10 @@ public class StreamingRegression extends Thread {
         return output;
     }
 
-    public Object[] regress() {                                       // for cep timeEvents
+    public Object[] regress() {                                       // for cep timerEvents
         numEventsReceived++;
         Object[] output;
         if (!samoaPredictions.isEmpty()) {
-            String str = "";
             output = new Object[numAttributes];
             Vector prediction = samoaPredictions.poll();
             for (int i = 0; i < prediction.size(); i++) {

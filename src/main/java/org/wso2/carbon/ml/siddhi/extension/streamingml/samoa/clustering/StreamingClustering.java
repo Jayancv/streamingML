@@ -1,32 +1,39 @@
-package org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.Clustering;
+/*
+ * Copyright (c) 2016, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ * WSO2 Inc. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+package org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.clustering;
 
 import org.apache.samoa.moa.cluster.Cluster;
 import org.apache.samoa.moa.cluster.Clustering;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-/**
- * Created by mahesh on 6/4/16.
- */
+
 public class StreamingClustering extends Thread{
 
     private int paramCount = 0;
-    private int numAttributes=0;                                // Number of x variables +1
-    private int batchSize = 10;                                 // Maximum # of events, used for regression calculation
-    private double ci = 0.95;                                           // Confidence Interval
+    private int numAttributes=0;
+    private int batchSize = 10;
     private int numClusters=1;
-    private int numIterations = 100;
-    private double alpha=0;
-    private int nt=0;
-    private int mt=0;
-    private List<String> eventsMem=null;
-
-    private boolean isBuiltModel;
-    private MODEL_TYPE type;
-    public enum MODEL_TYPE {BATCH_PROCESS, MOVING_WINDOW,TIME_BASED }
 
     public ConcurrentLinkedQueue<double[]>cepEvents;
     public ConcurrentLinkedQueue<Clustering>samoaClusters;
@@ -36,17 +43,12 @@ public class StreamingClustering extends Thread{
     public StreamingClusteringTaskBuilder clusteringTask;
     private static final Logger logger = LoggerFactory.getLogger(StreamingClustering.class);
 
-    public StreamingClustering(int paramCount, int batchSize, double ci, int numClusters,int numIteration, double alpha){
-        //this.learnType = learnType;
+    public StreamingClustering(int paramCount, int batchSize,  int numClusters){
         this.paramCount =paramCount;
         this.numAttributes = paramCount;
         this.batchSize = batchSize;
-        this.ci = ci;
         this.numClusters = numClusters;
-        this.numIterations = numIteration ;
-        this.alpha = alpha;
-        this.isBuiltModel = false;
-        type= MODEL_TYPE.BATCH_PROCESS;
+
 
         this.cepEvents = new ConcurrentLinkedQueue<double[]>();
         this.samoaClusters = new  ConcurrentLinkedQueue<Clustering>();
@@ -66,17 +68,14 @@ public class StreamingClustering extends Thread{
 
     public Object[] cluster(double[] eventData) {
         numEventsReceived++;
-        //logger.info("CEP Event Received : "+numEventsReceived);
         cepEvents.add(eventData);
 
         Object[] output;
         if(!samoaClusters.isEmpty()){
-            logger.info("Micro Clustering Done : Update the Model");
+
             output = new Object[numClusters +1];
             output[0] = 0.0;
             Clustering clusters = samoaClusters.poll();
-            int dim = clusters.dimension();
-            logger.info("Number of KMeans Clusters : "+ clusters.size());
             for (int i=0;i<numClusters;i++){
                 Cluster cluster= clusters.get(i);
                 String centerStr="";
@@ -86,10 +85,7 @@ public class StreamingClustering extends Thread{
                     centerStr += (","+center[j]);
                 }
                 output[i+1]= centerStr;
-                logger.info("Center :"+i+": "+centerStr);
             }
-            //for(int i=0;i<dim;i++){
-            //  output[i+1] = ""      }
 
         }else{
             output=null;
