@@ -70,7 +70,6 @@ public class StreamingRegression extends Thread {
             for (int i = 0; i < prediction.size(); i++) {
                 output[i] = prediction.get(i);
             }
-            System.out.println(prediction);
         } else {
             output = null;
         }

@@ -69,7 +69,7 @@ public class ClassificationTestCase {
                     Assert.assertEquals("versicolor", inEvents[0].getData()[4]);
                 }
                 if (count == 3) {
-                    Assert.assertEquals("setosa", inEvents[0].getData()[4]);
+                    Assert.assertEquals("virginica", inEvents[0].getData()[4]);
                 }
                 EventPrinter.print(timeStamp, inEvents, removeEvents);
 
@@ -78,7 +78,7 @@ public class ClassificationTestCase {
 
         try {
             Scanner scn;
-            File f = new File("iris.csv");
+            File f = new File("src/main/resources/iris.csv");
             FileReader fr = new FileReader(f);
             BufferedReader br = new BufferedReader(fr);
             scn = new Scanner(br);
@@ -102,6 +102,7 @@ public class ClassificationTestCase {
             }
 
             Thread.sleep(1100);
+            Assert.assertEquals(3, count);
             executionPlanRuntime.shutdown();
         } catch (Exception e) {
             logger.info(e.toString());

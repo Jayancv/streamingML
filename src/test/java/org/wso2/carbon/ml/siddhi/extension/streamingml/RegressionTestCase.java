@@ -19,6 +19,7 @@
 
 package org.wso2.carbon.ml.siddhi.extension.streamingml;
 
+import junit.framework.Assert;
 import org.apache.log4j.Logger;
 import org.junit.Before;
 import org.junit.Test;
@@ -53,7 +54,7 @@ public class RegressionTestCase {
         String inStreamDefinition = " define stream inputStream (attribute_0 double, attribute_1 double, " +
                 "attribute_2 double, attribute_3 double, attribute_4 double );";
 
-        String query = ("@info(name = 'query2') from inputStream#streamingml:streamingRegressionSamoa(3000,500,5,4," +
+        String query = ("@info(name = 'query2') from inputStream#streamingml:streamingRegressionSamoa(300,50,5,4," +
                 " attribute_0, attribute_1 , attribute_2 , attribute_3 , attribute_4) " +
                 "select att_0 as arrtibute_0,att_1 as arrtibute_1,att_2 as arrtibute_2,att_3 as arrtibute_3, " +
                 "prediction as prediction insert into outputStream;");
@@ -62,6 +63,14 @@ public class RegressionTestCase {
         executionPlanRuntime.addCallback("query2", new QueryCallback() {
             @Override
             public void receive(long timeStamp, Event[] inEvents, Event[] removeEvents) {
+                count++;
+                if (count == 1) {
+                    Assert.assertEquals(9.28, inEvents[0].getData()[0]);
+                    Assert.assertEquals(41.54, inEvents[0].getData()[1]);
+                    Assert.assertEquals(1018.33, inEvents[0].getData()[2]);
+                    Assert.assertEquals(79.89, inEvents[0].getData()[3]);
+                    Assert.assertEquals(474.19459146744055, inEvents[0].getData()[4]);
+                }
                 EventPrinter.print(timeStamp, inEvents, removeEvents);
                 eventArrived = true;
             }
@@ -69,7 +78,7 @@ public class RegressionTestCase {
 
         try {
             Scanner scn;
-            File f = new File("ccpp.csv");
+            File f = new File("src/main/resources/ccpp.csv");
             FileReader fr = new FileReader(f);
             BufferedReader br = new BufferedReader(fr);
             scn = new Scanner(br);
@@ -92,12 +101,9 @@ public class RegressionTestCase {
                 }
             }
 
-
-
-
-            Thread.sleep(1100);
-            //  Assert.assertEquals(2, count);
-//            Assert.assertTrue(eventArrived);
+            Thread.sleep(100);
+            Assert.assertEquals(1, count);
+            Assert.assertTrue(eventArrived);
             executionPlanRuntime.shutdown();
         } catch (Exception e) {
             logger.info(e.toString());

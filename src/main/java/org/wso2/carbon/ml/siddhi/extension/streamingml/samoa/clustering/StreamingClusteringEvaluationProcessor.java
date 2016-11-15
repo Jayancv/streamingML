@@ -51,7 +51,6 @@ public class StreamingClusteringEvaluationProcessor implements Processor {
         }
 
         else if(event instanceof ClusteringResultContentEvent){
-            logger.info(event.getKey()+" "+evalPoint+" ClusteringResultContentEvent "+numClusters);
             ClusteringResultContentEvent resultEvent = (ClusteringResultContentEvent)event;
             Clustering clustering=resultEvent.getClustering();
             Clustering kmeansClustering = WithKmeans.kMeans_rand(numClusters,clustering);
