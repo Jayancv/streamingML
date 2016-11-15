@@ -2,39 +2,68 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="4823d502-0232-430a-8405-6c28f1f344e8" name="Default" comment="">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Classification/StreamingClassification$MODEL_TYPE.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Regression/StreamingRegressionEvaluatorProcessor.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/classification/Simulator.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/classification/StreamingClassification$MODEL_TYPE.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/classification/StreamingClassification.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/classification/StreamingClassificationEntranceProcessor$DelayTimeoutHandler.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/classification/StreamingClassificationEntranceProcessor.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/classification/StreamingClassificationEvaluationProcessor$1.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/classification/StreamingClassificationEvaluationProcessor$Builder.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/classification/StreamingClassificationEvaluationProcessor.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/classification/StreamingClassificationStream.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/classification/StreamingClassificationTask.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/classification/StreamingClassificationTaskBuilder.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/target/test-classes/org/wso2/carbon/ml/siddhi/extension/streamingml/AppTest.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/libraries/Maven__junit_junit_3_8_1.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/resources/ccpp.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/resources/ccppTest.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/main/resources/iris.csv" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/StreamingKMeansClusteringStreamProcessor.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/StreamingLinearRegressionStreamProcessor.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/algorithm/CEPEventSimulator.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/algorithm/StreamingKMeansClustering$1.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/algorithm/StreamingKMeansClustering$MODEL_TYPE.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/algorithm/StreamingKMeansClustering.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/algorithm/StreamingKMeansClusteringModel.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/algorithm/StreamingLinearRegression$1.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/algorithm/StreamingLinearRegression$2.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/algorithm/StreamingLinearRegression$3.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/algorithm/StreamingLinearRegression$MODEL_TYPE.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/algorithm/StreamingLinearRegression.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/algorithm/StreamingLinearRegressionModel.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Classification/Simulator.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Classification/StreamingClassification.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Classification/StreamingClassificationEntranceProcessor$DelayTimeoutHandler.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Classification/StreamingClassificationEntranceProcessor.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Classification/StreamingClassificationEvaluationProcessor$1.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Classification/StreamingClassificationEvaluationProcessor$Builder.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Classification/StreamingClassificationEvaluationProcessor.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Classification/StreamingClassificationPerformanceEvaluator.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Classification/StreamingClassificationStream.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Classification/StreamingClassificationTask.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Classification/StreamingClassificationTaskBuilder.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Clustering/CepEventSimulator.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Clustering/StreamingClustering$MODEL_TYPE.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Clustering/StreamingClustering.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Clustering/StreamingClusteringEntranceProcessor.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Clustering/StreamingClusteringEvaluationProcessor.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Clustering/StreamingClusteringStream.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Clustering/StreamingClusteringTask.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Clustering/StreamingClusteringTaskBuilder.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Regression/RegressionSimulator.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Regression/StreamingRegression.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Regression/StreamingRegressionEntranceProcessor$DelayTimeoutHandler.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Regression/StreamingRegressionEntranceProcessor.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Regression/StreamingRegressionEvaluationProcessor$Builder.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Regression/StreamingRegressionEvaluationProcessor.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Regression/StreamingRegressionStream.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Regression/StreamingRegressionTask.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Regression/StreamingRegressionTaskBuilder.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/maven-archiver/pom.properties" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/streamingml-1.0-SNAPSHOT.jar" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/surefire-reports/TEST-org.wso2.carbon.ml.siddhi.extension.streamingml.AppTest.xml" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/target/surefire-reports/org.wso2.carbon.ml.siddhi.extension.streamingml.AppTest.txt" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/StreamingClassificationWithSamoaStreamProcessor.class" afterPath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/StreamingClassificationWithSamoaStreamProcessor.class" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/StreamingClusteringWithSamoaStreamProcessor.class" afterPath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/StreamingClusteringWithSamoaStreamProcessor.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Classification/Simulator.class" afterPath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Classification/Simulator.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Classification/StreamingClassification.class" afterPath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Classification/StreamingClassification.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Classification/StreamingClassificationEntranceProcessor$DelayTimeoutHandler.class" afterPath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Classification/StreamingClassificationEntranceProcessor$DelayTimeoutHandler.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Classification/StreamingClassificationEntranceProcessor.class" afterPath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Classification/StreamingClassificationEntranceProcessor.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Classification/StreamingClassificationEvaluationProcessor$Builder.class" afterPath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Classification/StreamingClassificationEvaluationProcessor$Builder.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Classification/StreamingClassificationEvaluationProcessor.class" afterPath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Classification/StreamingClassificationEvaluationProcessor.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Classification/StreamingClassificationPerformanceEvaluator.class" afterPath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Classification/StreamingClassificationPerformanceEvaluator.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Classification/StreamingClassificationStream.class" afterPath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Classification/StreamingClassificationStream.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Classification/StreamingClassificationTask.class" afterPath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Classification/StreamingClassificationTask.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Clustering/CepEventSimulator.class" afterPath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Clustering/CepEventSimulator.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Clustering/StreamingClustering.class" afterPath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Clustering/StreamingClustering.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Regression/RegressionSimulator.class" afterPath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Regression/RegressionSimulator.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Regression/StreamingRegressionEntranceProcessor.class" afterPath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Regression/StreamingRegressionEntranceProcessor.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Regression/StreamingRegressionStream.class" afterPath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Regression/StreamingRegressionStream.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Regression/StreamingRegressionTask.class" afterPath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Regression/StreamingRegressionTask.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Regression/StreamingRegressionTaskBuilder.class" afterPath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Regression/StreamingRegressionTaskBuilder.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/StreamingRegressionWithSamoaStreamProcessor.class" afterPath="$PROJECT_DIR$/target/classes/org/wso2/carbon/ml/siddhi/extension/streamingml/StreamingRegressionWithSamoaStreamProcessor.class" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/pom.xml" afterPath="$PROJECT_DIR$/pom.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/wso2/carbon/ml/siddhi/extension/streamingml/StreamingClusteringWithSamoaStreamProcessor.java" afterPath="$PROJECT_DIR$/src/main/java/org/wso2/carbon/ml/siddhi/extension/streamingml/StreamingClusteringWithSamoaStreamProcessor.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/clustering/StreamingClustering.java" afterPath="$PROJECT_DIR$/src/main/java/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/clustering/StreamingClustering.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/java/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/clustering/StreamingClusteringTaskBuilder.java" afterPath="$PROJECT_DIR$/src/main/java/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/clustering/StreamingClusteringTaskBuilder.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/main/resources/streamingml.siddhiext" afterPath="$PROJECT_DIR$/src/main/resources/streamingml.siddhiext" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/test/java/org/wso2/carbon/ml/siddhi/extension/streamingml/ClassificationTestCase.java" afterPath="$PROJECT_DIR$/src/test/java/org/wso2/carbon/ml/siddhi/extension/streamingml/ClassificationTestCase.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/test/java/org/wso2/carbon/ml/siddhi/extension/streamingml/ClusteringTestCase.java" afterPath="$PROJECT_DIR$/src/test/java/org/wso2/carbon/ml/siddhi/extension/streamingml/ClusteringTestCase.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/test/java/org/wso2/carbon/ml/siddhi/extension/streamingml/RegressionTestCase.java" afterPath="$PROJECT_DIR$/src/test/java/org/wso2/carbon/ml/siddhi/extension/streamingml/RegressionTestCase.java" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/streamingml.iml" afterPath="$PROJECT_DIR$/streamingml.iml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/target/classes/streamingml.siddhiext" afterPath="$PROJECT_DIR$/target/classes/streamingml.siddhiext" />
     </list>
     <ignored path="streamingml.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -60,117 +89,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="StreamingClassification.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Classification/StreamingClassification.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="996">
-              <caret line="122" column="12" selection-start-line="122" selection-start-column="12" selection-end-line="122" selection-end-column="12" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="StreamingClassificationWithSamoaStreamProcessor.java" pinned="false" current-in-tab="false">
+      <file leaf-file-name="StreamingClassificationWithSamoaStreamProcessor.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/org/wso2/carbon/ml/siddhi/extension/streamingml/StreamingClassificationWithSamoaStreamProcessor.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="105">
-              <caret line="23" column="13" selection-start-line="23" selection-start-column="13" selection-end-line="23" selection-end-column="13" />
-              <folding>
-                <element signature="imports" expanded="false" />
-                <element signature="e#7750#7751#0" expanded="false" />
-                <element signature="e#7786#7787#0" expanded="false" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="StreamingClassificationStream.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Classification/StreamingClassificationStream.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="105">
-              <caret line="22" column="13" selection-start-line="22" selection-start-column="13" selection-end-line="22" selection-end-column="13" />
-              <folding>
-                <element signature="imports" expanded="false" />
-                <element signature="e#4226#4227#0" expanded="false" />
-                <element signature="e#4261#4262#0" expanded="false" />
-                <element signature="e#4324#4325#0" expanded="false" />
-                <element signature="e#4350#4351#0" expanded="false" />
-                <element signature="e#4405#4406#0" expanded="false" />
-                <element signature="e#4432#4433#0" expanded="false" />
-                <element signature="e#5722#5723#0" expanded="false" />
-                <element signature="e#5749#5750#0" expanded="false" />
-                <element signature="e#6000#6001#0" expanded="false" />
-                <element signature="e#6042#6043#0" expanded="false" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Simulator.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Classification/Simulator.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="420">
-              <caret line="36" column="31" selection-start-line="36" selection-start-column="31" selection-end-line="36" selection-end-column="31" />
-              <folding>
-                <element signature="imports" expanded="false" />
-                <element signature="e#2181#2189#0" expanded="false" />
-                <element signature="e#2292#2311#0" expanded="false" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="AppTestCase.java" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/test/java/org/wso2/carbon/ml/siddhi/extension/streamingml/AppTestCase.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="285">
-              <caret line="19" column="77" selection-start-line="19" selection-start-column="77" selection-end-line="19" selection-end-column="77" />
-              <folding>
-                <element signature="imports" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="StreamingClassificationEntranceProcessor.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Classification/StreamingClassificationEntranceProcessor.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="105">
-              <caret line="20" column="13" selection-start-line="20" selection-start-column="13" selection-end-line="20" selection-end-column="13" />
-              <folding>
-                <element signature="imports" expanded="false" />
-                <element signature="e#1936#1937#0" expanded="false" />
-                <element signature="e#1980#1981#0" expanded="false" />
-                <element signature="e#3189#3190#0" expanded="false" />
-                <element signature="e#3220#3221#0" expanded="false" />
-                <element signature="e#3434#3435#0" expanded="false" />
-                <element signature="e#3469#3470#0" expanded="false" />
-                <element signature="e#3818#3819#0" expanded="false" />
-                <element signature="e#3864#3865#0" expanded="false" />
-                <element signature="e#4141#4142#0" expanded="false" />
-                <element signature="e#4180#4181#0" expanded="false" />
-                <element signature="e#5923#5924#0" expanded="false" />
-                <element signature="e#5966#5967#0" expanded="false" />
-                <element signature="e#6011#6012#0" expanded="false" />
-                <element signature="e#6045#6046#0" expanded="false" />
-                <element signature="e#6080#6081#0" expanded="false" />
-                <element signature="e#6113#6114#0" expanded="false" />
-                <element signature="e#6161#6162#0" expanded="false" />
-                <element signature="e#6199#6200#0" expanded="false" />
-                <element signature="e#6419#6420#0" expanded="false" />
-                <element signature="e#6469#6470#0" expanded="false" />
-                <element signature="e#6498#6499#0" expanded="false" />
-                <element signature="e#6557#6558#0" expanded="false" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="StreamingClassificationEvaluationProcessor.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Classification/StreamingClassificationEvaluationProcessor.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-210">
-              <caret line="27" column="13" selection-start-line="27" selection-start-column="13" selection-end-line="27" selection-end-column="13" />
+              <caret line="42" column="0" selection-start-line="42" selection-start-column="0" selection-end-line="42" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -222,8 +145,8 @@
         <option value="$PROJECT_DIR$/src/main/java/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Classification/Simulator.java" />
         <option value="$PROJECT_DIR$/src/main/java/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Classification/StreamingClassificationPerformanceEvaluator.java" />
         <option value="$PROJECT_DIR$/src/main/java/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Classification/StreamingClassification.java" />
-        <option value="$PROJECT_DIR$/src/main/java/org/wso2/carbon/ml/siddhi/extension/streamingml/StreamingClassificationWithSamoaStreamProcessor.java" />
         <option value="$PROJECT_DIR$/src/test/java/org/wso2/carbon/ml/siddhi/extension/streamingml/AppTestCase.java" />
+        <option value="$PROJECT_DIR$/src/main/java/org/wso2/carbon/ml/siddhi/extension/streamingml/StreamingClassificationWithSamoaStreamProcessor.java" />
       </list>
     </option>
   </component>
@@ -270,7 +193,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
           <PATH>
@@ -711,63 +633,11 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="target" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="streamingml" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="streamingml-1" />
+              <option name="myItemId" value="src" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="target" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="classes" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="streamingml" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="streamingml-1" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="target" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="classes" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="org" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="wso2" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="carbon" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="ml" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="siddhi" />
+              <option name="myItemId" value="test" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -871,78 +741,11 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="streamingml" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="streamingml-1" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="streamingml" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="samoa" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Clustering" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="streamingml" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="streamingml-1" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="main" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="java" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="streamingml" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="samoa" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Classification" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
         </subPane>
       </pane>
-      <pane id="Scratches" />
       <pane id="Scope" />
+      <pane id="PackagesPane" />
+      <pane id="Scratches" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -1384,7 +1187,7 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="69" y="27" width="1851" height="1053" extended-state="6" />
-    <editor active="true" />
+    <editor active="false" />
     <layout>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32946146" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
@@ -1392,9 +1195,9 @@
       <window_info id="Capture Analysis" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25554383" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.17001057" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.4625132" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.21932259" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
@@ -1643,14 +1446,7 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/classification/ClassificationEntranceProcessor.java" />
-    <entry file="file://$PROJECT_DIR$/src/main/java/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Clustering/StreamingClusteringEntranceProcessor.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1620">
-          <caret line="140" column="0" selection-start-line="140" selection-start-column="0" selection-end-line="140" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Clustering/StreamingClusteringEntranceProcessor.java" />
     <entry file="jar://$MAVEN_REPOSITORY$/org/apache/samoa/samoa-api/0.4.0-incubating-SNAPSHOT/samoa-api-0.4.0-incubating-SNAPSHOT.jar!/org/apache/samoa/moa/classifiers/core/attributeclassobservers/NominalAttributeClassObserver.class">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="90">
@@ -1665,13 +1461,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Clustering/CepEventSimulator.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1200">
-          <caret line="86" column="9" selection-start-line="54" selection-start-column="19" selection-end-line="86" selection-end-column="9" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Clustering/CepEventSimulator.java" />
     <entry file="jar://$MAVEN_REPOSITORY$/org/apache/samoa/samoa-api/0.4.0-incubating-SNAPSHOT/samoa-api-0.4.0-incubating-SNAPSHOT.jar!/org/apache/samoa/learners/classifiers/trees/VerticalHoeffdingTree.class">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="705">
@@ -1730,129 +1520,22 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/classification/Simulator.java" />
-    <entry file="file://$PROJECT_DIR$/src/main/java/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Classification/StreamingClassificationPerformanceEvaluator.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="75">
-          <caret line="80" column="13" selection-start-line="80" selection-start-column="13" selection-end-line="80" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Classification/StreamingClassificationTaskBuilder.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="60">
-          <caret line="19" column="13" selection-start-line="19" selection-start-column="13" selection-end-line="19" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Classification/StreamingClassificationPerformanceEvaluator.java" />
+    <entry file="file://$PROJECT_DIR$/src/main/java/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Classification/StreamingClassificationTaskBuilder.java" />
     <entry file="file://$PROJECT_DIR$/src/main/java/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/classification/StreamingClassificationTaskBuilder.java" />
     <entry file="file://$PROJECT_DIR$/src/main/java/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/classification/StreamingClassification.java" />
-    <entry file="file://$PROJECT_DIR$/src/main/java/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Clustering/StreamingClusteringStream.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="690">
-          <caret line="79" column="51" selection-start-line="79" selection-start-column="51" selection-end-line="79" selection-end-column="51" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Classification/StreamingClassificationStream.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="105">
-          <caret line="22" column="13" selection-start-line="22" selection-start-column="13" selection-end-line="22" selection-end-column="13" />
-          <folding>
-            <element signature="imports" expanded="false" />
-            <element signature="e#4226#4227#0" expanded="false" />
-            <element signature="e#4261#4262#0" expanded="false" />
-            <element signature="e#4324#4325#0" expanded="false" />
-            <element signature="e#4350#4351#0" expanded="false" />
-            <element signature="e#4405#4406#0" expanded="false" />
-            <element signature="e#4432#4433#0" expanded="false" />
-            <element signature="e#5722#5723#0" expanded="false" />
-            <element signature="e#5749#5750#0" expanded="false" />
-            <element signature="e#6000#6001#0" expanded="false" />
-            <element signature="e#6042#6043#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Clustering/StreamingClusteringStream.java" />
+    <entry file="file://$PROJECT_DIR$/src/main/java/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Classification/StreamingClassificationStream.java" />
+    <entry file="file://$PROJECT_DIR$/src/main/java/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Classification/Simulator.java" />
+    <entry file="file://$PROJECT_DIR$/src/main/java/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Classification/StreamingClassificationEntranceProcessor.java" />
+    <entry file="file://$PROJECT_DIR$/src/main/java/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Classification/StreamingClassificationEvaluationProcessor.java" />
+    <entry file="file://$PROJECT_DIR$/src/main/java/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Classification/StreamingClassification.java" />
+    <entry file="file://$PROJECT_DIR$/src/test/java/org/wso2/carbon/ml/siddhi/extension/streamingml/AppTestCase.java" />
     <entry file="file://$PROJECT_DIR$/src/main/java/org/wso2/carbon/ml/siddhi/extension/streamingml/StreamingClassificationWithSamoaStreamProcessor.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="105">
-          <caret line="23" column="13" selection-start-line="23" selection-start-column="13" selection-end-line="23" selection-end-column="13" />
-          <folding>
-            <element signature="imports" expanded="false" />
-            <element signature="e#7750#7751#0" expanded="false" />
-            <element signature="e#7786#7787#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Classification/Simulator.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="420">
-          <caret line="36" column="31" selection-start-line="36" selection-start-column="31" selection-end-line="36" selection-end-column="31" />
-          <folding>
-            <element signature="imports" expanded="false" />
-            <element signature="e#2181#2189#0" expanded="false" />
-            <element signature="e#2292#2311#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Classification/StreamingClassificationEntranceProcessor.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="105">
-          <caret line="20" column="13" selection-start-line="20" selection-start-column="13" selection-end-line="20" selection-end-column="13" />
-          <folding>
-            <element signature="imports" expanded="false" />
-            <element signature="e#1936#1937#0" expanded="false" />
-            <element signature="e#1980#1981#0" expanded="false" />
-            <element signature="e#3189#3190#0" expanded="false" />
-            <element signature="e#3220#3221#0" expanded="false" />
-            <element signature="e#3434#3435#0" expanded="false" />
-            <element signature="e#3469#3470#0" expanded="false" />
-            <element signature="e#3818#3819#0" expanded="false" />
-            <element signature="e#3864#3865#0" expanded="false" />
-            <element signature="e#4141#4142#0" expanded="false" />
-            <element signature="e#4180#4181#0" expanded="false" />
-            <element signature="e#5923#5924#0" expanded="false" />
-            <element signature="e#5966#5967#0" expanded="false" />
-            <element signature="e#6011#6012#0" expanded="false" />
-            <element signature="e#6045#6046#0" expanded="false" />
-            <element signature="e#6080#6081#0" expanded="false" />
-            <element signature="e#6113#6114#0" expanded="false" />
-            <element signature="e#6161#6162#0" expanded="false" />
-            <element signature="e#6199#6200#0" expanded="false" />
-            <element signature="e#6419#6420#0" expanded="false" />
-            <element signature="e#6469#6470#0" expanded="false" />
-            <element signature="e#6498#6499#0" expanded="false" />
-            <element signature="e#6557#6558#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Classification/StreamingClassificationEvaluationProcessor.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-210">
-          <caret line="27" column="13" selection-start-line="27" selection-start-column="13" selection-end-line="27" selection-end-column="13" />
+          <caret line="42" column="0" selection-start-line="42" selection-start-column="0" selection-end-line="42" selection-end-column="0" />
           <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/org/wso2/carbon/ml/siddhi/extension/streamingml/samoa/Classification/StreamingClassification.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="996">
-          <caret line="122" column="12" selection-start-line="122" selection-start-column="12" selection-end-line="122" selection-end-column="12" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/test/java/org/wso2/carbon/ml/siddhi/extension/streamingml/AppTestCase.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="285">
-          <caret line="19" column="77" selection-start-line="19" selection-start-column="77" selection-end-line="19" selection-end-column="77" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>

@@ -78,7 +78,7 @@ public class ClassificationTestCase {
 
         try {
             Scanner scn;
-            File f = new File("src/main/resources/iris.csv");
+            File f = new File("src/test/resources/iris.csv");
             FileReader fr = new FileReader(f);
             BufferedReader br = new BufferedReader(fr);
             scn = new Scanner(br);

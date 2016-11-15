@@ -32,7 +32,6 @@ public class StreamingClustering extends Thread{
 
     private int paramCount = 0;
     private int numAttributes=0;
-    private int batchSize = 10;
     private int numClusters=1;
 
     public ConcurrentLinkedQueue<double[]>cepEvents;
@@ -43,10 +42,9 @@ public class StreamingClustering extends Thread{
     public StreamingClusteringTaskBuilder clusteringTask;
     private static final Logger logger = LoggerFactory.getLogger(StreamingClustering.class);
 
-    public StreamingClustering(int paramCount, int batchSize,  int numClusters){
+    public StreamingClustering(int paramCount, int numClusters){
         this.paramCount =paramCount;
         this.numAttributes = paramCount;
-        this.batchSize = batchSize;
         this.numClusters = numClusters;
 
 
@@ -63,7 +61,7 @@ public class StreamingClustering extends Thread{
 
     public void run()
     {
-        this.clusteringTask.initTask(paramCount,numClusters,batchSize,maxNumEvents);
+        this.clusteringTask.initTask(paramCount,numClusters,maxNumEvents);
     }
 
     public Object[] cluster(double[] eventData) {

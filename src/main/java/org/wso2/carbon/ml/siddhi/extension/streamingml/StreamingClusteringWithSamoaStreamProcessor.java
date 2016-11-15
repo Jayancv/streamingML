@@ -43,7 +43,6 @@ import java.util.List;
 public class StreamingClusteringWithSamoaStreamProcessor extends StreamProcessor {
 
     private int paramCount = 0;                                         // Number of x variables +1
-    private int batchSize = 10;                                 // Maximum # of events, used for regression calculation
     private int paramPosition = 0;
     private int maxInstance = Integer.MAX_VALUE;
     private int numClusters = 1;
@@ -53,7 +52,7 @@ public class StreamingClusteringWithSamoaStreamProcessor extends StreamProcessor
     protected List<Attribute> init(AbstractDefinition inputDefinition, ExpressionExecutor[] attributeExpressionExecutors
             , ExecutionPlanContext executionPlanContext) {
         paramCount = attributeExpressionLength;
-        int PARAM_WIDTH = 3;
+        int PARAM_WIDTH = 2;
 
         if (attributeExpressionExecutors.length > PARAM_WIDTH) {
             if (attributeExpressionExecutors[0].getReturnType() == Attribute.Type.INT) {
@@ -68,20 +67,11 @@ public class StreamingClusteringWithSamoaStreamProcessor extends StreamProcessor
             }
 
             if (attributeExpressionExecutors[1].getReturnType() == Attribute.Type.INT) {
-                batchSize = ((Integer) attributeExpressionExecutors[1].execute(null));
-            } else {
-                throw new ExecutionPlanValidationException("Invalid parameter type found for the second argument, " +
-                        "required " + Attribute.Type.INT + " but found " +
-                        attributeExpressionExecutors[1].getReturnType().toString());
-            }
-
-
-            if (attributeExpressionExecutors[2].getReturnType() == Attribute.Type.INT) {
-                numClusters = ((Integer) attributeExpressionExecutors[2].execute(null));
+                numClusters = ((Integer) attributeExpressionExecutors[1].execute(null));
             } else {
                 throw new ExecutionPlanValidationException("Invalid parameter type found for the fourth argument, " +
                         "required " + Attribute.Type.INT + " but found " +
-                        attributeExpressionExecutors[2].getReturnType().toString());
+                        attributeExpressionExecutors[1].getReturnType().toString());
             }
 
 
@@ -94,7 +84,7 @@ public class StreamingClusteringWithSamoaStreamProcessor extends StreamProcessor
 
         paramCount = paramCount - PARAM_WIDTH;
         paramPosition = PARAM_WIDTH;
-        streamingClusteringWithSamoa = new StreamingClustering(paramCount, batchSize, numClusters);
+        streamingClusteringWithSamoa = new StreamingClustering(paramCount, numClusters);
         try {
             Thread.sleep(1000);
         } catch (Exception e) {

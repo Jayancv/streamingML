@@ -78,7 +78,7 @@ public class RegressionTestCase {
 
         try {
             Scanner scn;
-            File f = new File("src/main/resources/ccpp.csv");
+            File f = new File("src/test/resources/ccpp.csv");
             FileReader fr = new FileReader(f);
             BufferedReader br = new BufferedReader(fr);
             scn = new Scanner(br);
