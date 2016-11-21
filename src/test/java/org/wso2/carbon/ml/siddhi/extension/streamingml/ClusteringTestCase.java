@@ -50,9 +50,9 @@ public class ClusteringTestCase {
 
         String inStreamDefinition = " define stream inputStream (attribute_0 double, attribute_1 double," +
                 " attribute_2 double, attribute_3 double, attribute_4 double );";
-        String query = ("@info(name = 'query3') from inputStream#streamingml:streamingClusteringSamoa(-1,2," +
+        String query = ("@info(name = 'query3') from inputStream#streamingml:streamingClusteringSamoa(2," +
                 " attribute_0, attribute_1 , attribute_2 , attribute_3 , attribute_4) " +
-                "select stderr as stderr,center0 as center0,center1 as center1 insert into outputStream;");
+                "select center0 as center0,center1 as center1 insert into outputStream;");
         ExecutionPlanRuntime executionPlanRuntime = siddhiManager.createExecutionPlanRuntime(inStreamDefinition + query);
 
         executionPlanRuntime.addCallback("query3", new QueryCallback() {
@@ -61,16 +61,16 @@ public class ClusteringTestCase {
                 count++;
                 if (count == 1) {
                     Assert.assertEquals("26.689013161214312,65.2985408650787,1010.0086638445954,62.56587280444617," +
-                            "436.13502625254046", inEvents[0].getData()[1]);
+                            "436.13502625254046", inEvents[0].getData()[0]);
                     Assert.assertEquals("14.71610078358815,45.70548516901456,1014.585093380316,75.29614297441418," +
-                            "465.57460856962507", inEvents[0].getData()[2]);
+                            "465.57460856962507", inEvents[0].getData()[1]);
                 }
                 EventPrinter.print(timeStamp, inEvents, removeEvents);
             }
         });
-
+        Scanner scn=null;
         try {
-            Scanner scn;
+
             File f = new File("src/test/resources/ccppTest.csv");
             FileReader fr = new FileReader(f);
             BufferedReader br = new BufferedReader(fr);
@@ -99,8 +99,11 @@ public class ClusteringTestCase {
             executionPlanRuntime.shutdown();
         } catch (Exception e) {
             logger.info(e.toString());
-        }
-
-
+         }finally {
+        scn.close();
     }
+
+
+
+}
 }

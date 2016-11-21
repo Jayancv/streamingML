@@ -17,6 +17,6 @@
 #
 
 
-streamingClusteringSamoa=org.wso2.carbon.ml.siddhi.extension.streamingml.StreamingClusteringWithSamoaStreamProcessor
-streamingClassificationSamoa=org.wso2.carbon.ml.siddhi.extension.streamingml.StreamingClassificationWithSamoaStreamProcessor
-streamingRegressionSamoa=org.wso2.carbon.ml.siddhi.extension.streamingml.StreamingRegressionWithSamoaStreamProcessor
+streamingClusteringSamoa=org.wso2.carbon.ml.siddhi.extension.streamingml.StreamingClusteringExtension
+streamingClassificationSamoa=org.wso2.carbon.ml.siddhi.extension.streamingml.StreamingClassificationExtension
+streamingRegressionSamoa=org.wso2.carbon.ml.siddhi.extension.streamingml.StreamingRegressionExtension

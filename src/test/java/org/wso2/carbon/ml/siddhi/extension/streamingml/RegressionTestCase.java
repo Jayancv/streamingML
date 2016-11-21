@@ -51,14 +51,17 @@ public class RegressionTestCase {
         logger.info("StreamingRegressionStreamProcessor TestCase 1");
         SiddhiManager siddhiManager = new SiddhiManager();
 
-        String inStreamDefinition = " define stream inputStream (attribute_0 double, attribute_1 double, " +
-                "attribute_2 double, attribute_3 double, attribute_4 double );";
+        String inStreamDefinition = " define stream inputStream (attribute_0 double, " +
+                "attribute_1 double,attribute_2 double, attribute_3 double, attribute_4 double );";
 
-        String query = ("@info(name = 'query2') from inputStream#streamingml:streamingRegressionSamoa(300,50,5,4," +
-                " attribute_0, attribute_1 , attribute_2 , attribute_3 , attribute_4) " +
-                "select att_0 as arrtibute_0,att_1 as arrtibute_1,att_2 as arrtibute_2,att_3 as arrtibute_3, " +
-                "prediction as prediction insert into outputStream;");
-        ExecutionPlanRuntime executionPlanRuntime = siddhiManager.createExecutionPlanRuntime(inStreamDefinition + query);
+        String query = ("@info(name = 'query2') from inputStream#streamingml:" +
+                "streamingRegressionSamoa(5,100,300,5,attribute_0, attribute_1 , attribute_2 ," +
+                " attribute_3 , attribute_4) select att_0 as arrtibute_0,att_1 as arrtibute_1," +
+                "att_2 as arrtibute_2,att_3 as arrtibute_3, prediction as prediction" +
+                " insert into outputStream;");
+
+        ExecutionPlanRuntime executionPlanRuntime =
+                siddhiManager.createExecutionPlanRuntime(inStreamDefinition + query);
 
         executionPlanRuntime.addCallback("query2", new QueryCallback() {
             @Override
@@ -76,8 +79,8 @@ public class RegressionTestCase {
             }
         });
 
+        Scanner scn=null;
         try {
-            Scanner scn;
             File f = new File("src/test/resources/ccpp.csv");
             FileReader fr = new FileReader(f);
             BufferedReader br = new BufferedReader(fr);
@@ -89,8 +92,9 @@ public class RegressionTestCase {
                 if (scn.hasNext()) {
                     String eventStr = scn.nextLine();
                     String[] event = eventStr.split(",");
-                    inputHandler.send(new Object[]{Double.valueOf(event[0]), Double.valueOf(event[1]),
-                            Double.valueOf(event[2]), Double.valueOf(event[3]), Double.valueOf(event[4])});
+                    inputHandler.send(new Object[]{Double.valueOf(event[0]),
+                            Double.valueOf(event[1]), Double.valueOf(event[2]),
+                            Double.valueOf(event[3]), Double.valueOf(event[4])});
                 } else {
                     break;
                 }
@@ -107,6 +111,8 @@ public class RegressionTestCase {
             executionPlanRuntime.shutdown();
         } catch (Exception e) {
             logger.info(e.toString());
+        }finally {
+            scn.close();
         }
 
 

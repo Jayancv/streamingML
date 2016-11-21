@@ -16,13 +16,14 @@
  * under the License.
  */
 
-package org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.regression;
+package org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.utils.regression;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.util.Collections;
+import java.util.Queue;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
@@ -37,28 +38,25 @@ import org.apache.samoa.moa.evaluation.LearningEvaluation;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.utils.EvaluationProcessor;
 import org.wso2.siddhi.core.exception.ExecutionPlanRuntimeException;
 
-public class StreamingRegressionEvaluationProcessor implements Processor {
+public class StreamingRegressionEvaluationProcessor extends EvaluationProcessor {
 
-    private static final long serialVersionUID = -2778051819116753612L;
-    private static final Logger logger = LoggerFactory.getLogger(StreamingRegressionEvaluationProcessor.class);
+    private static final Logger logger =
+            LoggerFactory.getLogger(StreamingRegressionEvaluationProcessor.class);
     private static final String ORDERING_MEASUREMENT_NAME = "evaluation instances";
+
     private final PerformanceEvaluator evaluator;
     private final int samplingFrequency;
     private final File dumpFile;
-    private transient PrintStream immediateResultStream = null;
-    private transient boolean firstDump = true;
-    private long totalCount;
-    private long experimentStart;
-    private long sampleStart;
-    private LearningCurve learningCurve;
-    private int id;
+    private transient PrintStream immediateResultStream;
+    private transient boolean firstDump;
+    private Queue<Vector> regressionData;
+    public Queue<Vector> samoaPredictions;
 
-    public ConcurrentLinkedQueue<Vector> regressionData = new ConcurrentLinkedQueue<>();
-    public ConcurrentLinkedQueue<Vector> samoaPredictions;
-
-    public StreamingRegressionEvaluationProcessor(StreamingRegressionEvaluationProcessor.Builder builder) {
+    public StreamingRegressionEvaluationProcessor
+            (StreamingRegressionEvaluationProcessor.Builder builder) {
         this.immediateResultStream = null;
         this.firstDump = true;
         this.totalCount = 0L;
@@ -67,6 +65,7 @@ public class StreamingRegressionEvaluationProcessor implements Processor {
         this.evaluator = builder.evaluator;
         this.samplingFrequency = builder.samplingFrequency;
         this.dumpFile = builder.dumpFile;
+        regressionData = new ConcurrentLinkedQueue<>();
     }
 
     @Override
@@ -94,13 +93,13 @@ public class StreamingRegressionEvaluationProcessor implements Processor {
             evaluator.addResult(result.getInstance(), result.getClassVotes());
             totalCount += 1;
         } else {
-            double pre = (result.getClassVotes()[0]);
-            Vector t = new Vector();
+            double prediction = (result.getClassVotes()[0]);
+            Vector instanceValues = new Vector();
             for (int i = 0; i < result.getInstance().numValues() - 1; i++) {
-                t.add(result.getInstance().value(i));
+                instanceValues.add(result.getInstance().value(i));
             }
-            t.add(pre);
-            samoaPredictions.add(t);
+            instanceValues.add(prediction);
+            samoaPredictions.add(instanceValues);
         }
 
         if (totalCount == 1) {
@@ -112,7 +111,7 @@ public class StreamingRegressionEvaluationProcessor implements Processor {
 
     @Override
     public void onCreate(int id) {
-        this.id = id;
+        this.processId = id;
         this.learningCurve = new LearningCurve(ORDERING_MEASUREMENT_NAME);
 
         if (this.dumpFile != null) {
@@ -139,8 +138,10 @@ public class StreamingRegressionEvaluationProcessor implements Processor {
 
     @Override
     public Processor newProcessor(Processor p) {
-        StreamingRegressionEvaluationProcessor originalProcessor = (StreamingRegressionEvaluationProcessor) p;
-        StreamingRegressionEvaluationProcessor newProcessor = (new StreamingRegressionEvaluationProcessor.Builder(originalProcessor)).build();
+        StreamingRegressionEvaluationProcessor originalProcessor =
+                (StreamingRegressionEvaluationProcessor) p;
+        StreamingRegressionEvaluationProcessor newProcessor =
+                (new StreamingRegressionEvaluationProcessor.Builder(originalProcessor)).build();
         newProcessor.setSamoaPredictions(samoaPredictions);
         if (originalProcessor.learningCurve != null) {
             newProcessor.learningCurve = originalProcessor.learningCurve;
@@ -148,25 +149,14 @@ public class StreamingRegressionEvaluationProcessor implements Processor {
         return newProcessor;
     }
 
-    @Override
-    public String toString() {
-        StringBuilder report = new StringBuilder();
 
-        report.append(StreamingRegressionEvaluationProcessor.class.getCanonicalName());
-        report.append("id = ").append(this.id);
-        report.append('\n');
-        if (learningCurve.numEntries() > 0) {
-            report.append(learningCurve.toString());
-            report.append('\n');
-        }
-        return report.toString();
-    }
 
     private void addMeasurement() {
         Vector measurements = new Vector<>();
         measurements.add(new Measurement(ORDERING_MEASUREMENT_NAME, totalCount));
         Collections.addAll(measurements, evaluator.getPerformanceMeasurements());
-        Measurement[] finalMeasurements = (Measurement[]) measurements.toArray(new Measurement[measurements.size()]);
+        Measurement[] finalMeasurements = (Measurement[]) measurements.toArray(
+                new Measurement[measurements.size()]);
         LearningEvaluation learningEvaluation = new LearningEvaluation(finalMeasurements);
         learningCurve.insertEntry(learningEvaluation);
 
@@ -181,7 +171,8 @@ public class StreamingRegressionEvaluationProcessor implements Processor {
                 immediateResultStream.println(learningCurve.headerToString());
                 firstDump = false;
             }
-            immediateResultStream.println(learningCurve.entryToString(learningCurve.numEntries() - 1));
+            immediateResultStream.println(
+                    learningCurve.entryToString(learningCurve.numEntries() - 1));
             immediateResultStream.flush();
         }
     }
@@ -192,8 +183,10 @@ public class StreamingRegressionEvaluationProcessor implements Processor {
         String learningCurveSummary = this.toString();
         logger.info(learningCurveSummary);
         long experimentEnd = System.nanoTime();
-        long totalExperimentTime = TimeUnit.SECONDS.convert(experimentEnd - experimentStart, TimeUnit.NANOSECONDS);
-        logger.info("total evaluation time: {} seconds for {} instances", totalExperimentTime, totalCount);
+        long totalExperimentTime = TimeUnit.SECONDS.convert(experimentEnd - experimentStart,
+                TimeUnit.NANOSECONDS);
+        logger.info("total evaluation time: {} seconds for {} instances", totalExperimentTime,
+                totalCount);
 
         if (immediateResultStream != null) {
             immediateResultStream.println("# COMPLETED");
@@ -202,7 +195,7 @@ public class StreamingRegressionEvaluationProcessor implements Processor {
 
     }
 
-    public void setSamoaPredictions(ConcurrentLinkedQueue<Vector> samoaPrediction) {
+    public void setSamoaPredictions(Queue<Vector> samoaPrediction) {
         this.samoaPredictions = samoaPrediction;
     }
 

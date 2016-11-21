@@ -16,7 +16,7 @@
  * under the License.
  */
 
-package org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.classification;
+package org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.utils.classification;
 
 import org.apache.samoa.evaluation.ClassificationPerformanceEvaluator;
 import org.apache.samoa.instances.Instance;
@@ -32,7 +32,9 @@ import java.util.Vector;
  * Combination of Samoa  samoa/samoa-api/src/main/java/com/yahoo/labs/samoa/evaluation/BasicClassificationPerformanceEvaluator.java
  * and  samoa/samoa-api/src/main/java/com/yahoo/labs/samoa/evaluation/ClassificationPerformanceEvaluator.java
  */
-public class StreamingClassificationPerformanceEvaluator extends AbstractMOAObject implements ClassificationPerformanceEvaluator {
+public class StreamingClassificationPerformanceEvaluator extends AbstractMOAObject implements
+        ClassificationPerformanceEvaluator {
+
     private static final long serialVersionUID = 1L;
     protected int numClasses = -1;
     protected long[] support;
@@ -136,18 +138,19 @@ public class StreamingClassificationPerformanceEvaluator extends AbstractMOAObje
 
 
     public Measurement[] getPerformanceMeasurements() {
-        Measurement[] a1 = new Measurement[]{new Measurement("classified instances", this.getTotalWeightObserved()),
-                new Measurement("classifications correct (percent)", this.getFractionCorrectlyClassified() * 100.0D),
-                new Measurement("Kappa Statistic (percent)", this.getKappaStatistic() * 100.0D),
-                new Measurement("Kappa Temporal Statistic (percent)", this.getKappaTemporalStatistic() * 100.0D)};
+        Measurement[] statistics = new Measurement[]{new Measurement("classified instances",
+                this.getTotalWeightObserved()), new Measurement("classifications correct (percent)",
+                this.getFractionCorrectlyClassified() * 100.0D),
+                new Measurement("Kappa Statistic (percent)",
+                        this.getKappaStatistic() * 100.0D),
+                new Measurement("Kappa Temporal Statistic (percent)",
+                        this.getKappaTemporalStatistic() * 100.0D)};
         Vector measurements = new Vector();
-        Collections.addAll(measurements, a1);
+        Collections.addAll(measurements, statistics);
         Collections.addAll(measurements, this.getSupportMeasurements());
         Collections.addAll(measurements, this.getPrecisionMeasurements());
         Collections.addAll(measurements, this.getRecallMeasurements());
         Collections.addAll(measurements, this.getF1Measurements());
-
-
         return (Measurement[]) measurements.toArray(new Measurement[measurements.size()]);
     }
 
@@ -203,11 +206,13 @@ public class StreamingClassificationPerformanceEvaluator extends AbstractMOAObje
     }
 
     private double getPrecision(int classIndex) {
-        return (double) this.truePos[classIndex] / (double) (this.truePos[classIndex] + this.falsePos[classIndex]);
+        return (double) this.truePos[classIndex] / (double) (this.truePos[classIndex] +
+                this.falsePos[classIndex]);
     }
 
     private double getRecall(int classIndex) {
-        return (double) this.truePos[classIndex] / (double) (this.truePos[classIndex] + this.falseNeg[classIndex]);
+        return (double) this.truePos[classIndex] / (double) (this.truePos[classIndex] +
+                this.falseNeg[classIndex]);
     }
 
     private double getF1Score(int classIndex) {
@@ -236,7 +241,8 @@ public class StreamingClassificationPerformanceEvaluator extends AbstractMOAObje
             double pc = 0.0D;
 
             for (int i = 0; i < this.numClasses; ++i) {
-                pc += this.rowKappa[i] / this.weightObserved * (this.columnKappa[i] / this.weightObserved);
+                pc += this.rowKappa[i] / this.weightObserved *
+                        (this.columnKappa[i] / this.weightObserved);
             }
 
             return (p0 - pc) / (1.0D - pc);

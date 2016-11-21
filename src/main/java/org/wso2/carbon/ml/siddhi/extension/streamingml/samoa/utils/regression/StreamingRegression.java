@@ -15,41 +15,39 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.regression;
+package org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.utils.regression;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.wso2.siddhi.core.exception.ExecutionPlanRuntimeException;
 
+import java.util.Queue;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class StreamingRegression extends Thread {
-    private static final Logger logger = LoggerFactory.getLogger(StreamingRegression.class);
 
-    private int maxInstance = 100000;
-    private int batchSize = 500;            //Output display interval
-    private int numAttributes = 0;
-    private int paralle = 1;
-    public int numEventsReceived = 0;
+    private int maxInstance;
+    private int batchSize;            //Output display interval
+    private int numberOfAttributes;
+    private int parallelism;
+    public int numEventsReceived;
 
-    public ConcurrentLinkedQueue<double[]> cepEvents;
-    public ConcurrentLinkedQueue<Vector> samoaPredictions;
-
+    public Queue<double[]> cepEvents;
+    public Queue<Vector> samoaPredictions;
     public StreamingRegressionTaskBuilder regressionTask;
 
-    public StreamingRegression(int maxint, int batchSize, int paramCount, int parallelism) {
+    public StreamingRegression(int maxIns, int batchSize, int paramCount, int parallelism) {
 
-        this.maxInstance = maxint;
-        this.numAttributes = paramCount;
+        this.maxInstance = maxIns;
+        this.numberOfAttributes = paramCount;
         this.batchSize = batchSize;
-        this.paralle = parallelism;
+        this.parallelism = parallelism;
+        this.numEventsReceived = 0;
 
         this.cepEvents = new ConcurrentLinkedQueue<double[]>();
         this.samoaPredictions = new ConcurrentLinkedQueue<Vector>();
         try {
             this.regressionTask = new StreamingRegressionTaskBuilder(this.maxInstance, this.batchSize,
-                    this.numAttributes, this.cepEvents, this.samoaPredictions, this.paralle);
+                    this.numberOfAttributes, this.cepEvents, this.samoaPredictions, this.parallelism);
         } catch (Exception e) {
             throw new ExecutionPlanRuntimeException("Fail to Initiate the Streaming Regression.", e);
         }
@@ -57,30 +55,18 @@ public class StreamingRegression extends Thread {
 
     public void run() {
         regressionTask.initTask();
+        regressionTask.submit();
     }
 
-    public Object[] regress(double[] cepEvent) {
+    public void addEvents(double[] cepEvent) {
         numEventsReceived++;
         cepEvents.add(cepEvent);
-        Object[] output;
-
-        if (!samoaPredictions.isEmpty()) {                     // poll predicted events from prediction queue
-            output = new Object[numAttributes];
-            Vector prediction = samoaPredictions.poll();
-            for (int i = 0; i < prediction.size(); i++) {
-                output[i] = prediction.get(i);
-            }
-        } else {
-            output = null;
-        }
-        return output;
     }
 
-    public Object[] regress() {                                       // for cep timerEvents
-        numEventsReceived++;
+    public Object[] getOutput() {
         Object[] output;
-        if (!samoaPredictions.isEmpty()) {
-            output = new Object[numAttributes];
+        if (!samoaPredictions.isEmpty()) {             // poll predicted events from prediction queue
+            output = new Object[numberOfAttributes];
             Vector prediction = samoaPredictions.poll();
             for (int i = 0; i < prediction.size(); i++) {
                 output[i] = prediction.get(i);

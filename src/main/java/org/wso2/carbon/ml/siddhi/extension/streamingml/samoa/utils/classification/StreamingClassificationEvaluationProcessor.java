@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.classification;
+package org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.utils.classification;
 
 import org.apache.samoa.core.ContentEvent;
 import org.apache.samoa.core.Processor;
@@ -28,6 +28,7 @@ import org.apache.samoa.moa.evaluation.LearningEvaluation;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.wso2.carbon.ml.siddhi.extension.streamingml.samoa.utils.EvaluationProcessor;
 import org.wso2.siddhi.core.exception.ExecutionPlanRuntimeException;
 
 import java.io.File;
@@ -35,32 +36,25 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.util.Collections;
+import java.util.Queue;
 import java.util.Vector;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
 
-public class StreamingClassificationEvaluationProcessor implements Processor {
+public class StreamingClassificationEvaluationProcessor extends EvaluationProcessor {
 
     private static final long serialVersionUID = -2778051819116753612L;
-    private static final Logger logger = LoggerFactory.getLogger(StreamingClassificationEvaluationProcessor.class);
+    private static final Logger logger =
+            LoggerFactory.getLogger(StreamingClassificationEvaluationProcessor.class);
 
     private final PerformanceEvaluator evaluator;
     private final int samplingFrequency;
-    private final File dumpFile;
-    private transient PrintStream immediateResultStream;
-    private transient boolean firstDump;
-    private long totalCount;
-    private long experimentStart;
-    private long sampleStart;
-    private LearningCurve learningCurve;
-    private int id;
+    private File dumpFile;
+    private Queue<Vector> statistics;
+    public Queue<Vector> classifiers;
 
-    public ConcurrentLinkedQueue<Vector> statistics = new ConcurrentLinkedQueue<>();
-    public ConcurrentLinkedQueue<Vector> classifiers;
-
-    private int count = 0;
-
-    private StreamingClassificationEvaluationProcessor(StreamingClassificationEvaluationProcessor.Builder builder) {
+    protected StreamingClassificationEvaluationProcessor
+            (StreamingClassificationEvaluationProcessor.Builder builder) {
 
         this.immediateResultStream = null;
         this.firstDump = true;
@@ -70,12 +64,12 @@ public class StreamingClassificationEvaluationProcessor implements Processor {
         this.evaluator = builder.evaluator;
         this.samplingFrequency = builder.samplingFrequency;
         this.dumpFile = builder.dumpFile;
+        statistics = new ConcurrentLinkedQueue<>();
     }
 
     public boolean process(ContentEvent event) {
         boolean predicting = false;
         ResultContentEvent result = (ResultContentEvent) event;
-        count++;
         // Identify the event that uses to predict or train
         if (result.getInstance().classValue() == -1) {
             predicting = true;
@@ -89,23 +83,22 @@ public class StreamingClassificationEvaluationProcessor implements Processor {
             }
         }
 
-        if (result.isLastEvent()) {
-            this.concludeMeasurement();
-            return true;
-        }
-
-        int pre = Utils.maxIndex(result.getClassVotes());
+        int prediction = Utils.maxIndex(result.getClassVotes());
         if (predicting) {
-            Vector t = new Vector();
+            Vector instanceValues = new Vector();
             for (int i = 0; i < result.getInstance().numValues() - 1; i++) {
-                t.add(result.getInstance().value(i));
+                instanceValues.add(result.getInstance().value(i));
             }
-            t.add(pre);
-            classifiers.add(t);
+            instanceValues.add(prediction);
+            classifiers.add(instanceValues);
         } else {
             // Training event data added to model statistics
             this.evaluator.addResult(result.getInstance(), result.getClassVotes());
             ++this.totalCount;
+        }
+        if (result.isLastEvent()) {
+            this.concludeMeasurement();
+            return true;
         }
 
         if (totalCount == 1) {
@@ -113,18 +106,19 @@ public class StreamingClassificationEvaluationProcessor implements Processor {
             experimentStart = sampleStart;
         }
         return false;
-
     }
 
     public void onCreate(int id) {
-        this.id = id;
+        this.processId = id;
         this.learningCurve = new LearningCurve("evaluation instances");
         if (this.dumpFile != null) {
             try {
                 if (this.dumpFile.exists()) {
-                    this.immediateResultStream = new PrintStream(new FileOutputStream(this.dumpFile, true), true);
+                    this.immediateResultStream = new PrintStream(new FileOutputStream(this.dumpFile,
+                            true), true);
                 } else {
-                    this.immediateResultStream = new PrintStream(new FileOutputStream(this.dumpFile), true);
+                    this.immediateResultStream = new PrintStream(new FileOutputStream(this.dumpFile)
+                            , true);
                 }
             } catch (FileNotFoundException var3) {
                 this.immediateResultStream = null;
@@ -137,14 +131,11 @@ public class StreamingClassificationEvaluationProcessor implements Processor {
         this.firstDump = true;
     }
 
-    public void setSamoaClassifiers(ConcurrentLinkedQueue<Vector> classifiers) {
-        this.classifiers = classifiers;
-    }
-
     public Processor newProcessor(Processor p) {
-        StreamingClassificationEvaluationProcessor originalProcessor = (StreamingClassificationEvaluationProcessor) p;
-        StreamingClassificationEvaluationProcessor newProcessor = (new StreamingClassificationEvaluationProcessor.Builder
-                (originalProcessor)).build();
+        StreamingClassificationEvaluationProcessor originalProcessor =
+                (StreamingClassificationEvaluationProcessor) p;
+        StreamingClassificationEvaluationProcessor newProcessor =
+                (new StreamingClassificationEvaluationProcessor.Builder(originalProcessor)).build();
         newProcessor.setSamoaClassifiers(classifiers);
         if (originalProcessor.learningCurve != null) {
             newProcessor.learningCurve = originalProcessor.learningCurve;
@@ -155,7 +146,7 @@ public class StreamingClassificationEvaluationProcessor implements Processor {
     public String toString() {
         StringBuilder report = new StringBuilder();
         report.append(StreamingClassificationEvaluationProcessor.class.getCanonicalName());
-        report.append("id = ").append(this.id);
+        report.append("id = ").append(this.processId);
         report.append('\n');
         if (this.learningCurve.numEntries() > 0) {
             report.append(this.learningCurve.toString());
@@ -168,7 +159,8 @@ public class StreamingClassificationEvaluationProcessor implements Processor {
         Vector measurements = new Vector();
         measurements.add(new Measurement("evaluation instances", (double) this.totalCount));
         Collections.addAll(measurements, this.evaluator.getPerformanceMeasurements());
-        Measurement[] finalMeasurements = (Measurement[]) measurements.toArray(new Measurement[measurements.size()]);
+        Measurement[] finalMeasurements =
+                (Measurement[]) measurements.toArray(new Measurement[measurements.size()]);
         LearningEvaluation learningEvaluation = new LearningEvaluation(finalMeasurements);
         this.learningCurve.insertEntry(learningEvaluation);
 
@@ -183,7 +175,8 @@ public class StreamingClassificationEvaluationProcessor implements Processor {
                 this.immediateResultStream.println(this.learningCurve.headerToString());
                 this.firstDump = false;
             }
-            this.immediateResultStream.println(this.learningCurve.entryToString(this.learningCurve.numEntries() - 1));
+            this.immediateResultStream.println(this.learningCurve.entryToString
+                    (this.learningCurve.numEntries() - 1));
             this.immediateResultStream.flush();
         }
 
@@ -191,14 +184,17 @@ public class StreamingClassificationEvaluationProcessor implements Processor {
 
     private void concludeMeasurement() {
         long experimentEnd = System.nanoTime();
-        long totalExperimentTime = TimeUnit.SECONDS.convert(experimentEnd - this.experimentStart, TimeUnit.NANOSECONDS);
-        logger.info("total evaluation time: {} seconds for {} instances", Long.valueOf(totalExperimentTime),
-                Long.valueOf(this.totalCount));
+        long totalExperimentTime = TimeUnit.SECONDS.convert(experimentEnd - this.experimentStart,
+                TimeUnit.NANOSECONDS);
+        logger.info("total evaluation time: {} seconds for {} instances",
+                Long.valueOf(totalExperimentTime), Long.valueOf(this.totalCount));
         if (this.immediateResultStream != null) {
             this.immediateResultStream.println("# COMPLETED");
             this.immediateResultStream.flush();
         }
-
+    }
+    public void setSamoaClassifiers(Queue<Vector> classifiers) {
+        this.classifiers = classifiers;
     }
 
     public static class Builder {
@@ -216,7 +212,8 @@ public class StreamingClassificationEvaluationProcessor implements Processor {
             this.dumpFile = oldProcessor.dumpFile;
         }
 
-        public StreamingClassificationEvaluationProcessor.Builder samplingFrequency(int samplingFrequency) {
+        public StreamingClassificationEvaluationProcessor.Builder samplingFrequency
+                (int samplingFrequency) {
             this.samplingFrequency = samplingFrequency;
             return this;
         }
@@ -229,7 +226,5 @@ public class StreamingClassificationEvaluationProcessor implements Processor {
         public StreamingClassificationEvaluationProcessor build() {
             return new StreamingClassificationEvaluationProcessor(this);
         }
-
-
     }
 }
